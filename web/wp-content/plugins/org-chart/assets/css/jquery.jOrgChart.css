@@ -1,0 +1,106 @@
+/* Basic styling */
+
+/* Admin Style */
+
+.jOrgChart .popitup {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.admin_section_title i.fa.fa-refresh.fa-spin {
+  float: right;
+  margin-right: 12px;
+  font-size: 18px;
+  margin-top: 5px;
+  color: green;
+  display: none;
+}
+span.user_update_notice {
+  float: right;
+  font-size: 14px;
+  color: green;
+  margin-right: 12px;
+}
+
+.jOrgChart i {
+  display: block;
+  padding-top: 10px;
+  font-size: 25px;
+}
+
+/* Draw the lines */
+.jOrgChart .line {
+  height: 20px;
+  width: 7px;
+}
+
+.jOrgChart table tr {
+  border: 0px !important;
+}
+
+.jOrgChart .down {
+  background-color: #ababab;
+  margin: 0px auto;
+}
+
+.jOrgChart .top {
+  border-top: 0.5px solid rgba(62, 60, 61, 0.43);
+}
+
+.jOrgChart .left {
+  border-right: 0.5px solid rgba(62, 60, 61, 0.43);
+  float: none !important;
+  width: auto;
+}
+
+.jOrgChart .right {
+  border-left: 0.5px solid rgba(62, 60, 61, 0.43);
+  float: none !important;
+  width: auto;
+}
+
+/* node cell */
+.jOrgChart td {
+  text-align: center;
+  vertical-align: top;
+  padding: 0;
+}
+
+/* The node */
+.jOrgChart .node {
+  padding: 0 0 3px 0;
+  padding: 0 0 3px 0;
+  background-color: #35363b;
+  display: inline-block;
+  min-width: 60px;
+  z-index: 10;
+  margin: 0 2px;
+}
+
+.jOrgChart img {
+  width: 100%;
+  margin-bottom: 0px !important;
+}
+
+/* jQuery drag 'n drop */
+
+.drag-active {
+  border-style: dotted !important;
+}
+
+.drop-hover {
+  border-style: solid !important;
+  border-color: #e05e00 !important;
+}
+
+.jOrgChart table,
+.jOrgChart td {
+  border: 0px;
+  border-collapse: separate;
+  line-height: 1.5 !important;
+}
+
+.jOrgChart table {
+  width: 100%;
+  margin-bottom: 0;
+}
