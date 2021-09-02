@@ -89,12 +89,12 @@ function on_profile_update($user_id)
     $data = array(get_userdata($user_id));
     $user_meta = array(get_user_meta($user_id));
     $user = new User(isset($data["user_login"]), isset($user_meta["first_name"]), isset($data["user_email"]));
-    $user->setUSername(isset($user_meta["first_name"]));
+    $user->setName(isset($user_meta["first_name"]));
     $user->updateUser();
 }
 
-
-class User extends Connection
+include_once 'includes/Connection.php';
+class User
 {
     private $username;
     private $email;
@@ -109,59 +109,50 @@ class User extends Connection
 
     }
 
-    public function setUsername($username)
+    public function setName($name)
     {
-        $this->username = $username;
+        $this->name = $name;
+    }
+
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    public function getName($name)
+    {
+        if (name_exist($this, $name)) {
+            return $this->name;
+        }
+
     }
 
     public function updateUser()
     {
-
-        $conn = new mysqli("localhost", "c1demomg3", "mxnCouMD!6M8", "c1kanboard");
+        $conn = new Connection();
+        $conn->connect();
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         }
-        $sql = "UPDATE users SET name ='$this->name' WHERE email='$this->email'";
-        if (mysqli_query($conn, $sql)) {
+        //create a template
+        $sql = "UPDATE users SET name =? WHERE email=?";
+        //create a prepared statement
+        $stmt = mysqli_stmt_init($conn);
+        if (mysqli_stmt_prepare($stmt, $sql)) {
             echo "Record updated successfully";
+            //bind parameters to placeholders
+            mysqli_stmt_bind_param($stmt,"ss",$name,$email);
+            //run parameters inside database
+            mysqli_stmt_execute($stmt);
             $this->closeConnection();
         } else {
-            echo "Error updating record: " . mysqli_error($conn);
+            echo "Error updating record: ";
         }
 
     }
 }
 
-class Connection
-{
-    private $url;
-    private $username;
-    private $password;
-    private $dbname;
 
-    public function __construct($url, $username, $password, $dbname)
-    {
-        $this->url = "http://vps1.mg3.srl/phpmyadmin/";
-        $this->username = "c1demomg3";
-        $this->password = "mxnCouMD!6M8";
-        $this->dbname = "c1kanboard";
-    }
-
-    function connect()
-    {
-        $conn = new mysqli($this->url, $this->username, $this->password, $this->dbname);
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-        return $conn;
-    }
-
-    protected function closeConnection()
-    {
-        $conn = $this->connect();
-        $conn->close();
-    }
-}
 
 ?>
 
