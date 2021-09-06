@@ -25,9 +25,5 @@ private $dbname;
         return $conn;
     }
 
-    protected function closeConnection()
-    {
-        $conn = $this->connect();
-        $conn->close();
-    }
+
 }
