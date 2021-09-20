@@ -10,7 +10,7 @@ Author URI:
 
 */
 
-if (!function_exists('write_log')) {
+/*if (!function_exists('write_log')) {
 
     function write_log($log)
     {
@@ -23,7 +23,7 @@ if (!function_exists('write_log')) {
     }
 
 
-}
+}*/
 
 add_action('user_new_form', 'extra_user_fields');
 add_action('edit_user_profile', 'extra_user_fields');
@@ -49,8 +49,8 @@ function extra_user_fields($user)
             </td>
         </tr>
         <tr>
-            <td>Area</td>
-            <td><input type="text" name="Area">
+            <td>Servizio</td>
+            <td><input type="text" name="Servizio">
             </td>
         </tr>
         <tr>
@@ -64,19 +64,11 @@ function extra_user_fields($user)
         $('input').addClass('regular-text');
         $('input[name=Ente]').val('<?php echo get_the_author_meta('Ente', $user->ID); ?>');
         $('input[name=Settore]').val('<?php echo get_the_author_meta('Settore', $user->ID); ?>');
-        $('input[name=Area]').val('<?php echo get_the_author_meta('Area', $user->ID); ?>');
+        $('input[name=Servizio]').val('<?php echo get_the_author_meta('Servizio', $user->ID); ?>');
         $('input[name=Ufficio]').val('<?php echo get_the_author_meta('Ufficio', $user->ID); ?>');
 
 
     </script>
-    <pre>
-        <?php
-        $data = array(get_userdata($user->ID));
-        print_r($data);
-        $user_meta = array(get_user_meta($user->ID));
-        print_r($user_meta);
-        ?>
-    </pre>
 
 
     <?php
@@ -92,8 +84,7 @@ function save_extra_user_field($user_id)
         return false;
     }
     update_user_meta($user_id, 'Settore', $_POST["Settore"]);
-    update_user_meta($user_id, 'Area', $_POST["Area"]);
-    update_user_meta($user_id, 'Ufficio', $_POST["Ufficio"]);
+    update_user_meta($user_id, 'Servizio', $_POST["Servizio"]);    update_user_meta($user_id, 'Ufficio', $_POST["Ufficio"]);
     update_user_meta($user_id, 'Ente', $_POST["Ente"]);
 
 
@@ -119,6 +110,7 @@ function on_profile_update($user_id)
             update_user_meta($user_id, 'id_kanboard', $idKanboard);
         }
 
+
     }
 
 }
@@ -132,6 +124,18 @@ function my_delete_user($user_id)
     $user->deleteUser($id_kan);
 }
 
+
+add_action('admin_post_add_project', 'admin_add_project');
+function admin_add_project()
+{
+    $project = new Project();
+    $project->setProjectName("Prova Wordpress 2");
+    $project->setIdUser(wp_get_current_user());
+    $project->setUserRole('project manager');
+    $project->updateProject();
+
+
+}
 
 include_once 'includes/Connection.php';
 
@@ -234,12 +238,37 @@ class User
     }
 }
 
-class Project{
+class Project
+{
     private $project_name;
     private $id_project;
+    private $id_user;
+    private $user_role;
+
     public function __construct()
     {
 
+    }
+
+    public function getUserRole()
+    {
+        return $this->user_role;
+    }
+
+
+    public function setUserRole($user_role)
+    {
+        $this->user_role = $user_role;
+    }
+
+    public function getIdUser()
+    {
+        return $this->id_user;
+    }
+
+    public function setIdUser($id_user)
+    {
+        $this->id_user = $id_user;
     }
 
 
@@ -265,23 +294,37 @@ class Project{
     {
         $this->id_project = $id_project;
     }
-public function updateProject(){
-    $conn = new Connection();
-    $mysqli = $conn->connect();
-    if($this->id_project!=NULL){
-        $sql = "UPDATE projects SET name=? WHERE id=?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("si", $this->project_name, $this->id_project);
-        $res = $stmt->execute();
+
+    public function updateProject()
+    {
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        if ($this->id_project != NULL) {
+            $sql = "UPDATE projects SET name=? WHERE id=?";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("si", $this->project_name, $this->id_project);
+            $res = $stmt->execute();
+        } else {
+            $sql = "INSERT INTO projects (name,owner_id) VALUES(?,?)";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("si", $this->project_name, $this->id_user);
+            $res = $stmt->execute();
+            $sql = "SELECT id FROM projects WHERE name=?";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("s", $this->project_name);
+            $res = $stmt->execute();
+            $res = $stmt->get_result();
+            $project = $res->fetch_assoc();
+            $this->setIdProject($project['id']);
+            $sql = "INSERT INTO project_has_users (project_id,user_id,role) VALUES(?,?,?)";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("iis", $this->id_project, $this->id_user, $this->user_role);
+            $res = $stmt->execute();
+
+        }
+        $mysqli->close();
     }
-    else{
-        $sql = "INSERT INTO projects (name) VALUES(?)";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("s", $this->project_name);
-        $res = $stmt->execute();
-    }
-    $mysqli->close();
-}
+
     public function deleteProject($idProject)
     {
         $conn = new Connection();
@@ -294,12 +337,15 @@ public function updateProject(){
         $mysqli->close();
     }
 }
-class Task{
+
+class Task
+{
     private $id_task;
     private $title;
     private $description;
     private $date_creation;
     private $date_completed;
+
     public function __construct()
     {
 
@@ -364,23 +410,25 @@ class Task{
     {
         $this->date_completed = $date_completed;
     }
-    public function updateTask(){
+
+    public function updateTask()
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        if($this->id_task!=NULL){
+        if ($this->id_task != NULL) {
             $sql = "UPDATE tasks SET title=?,description=?,date_creation=?,date_completed=? WHERE id=?";
             $stmt = $mysqli->prepare($sql);
-            $stmt->bind_param("ssiii", $this->title,$this->description,$this->date_creation,$this->date_completed, $this->id_task);
+            $stmt->bind_param("ssiii", $this->title, $this->description, $this->date_creation, $this->date_completed, $this->id_task);
             $res = $stmt->execute();
-        }
-        else{
+        } else {
             $sql = "INSERT INTO tasks (title,description,date_creation,date_completed) VALUES(?,?,?,?)";
             $stmt = $mysqli->prepare($sql);
-            $stmt->bind_param("ssii", $this->title,$this->description,$this->date_creation,$this->date_completed);
+            $stmt->bind_param("ssii", $this->title, $this->description, $this->date_creation, $this->date_completed);
             $res = $stmt->execute();
         }
         $mysqli->close();
     }
+
     public function deleteTask($idTask)
     {
         $conn = new Connection();
@@ -396,7 +444,8 @@ class Task{
 
 }
 
-class SubTask{
+class SubTask
+{
 
     private $id_subtask;
     private $title;
@@ -404,6 +453,7 @@ class SubTask{
     private $time_estimated;
     private $time_spent;
     private $position;
+
     public function __construct()
     {
 
@@ -475,27 +525,30 @@ class SubTask{
     {
         $this->position = $position;
     }
+
     public function setDateCompleted($date_completed)
     {
         $this->date_completed = $date_completed;
     }
-    public function updateSubTask(){
+
+    public function updateSubTask()
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        if($this->id_subtask!=NULL){
+        if ($this->id_subtask != NULL) {
             $sql = "UPDATE subtasks SET title=?,status=?,time_estimated=?,time_spent=?, position=? WHERE id=?";
             $stmt = $mysqli->prepare($sql);
-            $stmt->bind_param("siiiii", $this->title,$this->status,$this->time_estimated,$this->time_spent, $this->position, $this->id_subtask);
+            $stmt->bind_param("siiiii", $this->title, $this->status, $this->time_estimated, $this->time_spent, $this->position, $this->id_subtask);
             $res = $stmt->execute();
-        }
-        else{
+        } else {
             $sql = "INSERT INTO subtasks (title,status,time_estimated,time_spent,position ) VALUES(?,?,?,?,?)";
             $stmt = $mysqli->prepare($sql);
-            $stmt->bind_param("siiii", $this->title,$this->status,$this->time_estimated,$this->time_spent,$this->position);
+            $stmt->bind_param("siiii", $this->title, $this->status, $this->time_estimated, $this->time_spent, $this->position);
             $res = $stmt->execute();
         }
         $mysqli->close();
     }
+
     public function deleteSubTask($idSubtask)
     {
         $conn = new Connection();
@@ -509,6 +562,7 @@ class SubTask{
     }
 
 }
+
 ?>
 
 
