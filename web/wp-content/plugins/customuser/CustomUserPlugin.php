@@ -37,39 +37,63 @@ function extra_user_fields($user)
     ?>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.0.js"></script>
     <h3>Job information</h3>
-    <table class="form-table">
-        <tr>
-            <td>Ente</td>
-            <td><input type="text" name="Ente">
-            </td>
-        </tr>
-        <tr>
-            <td>Settore</td>
-            <td><input type="text" name="Settore">
-            </td>
-        </tr>
-        <tr>
-            <td>Servizio</td>
-            <td><input type="text" name="Servizio">
-            </td>
-        </tr>
-        <tr>
-            <td>Ufficio</td>
-            <td><input type="text" name="Ufficio">
-            </td>
-        </tr>
-    </table>
+    Settore: <select name="Settore" id="settore">
+    <option value="" selected="selected">Seleziona un Settore</option>
+</select>
+    <br><br>
+    Apicale: <select name="Apicale" id="apicale">
+    <option value="" selected="selected">Seleziona un Apicale</option>
+</select>
+    <br><br>
+    Servizio: <select name="Servizio" id="servizio">
+    <option value="" selected="selected">Seleziona un Servizio</option>
+</select>
+    <br><br>
+    Responsabile Processo: <select name="ResposabileProcesso" id="responsabile">
+    <option value="" selected="selected">Seleziona un Responsabile Processo</option>
+</select>
+    <br><br>
+    Ufficio: <select name="Ufficio" id="ufficio">
+    <option value="" selected="selected">Seleziona un Ufficio</option>
+</select>
+    <br><br>
+    <tr>
+        <td>Ruolo:</td>
+        <td><input type="text" name="Ruolo">
+        </td>
+    </tr>
     <script type="text/javascript">
-
         $('input').addClass('regular-text');
-        $('input[name=Ente]').val('<?php echo get_the_author_meta('Ente', $user->ID); ?>');
-        $('input[name=Settore]').val('<?php echo get_the_author_meta('Settore', $user->ID); ?>');
-        $('input[name=Servizio]').val('<?php echo get_the_author_meta('Servizio', $user->ID); ?>');
-        $('input[name=Ufficio]').val('<?php echo get_the_author_meta('Ufficio', $user->ID); ?>');
+        $('input[name=Ruolo]').val('<?php echo get_the_author_meta('Ruolo', $user->ID); ?>');
 
-
+    window.onload = function() {
+    var subjectSel = document.getElementById("settore");
+    var topicSel = document.getElementById("servizio");
+    var chapterSel = document.getElementById("ufficio");
+    //questo serve per pescare le variabili in subjectObject, cambiarlo per prendere variabili dal db
+    for (var x in subjectObject) {
+    subjectSel.options[subjectSel.options.length] = new Option(x, x);
+    }
+    subjectSel.onchange = function() {
+    //empty Chapters- and Topics- dropdowns
+    chapterSel.length = 1;
+    topicSel.length = 1;
+    //display correct values
+    for (var y in subjectObject[this.value]) {
+    topicSel.options[topicSel.options.length] = new Option(y, y);
+    }
+    }
+    topicSel.onchange = function() {
+    //empty Chapters dropdown
+    chapterSel.length = 1;
+    //display correct values
+    var z = subjectObject[subjectSel.value][this.value];
+    for (var i = 0; i < z.length; i++) {
+    chapterSel.options[chapterSel.options.length] = new Option(z[i], z[i]);
+    }
+    }
+    }
     </script>
-
 
     <?php
 
@@ -83,9 +107,7 @@ function save_extra_user_field($user_id)
     if (!current_user_can('edit_user', $user_id)) {
         return false;
     }
-    update_user_meta($user_id, 'Settore', $_POST["Settore"]);
-    update_user_meta($user_id, 'Servizio', $_POST["Servizio"]);    update_user_meta($user_id, 'Ufficio', $_POST["Ufficio"]);
-    update_user_meta($user_id, 'Ente', $_POST["Ente"]);
+    update_user_meta($user_id, 'Ruolo', $_POST["Ruolo"]);
 
 
 }
@@ -97,7 +119,6 @@ function on_profile_update($user_id)
 {
     $user_data = array(get_userdata($user_id));
     $user_meta = array(get_user_meta($user_id));
-
     if (isset($user_data[0]->data) && isset($user_meta[0])) {
         $user = new User();
         $user->setEmail($user_data[0]->data->user_email);
@@ -109,8 +130,6 @@ function on_profile_update($user_id)
         if ($idKanboard != NULL) {
             update_user_meta($user_id, 'id_kanboard', $idKanboard);
         }
-
-
     }
 
 }
