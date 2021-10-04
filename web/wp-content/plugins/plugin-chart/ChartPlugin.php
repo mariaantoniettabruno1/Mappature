@@ -13,15 +13,19 @@ require_once 'ConnectionSarala.php';
 
 function visualize_orgchart()
 {
-    $settore = new Settore();
-    $settore->setIdFormSettore(20);
-    $settore->returnIDSettore();
-    $id_settore = $settore->getIdEntrySettore();
-   $entry_settore = GFAPI::get_entries(20);
+    $entry_gforms = GFAPI::get_entries(20);
 
-   echo '<pre>';
-    print_r($entry_settore);
-    echo '</pre>';
+    $data = array(
+        "settore" => $entry_gforms[0]['7'],
+        "servizio" => $entry_gforms[0]['8'],
+        "ufficio" => $entry_gforms[0]['4']
+
+    );
+
+
+    //echo '<pre>';
+    // print_r($entry_gforms);
+    // echo '</pre>';
 
     ?>
     <!DOCTYPE html>
@@ -47,7 +51,7 @@ function visualize_orgchart()
             }
 
             .caret-down::before {
-            transform: rotate(90deg);
+                transform: rotate(90deg);
             }
 
             .nested {
@@ -62,28 +66,28 @@ function visualize_orgchart()
     <body>
 
     <ul id="myUL">
-        <li><span class="caret"><?php echo $entry_settore['4'] ?></span>
-            <ul class="nested">
-                        <li><span class="caret"><?php ?></span>
-                            <ul class="nested">
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                                <li></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
+        <div style="text-align: center;">
+            <li><span class="caret"><?php echo $data["settore"]; ?></span>
+                <ul class="nested">
+                    <li><span class="caret"><?php echo $data["servizio"]; ?></span>
+                        <ul class="nested">
+                            <li><span class="caret"><?php echo $data["ufficio"]; ?></span>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
     </ul>
-
+    </li>
+    </ul>
+    </body>
+    </div>
     <script>
         var toggler = document.getElementsByClassName("caret");
         var i;
 
         for (i = 0; i < toggler.length; i++) {
-            toggler[i].addEventListener("click", function() {
+            toggler[i].addEventListener("click", function () {
                 this.parentElement.querySelector(".nested").classList.toggle("active");
                 this.classList.toggle("caret-down");
             });
