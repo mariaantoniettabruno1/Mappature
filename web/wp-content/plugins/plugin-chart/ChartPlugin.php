@@ -14,19 +14,14 @@ require_once 'ConnectionSarala.php';
 function visualize_orgchart()
 {
     $entry_gforms = GFAPI::get_entries(20);
+    $data = array();
 
-    $data = array(
-        "settore" => $entry_gforms[0]['7'],
-        "servizio" => $entry_gforms[0]['8'],
-        "ufficio" => $entry_gforms[0]['4']
-
-    );
-
-
-    //echo '<pre>';
-    // print_r($entry_gforms);
-    // echo '</pre>';
-
+    for ($i = 0; $i < sizeof($entry_gforms); $i++) {
+        $temparray = array("settore" => $entry_gforms[$i]['7'],
+            "servizio" => $entry_gforms[$i]['8'],
+            "ufficio" => $entry_gforms[$i]['4']);
+        array_push($data, $temparray);
+    }
     ?>
     <!DOCTYPE html>
     <html>
@@ -67,18 +62,26 @@ function visualize_orgchart()
 
     <ul id="myUL">
         <div style="text-align: center;">
-            <li><span class="caret"><?php echo $data["settore"]; ?></span>
-                <ul class="nested">
-                    <li><span class="caret"><?php echo $data["servizio"]; ?></span>
-                        <ul class="nested">
-                            <li><span class="caret"><?php echo $data["ufficio"]; ?></span>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-    </ul>
-    </li>
+            <?php for ($i = 0; $i < sizeof($data); $i++) {
+                echo "<li>
+                <span class='caret'>";
+                echo $data[$i]["settore"];
+                echo "<br>";
+                echo "</span>";
+                echo "<ul class='nested'>";
+                echo "<li>
+                <span class='caret'>";
+                echo $data[$i]["servizio"];
+                echo "<br>";
+                echo "</span>";
+                echo "<ul class='nested'>";
+                echo "<li>
+                <span class='caret'>";
+                echo $data[$i]["ufficio"];
+                echo "<br>";
+                echo "</span>";
+                echo "<ul class='nested'>";
+            }; ?>
     </ul>
     </body>
     </div>
