@@ -9,7 +9,7 @@ Author: MG3
 Author URI:
 
 */
-require_once 'ConnectionSarala.php';
+
 
 function visualize_orgchart()
 {

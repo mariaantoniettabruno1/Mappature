@@ -37,53 +37,53 @@ function extra_user_fields($user)
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.0.js"></script>
     <body>
     <h3>Job information</h3>
-    <br class = "container" id="settore">
-        <td>Settore</td>
+    <br class="container">
+    <td>Settore</td>
     <div>
         <?php
         $settore = new Settore();
-       $results_settore = $settore->selectSettore();
-       echo "<select id='Settore'>";
-       foreach ($results_settore as $result){
-           echo "<option selected='selected' value='$result'> $result</option>";
-           echo "<br>";
-       }
-       echo "</select>";
+        $results_settore = $settore->selectSettore();
+        echo "<select name= 'settore' >";
+        foreach ($results_settore as $result) {
+            echo "<option selected='selected' value='$result'> $result</option>";
+            echo "<br>";
+        }
+        echo "</select>";
         ?>
     </div>
 
-    <br class = "container" id ="servizio">
-        <td>Servizio</td>
-        <div>
-            <?php
-            $servizio = new Servizio();
-            $results_servizio = $servizio->selectServizio();
-            echo "<select>";
-            foreach ($results_servizio as $result){
-                echo "<option selected='selected' value='$result'> $result</option>";
-            }
-            echo "</select>";
-            ?>
-        </div>
-    <br class = "container" id ="ufficio">
-        <td>Ufficio</td>
-        <div>
-            <?php
-            $ufficio= new Ufficio();
-            $results_ufficio = $ufficio->selectUfficio();
-            echo "<select>";
-            foreach ($results_ufficio as $result){
-                echo "<option selected='selected' value='$result'> $result</option>";
-            }
-            echo "</select>";
-            ?>
-        </div>
+    <br class="container">
+    <td>Servizio</td>
+    <div>
+        <?php
+        $servizio = new Servizio();
+        $results_servizio = $servizio->selectServizio();
+        echo "<select name='servizio'>";
+        foreach ($results_servizio as $result) {
+            echo "<option selected='selected' value='$result'> $result</option>";
+        }
+        echo "</select>";
+        ?>
+    </div>
+    <br class="container">
+    <td>Ufficio</td>
+    <div>
+        <?php
+        $ufficio = new Ufficio();
+        $results_ufficio = $ufficio->selectUfficio();
+        echo "<select name='ufficio'>";
+        foreach ($results_ufficio as $result) {
+            echo "<option selected='selected'  value='$result'> $result</option>";
+        }
+        echo "</select>";
+        ?>
+    </div>
     <br>
-        <tr>
-            <td>Ruolo</td>
-            <td><input type="text" name="Ruolo">
-            </td>
-        </tr>
+    <tr>
+        <td>Ruolo</td>
+        <td><input type="text" name="Ruolo">
+        </td>
+    </tr>
     </div>
     </body>
     <script type="text/javascript">
@@ -104,7 +104,24 @@ function save_extra_user_field($user_id)
         return false;
     }
     update_user_meta($user_id, 'Ruolo', $_POST["Ruolo"]);
-
+    if(!empty($_POST['settore'])) {
+        update_user_meta($user_id, 'Settore', $_POST['settore']);
+    }
+    else{
+        echo "Error Post Settore";
+    }
+    if(!empty($_POST['servizio'])) {
+        update_user_meta($user_id, 'Servizio', $_POST['servizio']);
+    }
+    else{
+        echo "Error Post Servizio";
+    }
+    if(!empty($_POST['ufficio'])) {
+        update_user_meta($user_id, 'Ufficio', $_POST['ufficio']);
+    }
+    else{
+        echo "Error Post Ufficio";
+    }
 
 }
 
@@ -127,7 +144,6 @@ function on_profile_update($user_id)
         if ($idKanboard != NULL) {
             update_user_meta($user_id, 'id_kanboard', $idKanboard);
         }
-
 
         echo "<pre>";
         print_r($user_meta);
@@ -160,7 +176,7 @@ function admin_add_project()
 }
 
 include_once 'includes/Connection.php';
-
+include_once 'includes/ConnectionSarala.php';
 class User
 {
     private $username;
@@ -258,14 +274,16 @@ class User
 }
 
 
-class Settore{
+class Settore
+{
     private $formidSettore = 17;
+
     public function __construct()
     {
 
     }
 
-    public function getFormidSettore(): int
+    public function getFormidSettore()
     {
         return $this->formidSettore;
     }
@@ -276,26 +294,30 @@ class Settore{
         $this->formidSettore = $formidSettore;
     }
 
-    public function selectSettore(){
+    public function selectSettore()
+    {
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
         $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=?";
         $stmt = $mysqli->prepare($sql);
-            $stmt->bind_param("i", $this->formidSettore);
-            $res = $stmt->execute();
-            $res = $stmt->get_result();
-            $result = array();
-            foreach ($res as $lines){
-                array_push($result,$lines["meta_value"]);
-            }
+        $stmt->bind_param("i", $this->formidSettore);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = array();
+        foreach ($res as $lines) {
+            array_push($result, $lines["meta_value"]);
+        }
         $mysqli->close();
         return $result;
 
     }
 }
-class Servizio{
+
+class Servizio
+{
     private $formidServizio = 21;
     private $metakeyServizio = 1;
+
     public function __construct()
     {
 
@@ -322,26 +344,30 @@ class Servizio{
         $this->metakeyServizio = $metakeyServizio;
     }
 
-    public function selectServizio(){
+    public function selectServizio()
+    {
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
         $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=? and meta_key=?";
         $stmt = $mysqli->prepare($sql);
-            $stmt->bind_param("ii", $this->formidServizio, $this->metakeyServizio);
-            $res = $stmt->execute();
-            $res = $stmt->get_result();
-            $result = array();
-            foreach ($res as $lines){
-                array_push($result,$lines["meta_value"]);
-            }
+        $stmt->bind_param("ii", $this->formidServizio, $this->metakeyServizio);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = array();
+        foreach ($res as $lines) {
+            array_push($result, $lines["meta_value"]);
+        }
         $mysqli->close();
         return $result;
 
     }
 }
-class Ufficio{
+
+class Ufficio
+{
     private $formidUfficio = 20;
     private $metakeyUfficio = 4;
+
     public function __construct()
     {
 
@@ -371,23 +397,25 @@ class Ufficio{
         $this->metakeyUfficio = $metakeyUfficio;
     }
 
-    public function selectUfficio(){
+    public function selectUfficio()
+    {
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
         $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=? and meta_key=?";
         $stmt = $mysqli->prepare($sql);
-            $stmt->bind_param("ii", $this->formidUfficio, $this->metakeyUfficio);
-            $res = $stmt->execute();
-            $res = $stmt->get_result();
-            $result = array();
-            foreach ($res as $lines){
-                array_push($result,$lines["meta_value"]);
-            }
+        $stmt->bind_param("ii", $this->formidUfficio, $this->metakeyUfficio);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = array();
+        foreach ($res as $lines) {
+            array_push($result, $lines["meta_value"]);
+        }
         $mysqli->close();
         return $result;
 
     }
 }
+
 class Project
 {
     private $project_name;
