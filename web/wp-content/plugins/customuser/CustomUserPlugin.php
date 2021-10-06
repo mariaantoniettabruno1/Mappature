@@ -104,22 +104,19 @@ function save_extra_user_field($user_id)
         return false;
     }
     update_user_meta($user_id, 'Ruolo', $_POST["Ruolo"]);
-    if(!empty($_POST['settore'])) {
+    if (!empty($_POST['settore'])) {
         update_user_meta($user_id, 'Settore', $_POST['settore']);
-    }
-    else{
+    } else {
         echo "Error Post Settore";
     }
-    if(!empty($_POST['servizio'])) {
+    if (!empty($_POST['servizio'])) {
         update_user_meta($user_id, 'Servizio', $_POST['servizio']);
-    }
-    else{
+    } else {
         echo "Error Post Servizio";
     }
-    if(!empty($_POST['ufficio'])) {
+    if (!empty($_POST['ufficio'])) {
         update_user_meta($user_id, 'Ufficio', $_POST['ufficio']);
-    }
-    else{
+    } else {
         echo "Error Post Ufficio";
     }
 
@@ -138,17 +135,22 @@ function on_profile_update($user_id)
         $user->setEmail($user_data[0]->data->user_email);
         $user->setName($user_meta[0]['first_name'][0]);
         $user->setUsername($user_data[0]->data->user_login);
-        $user->setIdKanboard($user_meta[0]['id_kanboard'][0]);
         $user->updateUser();
         $idKanboard = $user->getIdKanboard();
-        if ($idKanboard != NULL) {
             update_user_meta($user_id, 'id_kanboard', $idKanboard);
-        }
+            if( $user->getValueSettore()==NULL && $user->getValueServizio()==NULL && $user->getValueUfficio()==NULL) {
+                $user->setValueSettore($user_meta[0]['Settore'][0]);
+                $user->setValueServizio($user_meta[0]['Servizio'][0]);
+                $user->setValueUfficio($user_meta[0]['Ufficio'][0]);
+                $user->createMetaUser();
+            }
+            else{
+                $user->setValueSettore($user_meta[0]['Settore'][0]);
+                $user->setValueServizio($user_meta[0]['Servizio'][0]);
+                $user->setValueUfficio($user_meta[0]['Ufficio'][0]);
+                $user->updateUser();
+            }
 
-        echo "<pre>";
-        print_r($user_meta);
-        echo "</pre>";
-        throw  new Exception();
     }
 
 }
@@ -172,18 +174,23 @@ function admin_add_project()
     $project->setUserRole('project manager');
     $project->updateProject();
 
-
 }
 
 include_once 'includes/Connection.php';
 include_once 'includes/ConnectionSarala.php';
+
 class User
 {
     private $username;
     private $email;
     private $name;
     private $idKanboard;
-
+    private $settore = "settore";
+    private $servizio = "servizio";
+    private $ufficio = "ufficio";
+    private $value_settore;
+    private $value_servizio;
+    private $value_ufficio;
 
     public function setIdKanboard($idKanboard)
     {
@@ -230,17 +237,62 @@ class User
     }
 
 
+    public function getValueSettore()
+    {
+        return $this->value_settore;
+    }
+
+
+    public function setValueSettore($value_settore)
+    {
+        $this->value_settore = $value_settore;
+    }
+
+    public function getValueServizio()
+    {
+        return $this->value_servizio;
+    }
+
+    public function setValueServizio($value_servizio)
+    {
+        $this->value_servizio = $value_servizio;
+    }
+
+    public function getValueUfficio()
+    {
+        return $this->value_ufficio;
+    }
+
+
+    public function setValueUfficio($value_ufficio)
+    {
+        $this->value_ufficio = $value_ufficio;
+    }
+
+
     public function updateUser()
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
 
-
         if ($this->idKanboard != NULL) {
+            $sql = "UPDATE user_has_metadata SET name=?, value=? WHERE user_id=?";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("ssi", $this->settore, $this->value_settore, $this->idKanboard);
+            $res = $stmt->execute();
+            $sql = "UPDATE user_has_metadata SET name=?, value=? WHERE user_id=?";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("ssi", $this->servizio, $this->value_servizio, $this->idKanboard);
+            $res = $stmt->execute();
+            $sql = "UPDATE user_has_metadata SET name=?, value=? WHERE user_id=?";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("ssi", $this->ufficio, $this->value_ufficio, $this->idKanboard);
+            $res = $stmt->execute();
             $sql = "UPDATE users SET name=?, email=? WHERE id=?";
             $stmt = $mysqli->prepare($sql);
             $stmt->bind_param("ssi", $this->name, $this->email, $this->idKanboard);
             $res = $stmt->execute();
+
         } else {
             $sql = "INSERT INTO users (username,name,email) VALUES(?,?,?)";
             $stmt = $mysqli->prepare($sql);
@@ -252,11 +304,41 @@ class User
             $res = $stmt->execute();
             $res = $stmt->get_result();
             $user = $res->fetch_assoc();
-            $this->setIdKanboard($user['id']);
+           $this->setIdKanboard($user['id']);
+            /*$sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("iss", $this->idKanboard, $this->settore, $this->value_settore);
+            $res = $stmt->execute();
+            $sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("iss", $this->idKanboard, $this->servizio, $this->value_servizio);
+            $res = $stmt->execute();
+            $sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("iss", $this->idKanboard, $this->ufficio, $this->value_ufficio);
+            $res = $stmt->execute();*/
         }
         $mysqli->close();
 
     }
+    public function createMetaUser(){
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("iss", $this->idKanboard, $this->settore, $this->value_settore);
+        $res = $stmt->execute();
+        $sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("iss", $this->idKanboard, $this->servizio, $this->value_servizio);
+        $res = $stmt->execute();
+        $sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("iss", $this->idKanboard, $this->ufficio, $this->value_ufficio);
+        $res = $stmt->execute();
+        $mysqli->close();
+    }
+
 
     public function deleteUser($id_kan)
     {
