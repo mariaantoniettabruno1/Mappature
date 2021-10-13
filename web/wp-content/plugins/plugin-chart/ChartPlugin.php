@@ -30,23 +30,26 @@ function visualize_orgchart()
         <style>
             ul, #myUL {
                 list-style-type: none;
-                margin: 0 auto;
             }
 
             #myUL {
                 margin: 0;
+                margin-left: auto;
+                margin-right: auto;
                 padding: 0;
             }
 
             .caret::before {
                 content: "\25B6";
-                color: black;
+                color: darkslategray;
                 display: inline-block;
                 margin-right: 6px;
+
             }
 
             .caret-down::before {
                 transform: rotate(90deg);
+
             }
 
             .nested {
@@ -59,32 +62,34 @@ function visualize_orgchart()
         </style>
     </head>
     <body>
-
     <ul id="myUL">
-        <div style="text-align: center;">
+
             <?php for ($i = 0; $i < sizeof($data); $i++) {
-                echo "<li>
-                <span class='caret'>";
+                echo "<div>";
+                echo "<li>";
+                echo "<span class='caret'>";
+                echo "<font color ='green'>";
                 echo $data[$i]["settore"];
-                echo "<br>";
+                echo "</font>";
                 echo "</span>";
                 echo "<ul class='nested'>";
-                echo "<li>
-                <span class='caret'>";
+                echo "<span class='caret'>";
+                echo "<font color ='#ff7d1a'>";
                 echo $data[$i]["servizio"];
-                echo "<br>";
+                echo "</font>";
                 echo "</span>";
                 echo "<ul class='nested'>";
-                echo "<li>
-                <span class='caret'>";
+                echo "<span class='caret'>";
+                echo "<font color ='#483d8b'>";
                 echo $data[$i]["ufficio"];
-                echo "<br>";
+                echo "</font>";
                 echo "</span>";
-                echo "<ul class='nested'>";
+                echo "</li>";
+                echo "</div>";
             }; ?>
+
     </ul>
     </body>
-    </div>
     <script>
         var toggler = document.getElementsByClassName("caret");
         var i;

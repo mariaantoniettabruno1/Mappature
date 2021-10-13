@@ -35,7 +35,7 @@ function extra_user_fields($user)
 
     ?>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.0.js"></script>
-    <body>
+    <br>
     <h3>Job information</h3>
     <br class="container">
     <td>Settore</td>
@@ -43,16 +43,17 @@ function extra_user_fields($user)
         <?php
         $settore = new Settore();
         $results_settore = $settore->selectSettore();
-        echo "<select name= 'settore' >";
+        echo "<select name= 'settore' id='id_settore'>";
         foreach ($results_settore as $result) {
             echo "<option selected='selected' value='$result'> $result</option>";
             echo "<br>";
         }
         echo "</select>";
+        echo "<script>";
         ?>
     </div>
-
-    <br class="container">
+    </br>
+    <br class="container" id="id_servizio">
     <td>Servizio</td>
     <div>
         <?php
@@ -65,6 +66,7 @@ function extra_user_fields($user)
         echo "</select>";
         ?>
     </div>
+
     <br class="container">
     <td>Ufficio</td>
     <div>
@@ -82,14 +84,15 @@ function extra_user_fields($user)
     <tr>
         <td>Ruolo</td>
         <td><input type="text" name="Ruolo">
+            <script>
+                $('input').addClass('regular-text');
+                $('input[name=Ruolo]').val('<?php echo get_the_author_meta('Ruolo', $user->ID); ?>');
+            </script>
         </td>
     </tr>
     </div>
     </body>
-    <script type="text/javascript">
-        $('input').addClass('regular-text');
-        $('input[name=Ruolo]').val('<?php echo get_the_author_meta('Ruolo', $user->ID); ?>');
-    </script>
+
 
     <?php
 
@@ -104,21 +107,10 @@ function save_extra_user_field($user_id)
         return false;
     }
     update_user_meta($user_id, 'Ruolo', $_POST["Ruolo"]);
-    if (!empty($_POST['settore'])) {
-        update_user_meta($user_id, 'Settore', $_POST['settore']);
-    } else {
-        echo "Error Post Settore";
-    }
-    if (!empty($_POST['servizio'])) {
-        update_user_meta($user_id, 'Servizio', $_POST['servizio']);
-    } else {
-        echo "Error Post Servizio";
-    }
-    if (!empty($_POST['ufficio'])) {
-        update_user_meta($user_id, 'Ufficio', $_POST['ufficio']);
-    } else {
-        echo "Error Post Ufficio";
-    }
+    update_user_meta($user_id, 'settore', $_POST["settore"]);
+    update_user_meta($user_id, 'servizio', $_POST["servizio"]);
+    update_user_meta($user_id, 'ufficio', $_POST["ufficio"]);
+
 
 }
 
@@ -135,21 +127,12 @@ function on_profile_update($user_id)
         $user->setEmail($user_data[0]->data->user_email);
         $user->setName($user_meta[0]['first_name'][0]);
         $user->setUsername($user_data[0]->data->user_login);
+        $user->setValueSettore($user_meta[0]['Settore'][0]);
+        $user->setValueServizio($user_meta[0]['Servizio'][0]);
+        $user->setValueUfficio($user_meta[0]['Ufficio'][0]);
         $user->updateUser();
         $idKanboard = $user->getIdKanboard();
-            update_user_meta($user_id, 'id_kanboard', $idKanboard);
-            if( $user->getValueSettore()==NULL && $user->getValueServizio()==NULL && $user->getValueUfficio()==NULL) {
-                $user->setValueSettore($user_meta[0]['Settore'][0]);
-                $user->setValueServizio($user_meta[0]['Servizio'][0]);
-                $user->setValueUfficio($user_meta[0]['Ufficio'][0]);
-                $user->createMetaUser();
-            }
-            else{
-                $user->setValueSettore($user_meta[0]['Settore'][0]);
-                $user->setValueServizio($user_meta[0]['Servizio'][0]);
-                $user->setValueUfficio($user_meta[0]['Ufficio'][0]);
-                $user->updateUser();
-            }
+        update_user_meta($user_id, 'id_kanboard', $idKanboard);
 
     }
 
@@ -194,7 +177,7 @@ class User
 
     public function setIdKanboard($idKanboard)
     {
-        $this->idKanboard = $idKanboard;
+        $this->idKanboard = (int)$idKanboard;
     }
 
     public function getIdKanboard()
@@ -274,24 +257,29 @@ class User
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
+        if (is_integer($this->idKanboard) && $this->idKanboard >= 0) {
+            $sql = "UPDATE user_has_metadata SET value=? WHERE user_id=? AND name=?";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("sis", $this->value_settore, $this->idKanboard, $this->settore);
+            $stmt->execute();
 
-        if ($this->idKanboard != NULL) {
-            $sql = "UPDATE user_has_metadata SET name=?, value=? WHERE user_id=?";
+            $sql = "UPDATE user_has_metadata SET value=? WHERE user_id=? AND name=?";
             $stmt = $mysqli->prepare($sql);
-            $stmt->bind_param("ssi", $this->settore, $this->value_settore, $this->idKanboard);
-            $res = $stmt->execute();
-            $sql = "UPDATE user_has_metadata SET name=?, value=? WHERE user_id=?";
+            $stmt->bind_param("sis", $this->value_servizio, $this->idKanboard, $this->servizio);
+            $stmt->execute();
+
+            $sql = "UPDATE user_has_metadata SET value=? WHERE user_id=? AND name=?";
             $stmt = $mysqli->prepare($sql);
-            $stmt->bind_param("ssi", $this->servizio, $this->value_servizio, $this->idKanboard);
-            $res = $stmt->execute();
-            $sql = "UPDATE user_has_metadata SET name=?, value=? WHERE user_id=?";
-            $stmt = $mysqli->prepare($sql);
-            $stmt->bind_param("ssi", $this->ufficio, $this->value_ufficio, $this->idKanboard);
-            $res = $stmt->execute();
+            $stmt->bind_param("sis", $this->value_ufficio, $this->idKanboard, $this->ufficio);
+            $stmt->execute();
+
+
             $sql = "UPDATE users SET name=?, email=? WHERE id=?";
             $stmt = $mysqli->prepare($sql);
             $stmt->bind_param("ssi", $this->name, $this->email, $this->idKanboard);
-            $res = $stmt->execute();
+            $stmt->execute();
+
+            $mysqli->close();
 
         } else {
             $sql = "INSERT INTO users (username,name,email) VALUES(?,?,?)";
@@ -304,8 +292,8 @@ class User
             $res = $stmt->execute();
             $res = $stmt->get_result();
             $user = $res->fetch_assoc();
-           $this->setIdKanboard($user['id']);
-            /*$sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
+            $this->setIdKanboard($user['id']);
+            $sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
             $stmt = $mysqli->prepare($sql);
             $stmt->bind_param("iss", $this->idKanboard, $this->settore, $this->value_settore);
             $res = $stmt->execute();
@@ -316,27 +304,11 @@ class User
             $sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
             $stmt = $mysqli->prepare($sql);
             $stmt->bind_param("iss", $this->idKanboard, $this->ufficio, $this->value_ufficio);
-            $res = $stmt->execute();*/
+            $res = $stmt->execute();
+            $mysqli->close();
         }
-        $mysqli->close();
 
-    }
-    public function createMetaUser(){
-        $conn = new Connection();
-        $mysqli = $conn->connect();
-        $sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("iss", $this->idKanboard, $this->settore, $this->value_settore);
-        $res = $stmt->execute();
-        $sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("iss", $this->idKanboard, $this->servizio, $this->value_servizio);
-        $res = $stmt->execute();
-        $sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("iss", $this->idKanboard, $this->ufficio, $this->value_ufficio);
-        $res = $stmt->execute();
-        $mysqli->close();
+
     }
 
 
