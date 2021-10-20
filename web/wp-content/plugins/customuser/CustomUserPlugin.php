@@ -175,6 +175,8 @@ include_once 'includes/Connection.php';
 include_once 'includes/ConnectionSarala.php';
 include_once 'includes/Processo.php';
 include_once 'includes/Procedimento.php';
+include_once 'includes/Fase.php';
+include_once 'includes/Atto.php';
 class User
 {
     private $username;
