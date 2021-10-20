@@ -131,20 +131,21 @@ class Fase{
     public function createFase(){
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "SELECT id FROM tasks WHERE title=?";
+        $sql = "SELECT id FROM tasks WHERE title=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $this->name_procedure);
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
         $this->setIdProcedure($result['id']);
-        $sql = "SELECT id FROM projects WHERE name=?";
+        $sql = "SELECT id FROM projects WHERE name=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $this->name_process);
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
         $this->setIdProcess($result['id']);
+
         $sql = "INSERT INTO subtasks (title,task_id) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("si", $this->title, $this->id_procedure);

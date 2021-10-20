@@ -135,8 +135,7 @@ class Atto{
     public function createAtto(){
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "SELECT id FROM tasks WHERE title=?";
-
+        $sql = "SELECT id FROM tasks WHERE title=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $this->name_procedure_atto);
         $res = $stmt->execute();
@@ -144,13 +143,14 @@ class Atto{
         $result = $res->fetch_assoc();
         $this->setIdProcedureAtto($result['id']);
 
-        $sql = "SELECT id FROM projects WHERE name=?";
+        $sql = "SELECT id FROM projects WHERE name=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $this->name_process_atto);
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
         $this->setIdProcessAtto($result['id']);
+
         $sql = "INSERT INTO subtasks (title,task_id) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("si", $this->title_atto, $this->id_procedure_atto);

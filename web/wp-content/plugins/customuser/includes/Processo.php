@@ -118,7 +118,7 @@ class Process
         $stmt->bind_param("sis", $this->process_name, $this->id_user, $this->token);
         $res = $stmt->execute();
 
-        $sql = "SELECT id FROM projects WHERE name=?";
+        $sql = "SELECT id FROM projects WHERE name=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $this->process_name);
         $res = $stmt->execute();
