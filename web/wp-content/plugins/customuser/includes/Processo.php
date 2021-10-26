@@ -1,7 +1,7 @@
 <?php
 include_once 'Connection.php';
 include_once 'ConnectionSarala.php';
-function visualize_processo()
+function create_processo()
 {
     $entry_gforms = GFAPI::get_entries(1);
     $process = new Process();
@@ -15,7 +15,35 @@ function visualize_processo()
 
 }
 
-add_shortcode('post_processo', 'visualize_processo');
+add_shortcode('post_processo', 'create_processo');
+
+
+function delete_processo()
+{
+    $entry_gforms = GFAPI::get_entries(1);
+    $process = new Process();
+    $process->deleteProcess();
+
+}
+
+add_shortcode('post_deleteprocesso', 'delete_processo');
+
+
+function update_processo()
+{
+    $entry_gforms = GFAPI::get_entries(1);
+    $process = new Process();
+    $id_current_form = $entry_gforms[0]['id'];
+    $results_processo = $process->selectProcesso($id_current_form);
+    $process->setProcessName($entry_gforms[0][1]);
+    $entry = array('1'=>$process->getProcessName());
+    $process->updateProcess();
+    $result = GFAPI::update_entry( $entry,$entry_gforms[0]['id']);
+    $entry_gforms = GFAPI::get_entries(1);
+
+}
+
+add_shortcode('post_updateprocesso', 'update_processo');
 
 class Process
 {
@@ -113,7 +141,7 @@ class Process
         $mysqli = $conn->connect();
 
 
-        $sql = "INSERT INTO projects (name,owner_id, token) VALUES(?,?,?)";
+        $sql = "INSERT INTO projects (name,owner_id,token) VALUES(?,?,?)";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("sis", $this->process_name, $this->id_user, $this->token);
         $res = $stmt->execute();
@@ -156,27 +184,59 @@ class Process
     }
 
 
-    public function deleteProcess($idProcess)
+    public function deleteProcess()
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $this->setIdProcess($idProcess);
-        $sql = "DELETE  FROM projects WHERE id=?";
+
+        $sql = "SELECT id FROM projects WHERE name=? ORDER BY id DESC LIMIT 1";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("s", $this->process_name);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $process = $res->fetch_assoc();
+        $this->setIdProcess($process['id']);
+
+        $sql = "DELETE  FROM projects WHERE id=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("i", $this->id_process);
         $res = $stmt->execute();
+
         $mysqli->close();
     }
-
+    public function selectProcesso($id_current_form){
+        $conn = new ConnectionSarala();
+        $mysqli = $conn->connect();
+        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("i", $id_current_form);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = array();
+        foreach ($res as $lines) {
+            array_push($result, $lines["meta_value"]);
+        }
+        $mysqli->close();
+        return $result;
+    }
     public function updateProcess()
     {
+
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "UPDATE projects SET name=? WHERE id=?";
+        $sql = "SELECT id FROM projects WHERE name=? ORDER BY id DESC LIMIT 1";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("s", $this->process_name);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $process = $res->fetch_assoc();
+        $this->setIdProcess($process['id']);
+        $sql = "UPDATE projects SET name=? WHERE id=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("si", $this->process_name, $this->id_process);
         $res = $stmt->execute();
         $mysqli->close();
+
     }
 
 }

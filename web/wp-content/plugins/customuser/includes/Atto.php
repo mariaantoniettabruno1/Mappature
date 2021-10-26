@@ -151,6 +151,8 @@ class Atto{
         $result = $res->fetch_assoc();
         $this->setIdProcessAtto($result['id']);
 
+        $a = " - atto";
+        $this->title_atto = $this->title_atto.$a;
         $sql = "INSERT INTO subtasks (title,task_id) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("si", $this->title_atto, $this->id_procedure_atto);

@@ -146,6 +146,8 @@ class Fase{
         $result = $res->fetch_assoc();
         $this->setIdProcess($result['id']);
 
+        $a = " - fase";
+        $this->title = $this->title.$a;
         $sql = "INSERT INTO subtasks (title,task_id) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("si", $this->title, $this->id_procedure);
