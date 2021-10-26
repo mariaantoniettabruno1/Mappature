@@ -21,8 +21,11 @@ add_shortcode('post_processo', 'create_processo');
 function delete_processo()
 {
     $entry_gforms = GFAPI::get_entries(1);
+    $id_current_form = $entry_gforms[0]['id'];
     $process = new Process();
+    $process->setProcessName($entry_gforms[0][1]);
     $process->deleteProcess();
+    $result = GFAPI::delete_entry($id_current_form);
 
 }
 
@@ -31,15 +34,17 @@ add_shortcode('post_deleteprocesso', 'delete_processo');
 
 function update_processo()
 {
-    $entry_gforms = GFAPI::get_entries(1);
+    $entry_gforms = GFAPI::get_entries(34);
     $process = new Process();
     $id_current_form = $entry_gforms[0]['id'];
     $results_processo = $process->selectProcesso($id_current_form);
-    $process->setProcessName($entry_gforms[0][1]);
-    $entry = array('1'=>$process->getProcessName());
-    $process->updateProcess();
-    $result = GFAPI::update_entry( $entry,$entry_gforms[0]['id']);
+    $process->setProcessName($results_processo[1]);
+    $entry = array('1'=>$results_processo[1],'2'=>$results_processo[2],'3'=>$results_processo[3], '4'=>$results_processo[4]);
     $entry_gforms = GFAPI::get_entries(1);
+    $id_current_form = $entry_gforms[0]['id'];
+    $process->setOldProcessName($entry_gforms[0][1]);
+    $process->updateProcess();
+    $result = GFAPI::update_entry($entry,$id_current_form);
 
 }
 
@@ -62,6 +67,7 @@ class Process
     private $fourth_title = "Fatto";
     private $token = '';
     private $swimlanes_name = "Corsia predefinita";
+    private $old_process_name;
 
     public function __construct()
     {
@@ -123,6 +129,19 @@ class Process
     {
         $this->id_form = $id_form;
     }
+
+
+    public function getOldProcessName()
+    {
+        return $this->old_process_name;
+    }
+
+
+    public function setOldProcessName($old_process_name)
+    {
+        $this->old_process_name = $old_process_name;
+    }
+
 
     public function insertDataProcessSarala()
     {
@@ -188,7 +207,6 @@ class Process
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-
         $sql = "SELECT id FROM projects WHERE name=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $this->process_name);
@@ -196,18 +214,24 @@ class Process
         $res = $stmt->get_result();
         $process = $res->fetch_assoc();
         $this->setIdProcess($process['id']);
-
         $sql = "DELETE  FROM projects WHERE id=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("i", $this->id_process);
         $res = $stmt->execute();
-
         $mysqli->close();
+        $conn = new ConnectionSarala();
+        $mysqli = $conn->connect();
+        $sql = "DELETE  FROM MAPP_processi WHERE id_processo=?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("i", $this->id_process);
+        $res = $stmt->execute();
+        $mysqli->close();
+
     }
     public function selectProcesso($id_current_form){
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
-        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=?";
+        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE entry_id=?";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("i", $id_current_form);
         $res = $stmt->execute();
@@ -226,7 +250,7 @@ class Process
         $mysqli = $conn->connect();
         $sql = "SELECT id FROM projects WHERE name=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("s", $this->process_name);
+        $stmt->bind_param("s", $this->old_process_name);
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $process = $res->fetch_assoc();
