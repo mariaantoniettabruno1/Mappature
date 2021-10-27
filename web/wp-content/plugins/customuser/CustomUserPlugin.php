@@ -25,6 +25,8 @@ Author URI:
 
 }*/
 
+
+
 add_action('user_new_form', 'extra_user_fields');
 add_action('edit_user_profile', 'extra_user_fields');
 add_action('show_user_profile', 'extra_user_fields');
@@ -173,10 +175,14 @@ function my_delete_user($user_id)
 
 include_once 'includes/Connection.php';
 include_once 'includes/ConnectionSarala.php';
-include_once 'includes/Processo.php';
-include_once 'includes/Procedimento.php';
-include_once 'includes/Fase.php';
-include_once 'includes/Atto.php';
+include_once 'classes/Processo.php';
+include_once 'classes/Procedimento.php';
+include_once 'classes/Fase.php';
+include_once 'classes/Atto.php';
+include_once 'classes/OrgChartProcess.php';
+
+include_once 'shortcodes/SCOrgChartProcess.php';
+
 class User
 {
     private $username;

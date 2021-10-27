@@ -1,29 +1,12 @@
 <?php
 
-/*
-Plugin Name: Chart Plugin
-Plugin URI:
-Description:
-Version: 0.1
-Author: MG3
-Author URI:
+function printOrgChartProcess(){
 
-*/
+    $oc = new OrgChartProcess();
+    
+?>
 
-
-function visualize_orgchart()
-{
-    $entry_gforms = GFAPI::get_entries(20);
-    $data = array();
-
-    for ($i = 0; $i < sizeof($entry_gforms); $i++) {
-        if (!is_array($data[$entry_gforms[$i]['7']][$entry_gforms[$i]['8']])) {
-            $data[$entry_gforms[$i]['7']][$entry_gforms[$i]['8']] = array();
-        }
-        array_push($data[$entry_gforms[$i]['7']][$entry_gforms[$i]['8']], $entry_gforms[$i]['4']);
-    }
-    ?>
-    <!DOCTYPE html>
+<!DOCTYPE html>
     <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -64,16 +47,20 @@ function visualize_orgchart()
                 display: block;
             }
 
-            .settore{
+            .processo{
                 color:#483D8B ;
             }
 
-            .servizio{
+            .procedimento{
                 color: green;
             }
 
-            .ufficio{
+            .fase{
                 color: #e36d11;
+            }
+
+            .atto{
+                color: #a10000;
             }
         </style>
     </head>
@@ -81,21 +68,27 @@ function visualize_orgchart()
     <ul id="myUL">
 
     <?php
-    foreach ($data as $settore => $listaServizi) {
+    foreach ($oc->getData() as $processo => $listaProcedimenti) {
         echo "
         <li>
-            <span class='caret settore'>  $settore </span>
+            <span class='caret processo'>  $processo </span>
             <ul class='nested'>";
-        foreach ($listaServizi as $servizio => $uffici) {
+        foreach ($listaProcedimenti as $procedimento => $subTasks) {
             echo"
                 <li>
-                   <span class='caret servizio' > $servizio </span>
+                   <span class='caret procedimento' > $procedimento </span>
                    <ul class='nested'>
             ";
-            foreach ($uffici as $key => $ufficio){
+            foreach ($subTasks["fasi"] as $key => $fase){
                 echo"
                         <li>
-                           <span class='caret ufficio' > $ufficio </span>
+                           <span class='caret fase' > $fase</span> 
+                        </li> ";
+            }
+            foreach ($subTasks["atti"]  as $key => $atto){
+                echo"
+                        <li>
+                           <span class='caret atto' > $atto</span> 
                         </li> ";
             }
             echo " </ul>
@@ -126,4 +119,4 @@ function visualize_orgchart()
     <?php
 }
 
-add_shortcode('post_orgchart', 'visualize_orgchart');
+add_shortcode("post_printorgchartprocess", "printOrgChartProcess");

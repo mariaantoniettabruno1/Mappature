@@ -1,6 +1,9 @@
 <?php
 include_once 'Connection.php';
 include_once 'ConnectionSarala.php';
+
+include_once "OrgChartProcess.php";
+
 function create_processo()
 {
     $entry_gforms = GFAPI::get_entries(1);
