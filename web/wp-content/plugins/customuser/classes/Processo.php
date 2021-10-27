@@ -3,6 +3,7 @@ include_once 'Connection.php';
 include_once 'ConnectionSarala.php';
 
 include_once "OrgChartProcess.php";
+include_once "Form.php";
 
 function create_processo()
 {
@@ -40,7 +41,7 @@ function update_processo()
     $entry_gforms = GFAPI::get_entries(34);
     $process = new Process();
     $id_current_form = $entry_gforms[0]['id'];
-    $results_processo = $process->selectProcesso($id_current_form);
+    $results_processo = Form::getForm($id_current_form);
     $process->setProcessName($results_processo[1]);
     $entry = array('1'=>$results_processo[1],'2'=>$results_processo[2],'3'=>$results_processo[3], '4'=>$results_processo[4]);
     $entry_gforms = GFAPI::get_entries(1);
@@ -231,21 +232,7 @@ class Process
         $mysqli->close();
 
     }
-    public function selectProcesso($id_current_form){
-        $conn = new ConnectionSarala();
-        $mysqli = $conn->connect();
-        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE entry_id=?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("i", $id_current_form);
-        $res = $stmt->execute();
-        $res = $stmt->get_result();
-        $result = array();
-        foreach ($res as $lines) {
-            array_push($result, $lines["meta_value"]);
-        }
-        $mysqli->close();
-        return $result;
-    }
+
     public function updateProcess()
     {
 

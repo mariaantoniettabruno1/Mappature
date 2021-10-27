@@ -3,10 +3,12 @@
 include_once 'Connection.php';
 include_once 'ConnectionSarala.php';
 
+include_once "Form.php";
+
 function visualize_procedimento()
 {
     $entry_gforms = GFAPI::get_entries(2);
-    $procedure = new Procedure();
+    $procedure = new Procedimento();
     $procedure->setTitle($entry_gforms[0][2]);
     $procedure->setIdForm($entry_gforms[0]['form_id']);
     $procedure->setNameProcess($entry_gforms[0][11]);
@@ -21,7 +23,30 @@ function visualize_procedimento()
 
 add_shortcode('post_procedimento', 'visualize_procedimento');
 
-class Procedure
+
+function update_procedimento()
+{
+    $entry_gforms = GFAPI::get_entries(37);
+    $procedimento = new Procedimento();
+    $id_current_form = $entry_gforms[0]['id'];
+    $results_procedimento = Form::getForm($id_current_form);
+    $procedimento->setTitle($results_procedimento[1]);
+
+    $entry = array('1'=>$results_procedimento[1],'2'=>$results_procedimento[2],'3'=>$results_procedimento[3], '4'=>$results_procedimento[4]);
+    $entry_gforms = GFAPI::get_entries(2);
+    $id_current_form = $entry_gforms[0]['id'];
+    $procedimento->setOldTitle($entry_gforms[0][2]);
+    echo "<pre>";
+    print_r($procedimento);
+    echo "</pre>";
+    $procedimento->updateProcedure();
+    $result = GFAPI::update_entry($entry,$id_current_form);
+
+}
+
+add_shortcode('post_updateprocedimento', 'update_procedimento');
+
+class Procedimento
 {
     private $id_procedure;
     private $title;
@@ -36,6 +61,7 @@ class Procedure
     private $date_created;
     private $date_updated;
     private $position;
+    private $old_title;
 
     public function __construct()
     {
@@ -270,9 +296,26 @@ class Procedure
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "UPDATE tasks SET title=?,description=?,date_creation=?,date_completed=? WHERE id=? AND project_id=?";
+
+        /*$query = "SELECT id FROM tasks WHERE title=? ORDER BY id DESC LIMIT 1";
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param("s", $this->old_title);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $procedimento = $res->fetch_assoc();
+        $this->setIdProcedure($procedimento['id']);
+
+        echo "<pre>";
+        print_r($procedimento);
+        echo "</pre>";
+
+        $sql = "UPDATE tasks SET title=? WHERE title=? AND project_id=?";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("ssiiii", $this->title, $this->description, $this->date_creation, $this->date_completed, $this->id_procedure, $this->id_process);
+        $stmt->bind_param("sii", $this->title,  $this->id_procedure, $this->id_process);*/
+
+        $sql = "UPDATE tasks SET title=? WHERE title=? ORDER BY id DESC LIMIT 1";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("ss", $this->title,  $this->old_title);
         $res = $stmt->execute();
         $mysqli->close();
     }
@@ -287,6 +330,22 @@ class Procedure
         $stmt->bind_param("ii", $this->id_procedure, $this->id_process);
         $res = $stmt->execute();
         $mysqli->close();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOldTitle()
+    {
+        return $this->old_title;
+    }
+
+    /**
+     * @param mixed $oldTitle
+     */
+    public function setOldTitle($oldTitle)
+    {
+        $this->old_title = $oldTitle;
     }
 
 
