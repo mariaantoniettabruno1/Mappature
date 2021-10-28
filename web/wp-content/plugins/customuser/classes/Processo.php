@@ -10,12 +10,10 @@ function create_processo()
     $entry_gforms = GFAPI::get_entries(1);
     $process = new Process();
     $process->setProcessName($entry_gforms[0][1]);
-    $data = wp_get_current_user();
-    $process->setIdUser($data->{'ID'});
     $process->setIdForm($entry_gforms[0]['form_id']);
+    $process->setProcessSettore($entry_gforms[0][2]);
     $process->setUserRole('project manager');
     $process->createProcess();
-
 
 }
 
@@ -72,6 +70,7 @@ class Process
     private $token = '';
     private $swimlanes_name = "Corsia predefinita";
     private $old_process_name;
+    private $process_settore;
 
     public function __construct()
     {
@@ -146,6 +145,22 @@ class Process
         $this->old_process_name = $old_process_name;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getProcessSettore()
+    {
+        return $this->process_settore;
+    }
+
+    /**
+     * @param mixed $process_settore
+     */
+    public function setProcessSettore($process_settore): void
+    {
+        $this->process_settore = $process_settore;
+    }
+
 
     public function insertDataProcessSarala()
     {
@@ -155,6 +170,12 @@ class Process
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("ii", $this->id_form, $this->id_process);
         $res = $stmt->execute();
+        $mysqli->close();
+    }
+    public function findProcessOwner(){
+        $conn = new ConnectionSarala();
+        $mysqli = $conn->connect();
+        $sql = "SELECT metavalue FROM wp_usermeta WHERE metakey=? AND metava";
         $mysqli->close();
     }
 

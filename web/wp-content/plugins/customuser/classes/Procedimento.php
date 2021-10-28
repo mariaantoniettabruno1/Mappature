@@ -297,22 +297,6 @@ class Procedimento
         $conn = new Connection();
         $mysqli = $conn->connect();
 
-        /*$query = "SELECT id FROM tasks WHERE title=? ORDER BY id DESC LIMIT 1";
-        $stmt = $mysqli->prepare($query);
-        $stmt->bind_param("s", $this->old_title);
-        $res = $stmt->execute();
-        $res = $stmt->get_result();
-        $procedimento = $res->fetch_assoc();
-        $this->setIdProcedure($procedimento['id']);
-
-        echo "<pre>";
-        print_r($procedimento);
-        echo "</pre>";
-
-        $sql = "UPDATE tasks SET title=? WHERE title=? AND project_id=?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("sii", $this->title,  $this->id_procedure, $this->id_process);*/
-
         $sql = "UPDATE tasks SET title=? WHERE title=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("ss", $this->title,  $this->old_title);

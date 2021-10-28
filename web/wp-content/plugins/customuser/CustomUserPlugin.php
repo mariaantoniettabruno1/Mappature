@@ -162,6 +162,10 @@ function on_profile_update($user_id)
         }
 
     }
+   /* echo "<pre>";
+    print_r($user_meta);
+    echo "</pre>";
+    throw new Exception();*/
 }
 
 add_action('delete_user', 'my_delete_user');
