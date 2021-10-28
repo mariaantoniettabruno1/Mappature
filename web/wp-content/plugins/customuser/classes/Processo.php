@@ -12,7 +12,12 @@ function create_processo()
     $process->setProcessName($entry_gforms[0][1]);
     $process->setIdForm($entry_gforms[0]['form_id']);
     $process->setProcessSettore($entry_gforms[0][2]);
+   $id_owner= $process->findProcessOwner($process->getProcessSettore());
+    $process->setIdUser($id_owner);
     $process->setUserRole('project manager');
+    /*echo "<pre>";
+    print_r($process->getIdUser()['meta_value']);
+    echo "</pre>";*/
     $process->createProcess();
 
 }
@@ -71,6 +76,8 @@ class Process
     private $swimlanes_name = "Corsia predefinita";
     private $old_process_name;
     private $process_settore;
+    private $user_orgchart_role = "Apicale";
+
 
     public function __construct()
     {
@@ -172,11 +179,20 @@ class Process
         $res = $stmt->execute();
         $mysqli->close();
     }
-    public function findProcessOwner(){
-        $conn = new ConnectionSarala();
+    public function findProcessOwner($settore_processo){
+       $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
-        $sql = "SELECT metavalue FROM wp_usermeta WHERE metakey=? AND metava";
+
+       $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key ='id_kanboard'
+                                      AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value=?)
+                                      AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value=?)";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("ss", $this->user_orgchart_role, $settore_processo);
+       $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = $res->fetch_assoc();
         $mysqli->close();
+       return $result['meta_value'];
     }
 
     public function createProcess()
