@@ -7,24 +7,31 @@ include_once "Form.php";
 include_once "IdProcessCreator.php";
 
 
-function visualize_procedimento()
+function crea_procedimento()
 {
     $entry_gforms = GFAPI::get_entries(2);
     $procedure = new Procedimento();
     $procedure->setTitle($entry_gforms[0][2]);
     $procedure->setIdForm($entry_gforms[0]['form_id']);
     $procedure->setNameProcess($entry_gforms[0][11]);
-    $procedure->setCreatorId(idProcessCreator::getProcessOwnerId($procedure->getNameProcess()));
-    //$procedure->setOwnerId(idProcessCreator::getProcedureOwnerId($procedure->getNameProcess(),$procedure->getTitle()));
+    $settore = $entry_gforms[0][12];
+    $procedure->setCreatorId(idProcessCreator::getProcessOwnerId($settore));
+    $servizio = $entry_gforms[0][13];
+    $procedure->setOwnerId(idProcessCreator::getProcedureOwnerId($settore, $servizio));
+
     //$procedure->setDateCreated($entry_gforms[0]['date_created']);
     //$procedure->setDateUpdated($entry_gforms[0]['date_updated']);
     $procedure->setPosition(1);
+    echo "<pre>";
+    print_r($procedure);
+    print_r(idProcessCreator::getProcessOwnerId($procedure->getNameProcess()));
+    echo "</pre>";
     $procedure->createProcedure();
 
 
 }
 
-add_shortcode('post_procedimento', 'visualize_procedimento');
+add_shortcode('post_procedimento', 'crea_procedimento');
 
 
 function update_procedimento()
@@ -295,9 +302,9 @@ class Procedimento
         $result = $res->fetch_assoc();
         $this->setColumnId($result['id']);
 
-        $sql = "INSERT INTO tasks (title,project_id,column_id,swimlane_id,creator_id,position,date_creation,date_modification,owner_id,creator_id) VALUES(?,?,?,?,?,?,?,?,?,?)";
+        $sql = "INSERT INTO tasks (title,project_id,column_id,swimlane_id,position,date_creation,date_modification,owner_id,creator_id) VALUES(?,?,?,?,?,?,?,?,?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("siiiiiiiii", $this->title, $this->id_process, $this->column_id, $this->swimlane_id, $this->creator_id,$this->position,$this->date_created,$this->date_updated,$this->owner_id,$this->creator_id);
+        $stmt->bind_param("siiiiiiii", $this->title, $this->id_process, $this->column_id, $this->swimlane_id, $this->position,$this->date_created,$this->date_updated,$this->owner_id,$this->creator_id);
         $res = $stmt->execute();
         $sql = "SELECT id FROM tasks WHERE title=?";
         $stmt = $mysqli->prepare($sql);

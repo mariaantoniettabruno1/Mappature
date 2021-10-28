@@ -13,7 +13,7 @@ function create_processo()
     $process->setProcessName($entry_gforms[0][1]);
     $process->setIdForm($entry_gforms[0]['form_id']);
     $process->setProcessSettore($entry_gforms[0][2]);
-   $id_owner= idProcessCreator::getProcessOwnerId($process->getProcessSettore());
+    $id_owner= idProcessCreator::getProcessOwnerId($process->getProcessSettore());
     $process->setIdUser($id_owner);
     $process->setUserRole('project manager');
     $process->createProcess();
@@ -183,7 +183,6 @@ class Process
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-
 
         $sql = "INSERT INTO projects (name,owner_id,token) VALUES(?,?,?)";
         $stmt = $mysqli->prepare($sql);
