@@ -1,6 +1,7 @@
 <?php
 include_once 'Connection.php';
 include_once 'ConnectionSarala.php';
+
 function visualize_atto()
 {
     $entry_gforms = GFAPI::get_entries(24);
@@ -16,6 +17,25 @@ function visualize_atto()
 
 add_shortcode('post_atto', 'visualize_atto');
 
+function update_atto()
+{
+    $entry_gforms = GFAPI::get_entries(41);
+    $atto = new Atto();
+    $id_current_form = $entry_gforms[0]['id'];
+    $results_atto = Form::getForm($id_current_form);
+    $atto->setTitleAtto($results_atto[1]);
+
+    $entry = array('1'=>$results_atto[1],'2'=>$results_atto[2],'3'=>$results_atto[3], '4'=>$results_atto[4], '5'=>$results_atto[5], '6'=>$results_atto[6]);
+    $entry_gforms = GFAPI::get_entries(24);
+    $id_current_form = $entry_gforms[0]['id'];
+    $atto->setOldTitleAtto($entry_gforms[0][1]);
+    $atto->update();
+    $result = GFAPI::update_entry($entry, $id_current_form);
+
+}
+
+add_shortcode('post_updateatto', 'update_atto');
+
 class Atto{
     private $id_atto;
     private $title_atto;
@@ -25,6 +45,7 @@ class Atto{
     private $id_process_atto;
     private $name_process_atto;
     private $id_form_atto;
+    private $old_title_atto;
 
 
     public function getIdProcessAtto()
@@ -159,6 +180,40 @@ class Atto{
         $res = $stmt->execute();
         $mysqli->close();
         $this->insertDataAttoSarala();
+    }
+
+    public function update(){
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+
+        $dbTitle = $this->getDbTitle($this->title_atto);
+        $dbOldTitle = $this->getDbTitle($this->old_title_atto);
+
+        $sql = "UPDATE subtasks SET title=? WHERE title=? ORDER BY id DESC LIMIT 1";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("ss", $dbTitle,  $dbOldTitle);
+        $res = $stmt->execute();
+        $mysqli->close();
+    }
+
+    private function getDbTitle($title){
+        return $title." - atto";
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOldTitleAtto()
+    {
+        return $this->old_title_atto;
+    }
+
+    /**
+     * @param mixed $old_title_atto
+     */
+    public function setOldTitleAtto($old_title_atto)
+    {
+        $this->old_title_atto = $old_title_atto;
     }
 
 

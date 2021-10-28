@@ -32,7 +32,7 @@ function update_procedimento()
     $results_procedimento = Form::getForm($id_current_form);
     $procedimento->setTitle($results_procedimento[1]);
 
-    $entry = array('1'=>$results_procedimento[1],'2'=>$results_procedimento[2],'3'=>$results_procedimento[3], '4'=>$results_procedimento[4]);
+    $entry = array('1'=>$results_procedimento[1],'2'=>$results_procedimento[2],'3'=>$results_procedimento[3], '4'=>$results_procedimento[4], '5'=>$results_procedimento[5]);
     $entry_gforms = GFAPI::get_entries(2);
     $id_current_form = $entry_gforms[0]['id'];
     $procedimento->setOldTitle($entry_gforms[0][2]);
@@ -45,6 +45,19 @@ function update_procedimento()
 }
 
 add_shortcode('post_updateprocedimento', 'update_procedimento');
+
+function delete_procedimento()
+{
+    $entry_gforms = GFAPI::get_entries(1);
+    $id_current_form = $entry_gforms[0]['id'];
+    $process = new Process();
+    $process->setProcessName($entry_gforms[0][1]);
+    $process->deleteProcess();
+    $result = GFAPI::delete_entry($id_current_form);
+
+}
+
+add_shortcode('post_deleteprocedimento', 'delete_procedimento');
 
 class Procedimento
 {

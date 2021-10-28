@@ -16,6 +16,25 @@ function visualize_fase()
 
 add_shortcode('post_fase', 'visualize_fase');
 
+function update_fase()
+{
+    $entry_gforms = GFAPI::get_entries(43);
+    $fase = new Fase();
+    $id_current_form = $entry_gforms[0]['id'];
+    $results_fase = Form::getForm($id_current_form);
+    $fase->setTitle($results_fase[1]);
+
+    $entry = array('1'=>$results_fase[1],'2'=>$results_fase[2],'3'=>$results_fase[3], '4'=>$results_fase[4], '5'=>$results_fase[5], '6'=>$results_fase[6]);
+    $entry_gforms = GFAPI::get_entries(23);
+    $id_current_form = $entry_gforms[0]['id'];
+    $fase->setOldTitle($entry_gforms[0][1]);
+    $fase->update();
+    $result = GFAPI::update_entry($entry, $id_current_form);
+
+}
+
+add_shortcode('post_updatefase', 'update_fase');
+
 class Fase{
     private $id;
     private $title;
@@ -25,6 +44,7 @@ class Fase{
     private $name_process;
     private $id_process;
     private $id_form;
+    private $old_title;
 
 
     public function getIdForm()
@@ -155,6 +175,40 @@ class Fase{
         $this->insertDataFaseSarala();
         $mysqli->close();
 
+    }
+
+    public function update(){
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+
+        $dbTitle = $this->getDbTitle($this->title);
+        $dbOldTitle = $this->getDbTitle($this->old_title);
+
+        $sql = "UPDATE subtasks SET title=? WHERE title=? ORDER BY id DESC LIMIT 1";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("ss", $dbTitle,  $dbOldTitle);
+        $res = $stmt->execute();
+        $mysqli->close();
+    }
+
+    private function getDbTitle($title){
+        return $title." - fase";
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOldTitle()
+    {
+        return $this->old_title;
+    }
+
+    /**
+     * @param mixed $old_title
+     */
+    public function setOldTitle($old_title)
+    {
+        $this->old_title = $old_title;
     }
 
 
