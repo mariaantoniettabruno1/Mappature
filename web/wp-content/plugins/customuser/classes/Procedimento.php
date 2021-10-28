@@ -32,7 +32,7 @@ function update_procedimento()
     $results_procedimento = Form::getForm($id_current_form);
     $procedimento->setTitle($results_procedimento[1]);
 
-    $entry = array('1'=>$results_procedimento[1],'2'=>$results_procedimento[2],'3'=>$results_procedimento[3], '4'=>$results_procedimento[4]);
+    $entry = array('1'=>$results_procedimento[1],'2'=>$results_procedimento[2],'3'=>$results_procedimento[3], '4'=>$results_procedimento[4], '5'=>$results_procedimento[5]);
     $entry_gforms = GFAPI::get_entries(2);
     $id_current_form = $entry_gforms[0]['id'];
     $procedimento->setOldTitle($entry_gforms[0][2]);
@@ -45,6 +45,19 @@ function update_procedimento()
 }
 
 add_shortcode('post_updateprocedimento', 'update_procedimento');
+
+function delete_procedimento()
+{
+    $entry_gforms = GFAPI::get_entries(1);
+    $id_current_form = $entry_gforms[0]['id'];
+    $process = new Process();
+    $process->setProcessName($entry_gforms[0][1]);
+    $process->deleteProcess();
+    $result = GFAPI::delete_entry($id_current_form);
+
+}
+
+add_shortcode('post_deleteprocedimento', 'delete_procedimento');
 
 class Procedimento
 {
@@ -296,22 +309,6 @@ class Procedimento
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-
-        /*$query = "SELECT id FROM tasks WHERE title=? ORDER BY id DESC LIMIT 1";
-        $stmt = $mysqli->prepare($query);
-        $stmt->bind_param("s", $this->old_title);
-        $res = $stmt->execute();
-        $res = $stmt->get_result();
-        $procedimento = $res->fetch_assoc();
-        $this->setIdProcedure($procedimento['id']);
-
-        echo "<pre>";
-        print_r($procedimento);
-        echo "</pre>";
-
-        $sql = "UPDATE tasks SET title=? WHERE title=? AND project_id=?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("sii", $this->title,  $this->id_procedure, $this->id_process);*/
 
         $sql = "UPDATE tasks SET title=? WHERE title=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
