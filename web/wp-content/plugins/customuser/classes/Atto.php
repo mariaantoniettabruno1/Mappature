@@ -36,6 +36,17 @@ function update_atto()
 
 add_shortcode('post_updateatto', 'update_atto');
 
+function delete_atto(){
+    $entry_gforms = GFAPI::get_entries(24);
+    $id_current_form = $entry_gforms[0]['id'];
+    $atto = new Atto();
+    $atto->setTitleAtto($entry_gforms[0][1]);
+    $atto->delete();
+    $result = GFAPI::delete_entry($id_current_form);
+}
+
+add_shortcode('post_deleteatto', 'delete_atto');
+
 class Atto{
     private $id_atto;
     private $title_atto;
@@ -192,6 +203,17 @@ class Atto{
         $sql = "UPDATE subtasks SET title=? WHERE title=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("ss", $dbTitle,  $dbOldTitle);
+        $res = $stmt->execute();
+        $mysqli->close();
+    }
+
+    public function delete(){
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $dbTitle = $this->getDbTitle($this->title_atto);
+        $sql = "DELETE FROM subtasks WHERE title=? ORDER BY id DESC LIMIT 1";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("s", $dbTitle);
         $res = $stmt->execute();
         $mysqli->close();
     }
