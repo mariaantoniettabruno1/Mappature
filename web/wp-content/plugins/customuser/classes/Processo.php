@@ -4,6 +4,7 @@ include_once 'ConnectionSarala.php';
 
 include_once "OrgChartProcess.php";
 include_once "Form.php";
+include_once "IdProcessCreator.php";
 
 function create_processo()
 {
@@ -12,6 +13,8 @@ function create_processo()
     $process->setProcessName($entry_gforms[0][1]);
     $process->setIdForm($entry_gforms[0]['form_id']);
     $process->setProcessSettore($entry_gforms[0][2]);
+   $id_owner= idProcessCreator::getProcessOwnerId($process->getProcessSettore());
+    $process->setIdUser($id_owner);
     $process->setUserRole('project manager');
     $process->createProcess();
 
@@ -71,6 +74,8 @@ class Process
     private $swimlanes_name = "Corsia predefinita";
     private $old_process_name;
     private $process_settore;
+    private $user_orgchart_role = "Apicale";
+
 
     public function __construct()
     {
@@ -172,12 +177,7 @@ class Process
         $res = $stmt->execute();
         $mysqli->close();
     }
-    public function findProcessOwner(){
-        $conn = new ConnectionSarala();
-        $mysqli = $conn->connect();
-        $sql = "SELECT metavalue FROM wp_usermeta WHERE metakey=? AND metava";
-        $mysqli->close();
-    }
+
 
     public function createProcess()
     {
