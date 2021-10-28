@@ -4,6 +4,8 @@ include_once 'Connection.php';
 include_once 'ConnectionSarala.php';
 
 include_once "Form.php";
+include_once "IdProcessCreator.php";
+
 
 function visualize_procedimento()
 {
@@ -12,7 +14,8 @@ function visualize_procedimento()
     $procedure->setTitle($entry_gforms[0][2]);
     $procedure->setIdForm($entry_gforms[0]['form_id']);
     $procedure->setNameProcess($entry_gforms[0][11]);
-    $procedure->setCreatorId($entry_gforms[0]['created_by']);
+    $procedure->setCreatorId(idProcessCreator::getProcessOwnerId($procedure->getNameProcess()));
+    //$procedure->setOwnerId(idProcessCreator::getProcedureOwnerId($procedure->getNameProcess(),$procedure->getTitle()));
     //$procedure->setDateCreated($entry_gforms[0]['date_created']);
     //$procedure->setDateUpdated($entry_gforms[0]['date_updated']);
     $procedure->setPosition(1);
@@ -36,9 +39,6 @@ function update_procedimento()
     $entry_gforms = GFAPI::get_entries(2);
     $id_current_form = $entry_gforms[0]['id'];
     $procedimento->setOldTitle($entry_gforms[0][2]);
-    echo "<pre>";
-    print_r($procedimento);
-    echo "</pre>";
     $procedimento->updateProcedure();
     $result = GFAPI::update_entry($entry,$id_current_form);
 
@@ -75,10 +75,26 @@ class Procedimento
     private $date_updated;
     private $position;
     private $old_title;
-
+    private $owner_id;
     public function __construct()
     {
 
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOwnerId()
+    {
+        return $this->owner_id;
+    }
+
+    /**
+     * @param mixed $owner_id
+     */
+    public function setOwnerId($owner_id): void
+    {
+        $this->owner_id = $owner_id;
     }
 
 
@@ -279,9 +295,9 @@ class Procedimento
         $result = $res->fetch_assoc();
         $this->setColumnId($result['id']);
 
-        $sql = "INSERT INTO tasks (title,project_id,column_id,swimlane_id,creator_id,position,date_creation,date_modification) VALUES(?,?,?,?,?,?,?,?)";
+        $sql = "INSERT INTO tasks (title,project_id,column_id,swimlane_id,creator_id,position,date_creation,date_modification,owner_id,creator_id) VALUES(?,?,?,?,?,?,?,?,?,?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("siiiiiii", $this->title, $this->id_process, $this->column_id, $this->swimlane_id, $this->creator_id,$this->position,$this->date_created,$this->date_updated);
+        $stmt->bind_param("siiiiiiiii", $this->title, $this->id_process, $this->column_id, $this->swimlane_id, $this->creator_id,$this->position,$this->date_created,$this->date_updated,$this->owner_id,$this->creator_id);
         $res = $stmt->execute();
         $sql = "SELECT id FROM tasks WHERE title=?";
         $stmt = $mysqli->prepare($sql);

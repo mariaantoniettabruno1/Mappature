@@ -4,6 +4,7 @@ include_once 'ConnectionSarala.php';
 
 include_once "OrgChartProcess.php";
 include_once "Form.php";
+include_once "IdProcessCreator.php";
 
 function create_processo()
 {
@@ -12,12 +13,9 @@ function create_processo()
     $process->setProcessName($entry_gforms[0][1]);
     $process->setIdForm($entry_gforms[0]['form_id']);
     $process->setProcessSettore($entry_gforms[0][2]);
-   $id_owner= $process->findProcessOwner($process->getProcessSettore());
+   $id_owner= idProcessCreator::getProcessOwnerId($process->getProcessSettore());
     $process->setIdUser($id_owner);
     $process->setUserRole('project manager');
-    /*echo "<pre>";
-    print_r($process->getIdUser()['meta_value']);
-    echo "</pre>";*/
     $process->createProcess();
 
 }
@@ -179,21 +177,7 @@ class Process
         $res = $stmt->execute();
         $mysqli->close();
     }
-    public function findProcessOwner($settore_processo){
-       $conn = new ConnectionSarala();
-        $mysqli = $conn->connect();
 
-       $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key ='id_kanboard'
-                                      AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value=?)
-                                      AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value=?)";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("ss", $this->user_orgchart_role, $settore_processo);
-       $res = $stmt->execute();
-        $res = $stmt->get_result();
-        $result = $res->fetch_assoc();
-        $mysqli->close();
-       return $result['meta_value'];
-    }
 
     public function createProcess()
     {
