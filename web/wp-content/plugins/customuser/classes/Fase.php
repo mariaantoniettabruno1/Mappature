@@ -35,6 +35,17 @@ function update_fase()
 
 add_shortcode('post_updatefase', 'update_fase');
 
+function delete_fase(){
+    $entry_gforms = GFAPI::get_entries(23);
+    $id_current_form = $entry_gforms[0]['id'];
+    $fase = new Fase();
+    $fase->setTitle($entry_gforms[0][1]);
+    $fase->delete();
+    $result = GFAPI::delete_entry($id_current_form);
+}
+
+add_shortcode('post_deletefase', 'delete_fase');
+
 class Fase{
     private $id;
     private $title;
@@ -187,6 +198,17 @@ class Fase{
         $sql = "UPDATE subtasks SET title=? WHERE title=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("ss", $dbTitle,  $dbOldTitle);
+        $res = $stmt->execute();
+        $mysqli->close();
+    }
+
+    public function delete(){
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $dbTitle = $this->getDbTitle($this->title);
+        $sql = "DELETE FROM subtasks WHERE title=? ORDER BY id DESC LIMIT 1";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("s", $dbTitle);
         $res = $stmt->execute();
         $mysqli->close();
     }

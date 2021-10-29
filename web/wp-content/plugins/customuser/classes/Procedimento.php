@@ -17,15 +17,12 @@ function crea_procedimento()
     $settore = $entry_gforms[0][12];
     $procedure->setCreatorId(idProcessCreator::getProcessOwnerId($settore));
     $servizio = $entry_gforms[0][13];
-    $procedure->setOwnerId(idProcessCreator::getProcedureOwnerId($settore, $servizio));
+    $ufficio = $entry_gforms[0][14];
+    $procedure->setOwnerId(idProcessCreator::getProcedureOwnerId($settore, $servizio, $ufficio));
 
     //$procedure->setDateCreated($entry_gforms[0]['date_created']);
     //$procedure->setDateUpdated($entry_gforms[0]['date_updated']);
     $procedure->setPosition(1);
-    echo "<pre>";
-    print_r($procedure);
-    print_r(idProcessCreator::getProcessOwnerId($procedure->getNameProcess()));
-    echo "</pre>";
     $procedure->createProcedure();
 
 
@@ -55,11 +52,11 @@ add_shortcode('post_updateprocedimento', 'update_procedimento');
 
 function delete_procedimento()
 {
-    $entry_gforms = GFAPI::get_entries(1);
+    $entry_gforms = GFAPI::get_entries(2);
     $id_current_form = $entry_gforms[0]['id'];
-    $process = new Process();
-    $process->setProcessName($entry_gforms[0][1]);
-    $process->deleteProcess();
+    $procedimento = new Procedimento();
+    $procedimento->setTitle($entry_gforms[0][2]);
+    $procedimento->deleteProcedure();
     $result = GFAPI::delete_entry($id_current_form);
 
 }
@@ -340,14 +337,13 @@ class Procedimento
         $mysqli->close();
     }
 
-    public function deleteProcedure($idProcedure)
+    public function deleteProcedure()
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $this->setIdTask($idProcedure);
-        $sql = "DELETE  FROM tasks WHERE id=? AND  project_id=?";
+        $sql = "DELETE  FROM tasks WHERE title=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("ii", $this->id_procedure, $this->id_process);
+        $stmt->bind_param("s", $this->title);
         $res = $stmt->execute();
         $mysqli->close();
     }
