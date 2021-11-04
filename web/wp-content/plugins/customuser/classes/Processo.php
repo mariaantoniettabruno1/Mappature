@@ -8,15 +8,29 @@ include_once "IdProcessCreator.php";
 
 function create_processo()
 {
-    $entry_gforms = GFAPI::get_entries(1);
+    $lastEntry = GFAPI::get_entries(1)[0];
+//    echo "<pre>";
+//    print_r($lastEntry);
+
     $process = new Process();
-    $process->setProcessName($entry_gforms[0][1]);
-    $process->setIdForm($entry_gforms[0]['form_id']);
-    $process->setProcessSettore($entry_gforms[0][2]);
-    $id_owner= idProcessCreator::getProcessOwnerId($process->getProcessSettore());
-    $process->setIdUser($id_owner);
-    $process->setUserRole('project manager');
-    $process->createProcess();
+    foreach ($lastEntry as $key => $value){
+        $pattern = "[^9.]";
+        if (preg_match($pattern, $key) && $value){
+//            echo "<p>";
+//            print_r($value);
+//            print_r("eccoci qua questo è vuoto");
+//            echo "</p>";
+
+            $process->setProcessName($value);
+            $process->setIdForm($lastEntry['form_id']);
+            $process->setProcessSettore($lastEntry[2]);
+            $id_owner= idProcessCreator::getProcessOwnerId($process->getProcessSettore());
+            $process->setIdUser($id_owner);
+            $process->setUserRole('project manager');
+            $process->createProcess();
+        }
+    }
+//    echo "</pre>";
 
 }
 
