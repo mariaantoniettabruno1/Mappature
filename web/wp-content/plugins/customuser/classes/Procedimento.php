@@ -13,11 +13,11 @@ function crea_procedimento()
     $procedure = new Procedimento();
     $procedure->setTitle($entry_gforms[0][2]);
     $procedure->setIdForm($entry_gforms[0]['form_id']);
-    $procedure->setNameProcess($entry_gforms[0][11]);
-    $settore = $entry_gforms[0][12];
+    $procedure->setNameProcess($entry_gforms[0][17]);
+    $settore = $entry_gforms[0][18];
     $procedure->setCreatorId(idProcessCreator::getProcessOwnerId($settore));
-    $servizio = $entry_gforms[0][13];
-    $ufficio = $entry_gforms[0][14];
+    $servizio = $entry_gforms[0][19];
+    $ufficio = $entry_gforms[0][20];
     $procedure->setOwnerId(idProcessCreator::getProcedureOwnerId($settore, $servizio, $ufficio));
 
     //$procedure->setDateCreated($entry_gforms[0]['date_created']);
@@ -38,9 +38,11 @@ function update_procedimento()
     $id_current_form = $entry_gforms[0]['id'];
     $results_procedimento = Form::getForm($id_current_form);
     $procedimento->setTitle($results_procedimento[1]);
-
     $entry = array('1'=>$results_procedimento[1],'2'=>$results_procedimento[2],'3'=>$results_procedimento[3], '4'=>$results_procedimento[4], '5'=>$results_procedimento[5]);
     $entry_gforms = GFAPI::get_entries(2);
+    echo "<pre>";
+    print_r($entry_gforms);
+    echo "</pre>";
     $id_current_form = $entry_gforms[0]['id'];
     $procedimento->setOldTitle($entry_gforms[0][2]);
     $procedimento->updateProcedure();

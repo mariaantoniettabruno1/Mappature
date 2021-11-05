@@ -11,6 +11,15 @@ function visualize_atto()
     $atto->setNameProcessAtto($entry_gforms[0][2]);
     $atto->setIdFormAtto($entry_gforms[0]['form_id']);
     $atto->setIdAtto($entry_gforms[0]['id']);
+
+   /*foreach ($entry_gforms[0] as $key => $value){
+        $pattern = "[^9.]";
+        if (preg_match($pattern, $key) && $value) {
+           $atto->setUserIdAtto(idProcessCreator::getAttoFaseOwnerId($value));
+
+        }
+        }
+*/
     $atto->createAtto();
 
 }
@@ -185,9 +194,9 @@ class Atto{
 
         $a = " - atto";
         $this->title_atto = $this->title_atto.$a;
-        $sql = "INSERT INTO subtasks (title,task_id) VALUES(?,?)";
+        $sql = "INSERT INTO subtasks (title,task_id,user_id) VALUES(?,?,?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("si", $this->title_atto, $this->id_procedure_atto);
+        $stmt->bind_param("sii", $this->title_atto, $this->id_procedure_atto, $this->user_id);
         $res = $stmt->execute();
         $mysqli->close();
         $this->insertDataAttoSarala();

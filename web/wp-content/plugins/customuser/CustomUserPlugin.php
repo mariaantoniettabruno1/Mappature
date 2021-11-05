@@ -40,7 +40,7 @@ function extra_user_fields($user)
     <br>
     <h3>Job information</h3>
     <br class="container">
-    <td>Settore</td>
+    <td>Area</td>
     <div>
         <?php
 
