@@ -1,15 +1,27 @@
 <?php
 include_once 'Connection.php';
 include_once 'ConnectionSarala.php';
+
 function visualize_fase()
 {
-    $entry_gforms = GFAPI::get_entries(23);
+    $entry_gforms = GFAPI::get_entries(23)[0];
+
+    echo "<pre>";
+    print_r(GFAPI::get_entries(23));
+    echo "</pre>";
+
     $fase = new Fase();
-    $fase->setTitle($entry_gforms[0][1]);
-    $fase->setNameProcedure($entry_gforms[0][3]);
-    $fase->setNameProcess($entry_gforms[0][2]);
-    $fase->setIdForm($entry_gforms[0]['form_id']);
-    $fase->setId($entry_gforms[0]['id']);
+    $fase->setTitle($entry_gforms[1]);
+    $fase->setNameProcedure($entry_gforms[3]);
+    $fase->setNameProcess($entry_gforms[2]);
+    $fase->setIdForm($entry_gforms['form_id']);
+    $fase->setId($entry_gforms['id']);
+    foreach ($entry_gforms as $key => $value){
+        $pattern = "[^9.]";
+        if (preg_match($pattern, $key) && $value){
+            $fase->addUser($value);
+        }
+    }
     $fase->createFase();
 
 }
@@ -50,12 +62,18 @@ class Fase{
     private $id;
     private $title;
     private $user_id;
+    private $users;
     private $id_procedure;
     private $name_procedure;
     private $name_process;
     private $id_process;
     private $id_form;
     private $old_title;
+
+    public function __construct()
+    {
+        $this->users = [];
+    }
 
 
     public function getIdForm()
@@ -179,10 +197,12 @@ class Fase{
 
         $a = " - fase";
         $this->title = $this->title.$a;
-        $sql = "INSERT INTO subtasks (title,task_id) VALUES(?,?)";
+        $sql = "INSERT INTO subtasks (title,task_id, user_id) VALUES(?,?,?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("si", $this->title, $this->id_procedure);
-        $res = $stmt->execute();
+        foreach ($this->users as $userId) {
+            $stmt->bind_param("sii", $this->title, $this->id_procedure, $userId);
+            $res = $stmt->execute();
+        }
         $this->insertDataFaseSarala();
         $mysqli->close();
 
@@ -231,6 +251,27 @@ class Fase{
     public function setOldTitle($old_title)
     {
         $this->old_title = $old_title;
+    }
+
+    /**
+     * @return array
+     */
+    public function getUsers(): array
+    {
+        return $this->users;
+    }
+
+    /**
+     * @param array $users
+     */
+    public function setUsers(array $users)
+    {
+        $this->users = $users;
+    }
+
+    public function addUser($value)
+    {
+        array_push($this->users, $value);
     }
 
 
