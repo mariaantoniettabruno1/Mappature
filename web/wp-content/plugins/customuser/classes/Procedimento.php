@@ -9,22 +9,27 @@ include_once "IdProcessCreator.php";
 
 function crea_procedimento()
 {
-    $entry_gforms = GFAPI::get_entries(2);
+    $last_entry = GFAPI::get_entries(50)[0];
     $procedure = new Procedimento();
-    $procedure->setTitle($entry_gforms[0][2]);
-    $procedure->setIdForm($entry_gforms[0]['form_id']);
-    $procedure->setNameProcess($entry_gforms[0][17]);
-    $settore = $entry_gforms[0][18];
-    $procedure->setCreatorId(idProcessCreator::getProcessOwnerId($settore));
-    $servizio = $entry_gforms[0][19];
-    $ufficio = $entry_gforms[0][20];
-    $procedure->setOwnerId(idProcessCreator::getProcedureOwnerId($settore, $servizio, $ufficio));
 
-    //$procedure->setDateCreated($entry_gforms[0]['date_created']);
-    //$procedure->setDateUpdated($entry_gforms[0]['date_updated']);
-    $procedure->setPosition(1);
-    $procedure->createProcedure();
+    foreach ($last_entry as $key => $value) {
+        $pattern = "[^22.]";
+        if (preg_match($pattern, $key) && $value) {
 
+            $procedure->setTitle($value);
+            $procedure->setIdForm($last_entry['form_id']);
+            $procedure->setNameProcess($last_entry[24]);
+            $settore = $last_entry[18];
+            $procedure->setCreatorId(idProcessCreator::getProcessOwnerId($settore));
+            $servizio = $last_entry[19];
+            $ufficio = $last_entry[20];
+            $procedure->setOwnerId(idProcessCreator::getProcedureOwnerId($settore, $servizio, $ufficio));
+            $procedure->setPosition(1);
+            //$procedure->setDateCreated($entry_gforms[0]['date_created']);
+            //$procedure->setDateUpdated($entry_gforms[0]['date_updated']);
+            $procedure->createProcedure();
+        }
+    }
 
 }
 
