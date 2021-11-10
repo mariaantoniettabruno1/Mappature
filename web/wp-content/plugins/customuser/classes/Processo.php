@@ -9,28 +9,21 @@ include_once "IdProcessCreator.php";
 function create_processo()
 {
     $lastEntry = GFAPI::get_entries(1)[0];
-//    echo "<pre>";
-//    print_r($lastEntry);
 
     $process = new Process();
-    foreach ($lastEntry as $key => $value){
+    foreach ($lastEntry as $key => $value) {
         $pattern = "[^9.]";
-        if (preg_match($pattern, $key) && $value){
-//            echo "<p>";
-//            print_r($value);
-//            print_r("eccoci qua questo è vuoto");
-//            echo "</p>";
+        if (preg_match($pattern, $key) && $value) {
 
             $process->setProcessName($value);
             $process->setIdForm($lastEntry['form_id']);
             $process->setProcessSettore($lastEntry[2]);
-            $id_owner= idProcessCreator::getProcessOwnerId($process->getProcessSettore());
+            $id_owner = idProcessCreator::getProcessOwnerId($process->getProcessSettore());
             $process->setIdUser($id_owner);
             $process->setUserRole('project manager');
             $process->createProcess();
         }
     }
-//    echo "</pre>";
 
 }
 
@@ -53,17 +46,33 @@ add_shortcode('post_deleteprocesso', 'delete_processo');
 
 function update_processo()
 {
-    $entry_gforms = GFAPI::get_entries(34);
-    $process = new Process();
-    $id_current_form = $entry_gforms[0]['id'];
-    $results_processo = Form::getForm($id_current_form);
-    $process->setProcessName($results_processo[1]);
-    $entry = array('1'=>$results_processo[1],'2'=>$results_processo[2],'3'=>$results_processo[3], '4'=>$results_processo[4]);
-    $entry_gforms = GFAPI::get_entries(1);
-    $id_current_form = $entry_gforms[0]['id'];
-    $process->setOldProcessName($entry_gforms[0][1]);
-    $process->updateProcess();
-    $result = GFAPI::update_entry($entry,$id_current_form);
+//    $entry_gforms = GFAPI::get_entries(34);
+//    $process = new Process();
+//    $id_current_form = $entry_gforms[0]['id'];
+//    $results_processo = Form::getForm($id_current_form);
+//    $process->setProcessName($results_processo[1]);
+//    $entry = array('1' => $results_processo[1], '2' => $results_processo[2], '3' => $results_processo[3], '4' => $results_processo[4]);
+//    $entry_gforms = GFAPI::get_entries(1);
+//    $id_current_form = $entry_gforms[0]['id'];
+//    $process->setOldProcessName($entry_gforms[0][1]);
+//    $process->updateProcess();
+//    $result = GFAPI::update_entry($entry, $id_current_form);
+    $entry_gforms = GFAPI::get_entries(2);
+
+   /* $procedure = new Procedimento();
+    $procedure->setTitle($entry_gforms[0][2]);
+    $procedure->setIdForm($entry_gforms[0]['form_id']);
+    $procedure->setNameProcess($entry_gforms[0][17]);
+    $settore = $entry_gforms[0][18];
+    $procedure->setCreatorId(idProcessCreator::getProcessOwnerId($settore));
+    $servizio = $entry_gforms[0][19];
+    $ufficio = $entry_gforms[0][20];
+    $procedure->setOwnerId(idProcessCreator::getProcedureOwnerId($settore, $servizio, $ufficio));
+
+    //$procedure->setDateCreated($entry_gforms[0]['date_created']);
+    //$procedure->setDateUpdated($entry_gforms[0]['date_updated']);
+    $procedure->setPosition(1);
+    $procedure->createProcedure();*/
 
 }
 

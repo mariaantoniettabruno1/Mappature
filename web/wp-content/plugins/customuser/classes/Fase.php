@@ -6,9 +6,9 @@ function visualize_fase()
 {
     $entry_gforms = GFAPI::get_entries(23)[0];
 
-    echo "<pre>";
-    print_r(GFAPI::get_entries(23));
-    echo "</pre>";
+    /* echo "<pre>";
+     print_r(GFAPI::get_entries(23));
+     echo "</pre>";*/
 
     $fase = new Fase();
     $fase->setTitle($entry_gforms[1]);
@@ -16,9 +16,9 @@ function visualize_fase()
     $fase->setNameProcess($entry_gforms[2]);
     $fase->setIdForm($entry_gforms['form_id']);
     $fase->setId($entry_gforms['id']);
-    foreach ($entry_gforms as $key => $value){
+    foreach ($entry_gforms as $key => $value) {
         $pattern = "[^9.]";
-        if (preg_match($pattern, $key) && $value){
+        if (preg_match($pattern, $key) && $value) {
             $fase->addUser($value);
         }
     }
@@ -36,7 +36,7 @@ function update_fase()
     $results_fase = Form::getForm($id_current_form);
     $fase->setTitle($results_fase[1]);
 
-    $entry = array('1'=>$results_fase[1],'2'=>$results_fase[2],'3'=>$results_fase[3], '4'=>$results_fase[4], '5'=>$results_fase[5], '6'=>$results_fase[6]);
+    $entry = array('1' => $results_fase[1], '2' => $results_fase[2], '3' => $results_fase[3], '4' => $results_fase[4], '5' => $results_fase[5], '6' => $results_fase[6]);
     $entry_gforms = GFAPI::get_entries(23);
     $id_current_form = $entry_gforms[0]['id'];
     $fase->setOldTitle($entry_gforms[0][1]);
@@ -47,7 +47,8 @@ function update_fase()
 
 add_shortcode('post_updatefase', 'update_fase');
 
-function delete_fase(){
+function delete_fase()
+{
     $entry_gforms = GFAPI::get_entries(23);
     $id_current_form = $entry_gforms[0]['id'];
     $fase = new Fase();
@@ -58,7 +59,8 @@ function delete_fase(){
 
 add_shortcode('post_deletefase', 'delete_fase');
 
-class Fase{
+class Fase
+{
     private $id;
     private $title;
     private $user_id;
@@ -86,7 +88,6 @@ class Fase{
     {
         $this->id_form = $id_form;
     }
-
 
 
     public function getIdProcess()
@@ -168,16 +169,20 @@ class Fase{
     {
         $this->name_procedure = $name_procedure;
     }
-    public function insertDataFaseSarala(){
+
+    public function insertDataFaseSarala()
+    {
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
         $sql = "INSERT INTO MAPP_fasi (id_fase,id_form,id_processo,id_procedimento) VALUES(?,?,?,?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("iiii", $this->id, $this->id_form, $this->id_process,$this->id_procedure);
+        $stmt->bind_param("iiii", $this->id, $this->id_form, $this->id_process, $this->id_procedure);
         $res = $stmt->execute();
         $mysqli->close();
     }
-    public function createFase(){
+
+    public function createFase()
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
         $sql = "SELECT id FROM tasks WHERE title=? ORDER BY id DESC LIMIT 1";
@@ -196,19 +201,21 @@ class Fase{
         $this->setIdProcess($result['id']);
 
         $a = " - fase";
-        $this->title = $this->title.$a;
+        $this->title = $this->title . $a;
         $sql = "INSERT INTO subtasks (title,task_id, user_id) VALUES(?,?,?)";
         $stmt = $mysqli->prepare($sql);
         foreach ($this->users as $userId) {
             $stmt->bind_param("sii", $this->title, $this->id_procedure, $userId);
             $res = $stmt->execute();
         }
+
         $this->insertDataFaseSarala();
         $mysqli->close();
 
     }
 
-    public function update(){
+    public function update()
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
 
@@ -217,12 +224,13 @@ class Fase{
 
         $sql = "UPDATE subtasks SET title=? WHERE title=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("ss", $dbTitle,  $dbOldTitle);
+        $stmt->bind_param("ss", $dbTitle, $dbOldTitle);
         $res = $stmt->execute();
         $mysqli->close();
     }
 
-    public function delete(){
+    public function delete()
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
         $dbTitle = $this->getDbTitle($this->title);
@@ -233,8 +241,9 @@ class Fase{
         $mysqli->close();
     }
 
-    private function getDbTitle($title){
-        return $title." - fase";
+    private function getDbTitle($title)
+    {
+        return $title . " - fase";
     }
 
     /**
@@ -271,7 +280,16 @@ class Fase{
 
     public function addUser($value)
     {
-        array_push($this->users, $value);
+        $conn = new ConnectionSarala();
+        $mysqli = $conn->connect();
+        $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key='id_kanboard' AND user_id=?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("i", $value);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = $res->fetch_assoc();
+        array_push($this->users, $result['meta_value']);
+
     }
 
 

@@ -38,20 +38,20 @@ add_shortcode('post_procedimento', 'crea_procedimento');
 
 function update_procedimento()
 {
-    $entry_gforms = GFAPI::get_entries(37);
-    $procedimento = new Procedimento();
-    $id_current_form = $entry_gforms[0]['id'];
-    $results_procedimento = Form::getForm($id_current_form);
-    $procedimento->setTitle($results_procedimento[1]);
-    $entry = array('1'=>$results_procedimento[1],'2'=>$results_procedimento[2],'3'=>$results_procedimento[3], '4'=>$results_procedimento[4], '5'=>$results_procedimento[5]);
-    $entry_gforms = GFAPI::get_entries(2);
-    echo "<pre>";
-    print_r($entry_gforms);
-    echo "</pre>";
-    $id_current_form = $entry_gforms[0]['id'];
-    $procedimento->setOldTitle($entry_gforms[0][2]);
-    $procedimento->updateProcedure();
-    $result = GFAPI::update_entry($entry,$id_current_form);
+//    $entry_gforms = GFAPI::get_entries(37);
+//    $procedimento = new Procedimento();
+//    $id_current_form = $entry_gforms[0]['id'];
+//    $results_procedimento = Form::getForm($id_current_form);
+//    $procedimento->setTitle($results_procedimento[1]);
+//    $entry = array('1' => $results_procedimento[1], '2' => $results_procedimento[2], '3' => $results_procedimento[3], '4' => $results_procedimento[4], '5' => $results_procedimento[5]);
+//    $entry_gforms = GFAPI::get_entries(2);
+////    echo "<pre>";
+////    print_r($entry_gforms);
+////    echo "</pre>";
+//    $id_current_form = $entry_gforms[0]['id'];
+//    $procedimento->setOldTitle($entry_gforms[0][2]);
+//    $procedimento->updateProcedure();
+//    $result = GFAPI::update_entry($entry, $id_current_form);
 
 }
 
@@ -87,6 +87,7 @@ class Procedimento
     private $position;
     private $old_title;
     private $owner_id;
+
     public function __construct()
     {
 
@@ -265,7 +266,6 @@ class Procedimento
     }
 
 
-
     public function insertDataProcedureSarala()
     {
         $conn = new ConnectionSarala();
@@ -308,7 +308,7 @@ class Procedimento
 
         $sql = "INSERT INTO tasks (title,project_id,column_id,swimlane_id,position,date_creation,date_modification,owner_id,creator_id) VALUES(?,?,?,?,?,?,?,?,?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("siiiiiiii", $this->title, $this->id_process, $this->column_id, $this->swimlane_id, $this->position,$this->date_created,$this->date_updated,$this->owner_id,$this->creator_id);
+        $stmt->bind_param("siiiiiiii", $this->title, $this->id_process, $this->column_id, $this->swimlane_id, $this->position, $this->date_created, $this->date_updated, $this->owner_id, $this->creator_id);
         $res = $stmt->execute();
         $sql = "SELECT id FROM tasks WHERE title=?";
         $stmt = $mysqli->prepare($sql);
@@ -339,7 +339,7 @@ class Procedimento
 
         $sql = "UPDATE tasks SET title=? WHERE title=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("ss", $this->title,  $this->old_title);
+        $stmt->bind_param("ss", $this->title, $this->old_title);
         $res = $stmt->execute();
         $mysqli->close();
     }

@@ -42,6 +42,7 @@ function extra_user_fields($user)
     <br class="container">
     <td>Area</td>
     <div>
+
         <?php
 
         $settore = new Settore();
@@ -67,6 +68,7 @@ function extra_user_fields($user)
     <br class="container" id="id_servizio">
     <td>Servizio</td>
     <div>
+
         <?php
         $servizio = new Servizio();
         $results_servizio = $servizio->selectServizio();
@@ -86,21 +88,24 @@ function extra_user_fields($user)
     <br class="container">
     <td>Ufficio</td>
     <div>
-        <?php
+
+    <?php
         $ufficio = new Ufficio();
         $results_ufficio = $ufficio->selectUfficio();
         ?>
-        <select name='ufficio' id='ufficio'>
+        <label name='ufficio' id='ufficio'>
             <?php if ($user_meta['ufficio'][0] !== NULL) {
                 $ufficio = $user_meta['ufficio'][0];
             } else {
                 $ufficio = '';
             }foreach ($results_ufficio as $result): ?>
-                <option <?php if ($result === $ufficio) echo 'selected' ?>
-                        value='<?= $result ?>'> <?= $result ?></option>
+                <input type="checkbox" <?php if ($result === $ufficio) echo 'selected' ?>
+                        value='<?= $result ?>'> <?= $result ?> <br>
             <?php endforeach; ?>
-        </select>
-    </div>
+
+        </label>
+
+   </div>
     <br>
     <tr>
         <td>Ruolo</td>
