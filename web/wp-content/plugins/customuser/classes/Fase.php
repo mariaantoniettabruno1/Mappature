@@ -202,10 +202,15 @@ class Fase
 
         $a = " - fase";
         $this->title = $this->title . $a;
-        $sql = "INSERT INTO subtasks (title,task_id, user_id) VALUES(?,?,?)";
+        $sql = "INSERT INTO subtasks (title,task_id) VALUES(?,?)";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("si", $this->title, $this->id_procedure);
+        $res = $stmt->execute();
+        $subtask_id = $mysqli->insert_id;
+        $sql = "INSERT INTO MAPP_subtask_users (subtask_id,user_id) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);
         foreach ($this->users as $userId) {
-            $stmt->bind_param("sii", $this->title, $this->id_procedure, $userId);
+            $stmt->bind_param("ii", $subtask_id, $userId);
             $res = $stmt->execute();
         }
 

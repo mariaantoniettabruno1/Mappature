@@ -26,7 +26,6 @@ Author URI:
 }*/
 
 
-
 add_action('user_new_form', 'extra_user_fields');
 add_action('edit_user_profile', 'extra_user_fields');
 add_action('show_user_profile', 'extra_user_fields');
@@ -39,81 +38,30 @@ function extra_user_fields($user)
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <br>
     <h3>Job information</h3>
-    <br class="container">
-    <td>Area</td>
-    <div>
-
-        <?php
-
-        $settore = new Settore();
-        $results_settore = $settore->selectSettore();
-        ?>
-        <select name='settore' id='settore'>
-            <?php if ($user->ID !== NULL) {
-                $user_meta = get_user_meta($user->ID);
-                $settore = $user_meta['settore'][0];
-            } else {
-                $settore = '';
-            }
-            foreach ($results_settore as $result): ?>
-                <option <?php if ($result === $settore) echo 'selected' ?>
-                        value='<?= $result ?>'> <?= $result ?></option>
-            <?php endforeach; ?>
-        </select>
-
-
-    </div>
-
     </br>
-    <br class="container" id="id_servizio">
-    <td>Servizio</td>
-    <div>
-
-        <?php
-        $servizio = new Servizio();
-        $results_servizio = $servizio->selectServizio();
-        ?>
-        <select name='servizio' id='servizio'>
-            <?php if ($user_meta['servizio'][0] !== NULL) {
-                $servizio = $user_meta['servizio'][0];
-            } else {
-                $servizio = '';
-            }foreach ($results_servizio as $result): ?>
-                <option <?php if ($result === $servizio) echo 'selected' ?>
-                        value='<?= $result ?>'> <?= $result ?></option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-
-    <br class="container">
-    <td>Ufficio</td>
-    <div>
-
-    <?php
-        $ufficio = new Ufficio();
-        $results_ufficio = $ufficio->selectUfficio();
-        ?>
-        <label name='ufficio' id='ufficio'>
-            <?php if ($user_meta['ufficio'][0] !== NULL) {
-                $ufficio = $user_meta['ufficio'][0];
-            } else {
-                $ufficio = '';
-            }foreach ($results_ufficio as $result): ?>
-                <input type="checkbox" <?php if ($result === $ufficio) echo 'selected' ?>
-                        value='<?= $result ?>'> <?= $result ?> <br>
-            <?php endforeach; ?>
-
-        </label>
-
-   </div>
-    <br>
     <tr>
         <td>Ruolo</td>
-        <td><input type="text" name="Ruolo">
+        <div>
+            <select name='ruolo' id='ruolo'>
+                <option > Dirigente</option>
+                <option > PO</option>
+                <option > Dipendente</option>
+            </select>
+
             <script>
-                $('input').addClass('regular-text');
-                $('input[name=Ruolo]').val('<?php echo get_the_author_meta('Ruolo', $user->ID); ?>');
+                $(function () {
+                    var genderValue = localStorage.getItem("ruoloValue");
+                    if (genderValue != null) {
+                        $("select[name=ruolo]").val(genderValue);
+                    }
+
+                    $("select[name=ruolo]").on("change", function () {
+                        localStorage.setItem("ruoloValue", $(this).val());
+                    });
+                })
+
             </script>
+        </div>
         </td>
     </tr>
     </div>
@@ -132,10 +80,11 @@ function save_extra_user_field($user_id)
     if (!current_user_can('edit_user', $user_id)) {
         return false;
     }
-    update_user_meta($user_id, 'Ruolo', $_POST["Ruolo"]);
-    update_user_meta($user_id, 'settore', $_POST["settore"]);
-    update_user_meta($user_id, 'servizio', $_POST["servizio"]);
-    update_user_meta($user_id, 'ufficio', $_POST["ufficio"]);
+    update_user_meta($user_id, 'ruolo', $_POST["ruolo"]);
+   /* echo "<pre>";
+    print_r(get_user_meta($user_id));
+    throw new Exception();
+    echo "</pre>";*/
 
 
 }
@@ -153,9 +102,6 @@ function on_profile_update($user_id)
         $user->setEmail($user_data[0]->data->user_email);
         $user->setName($user_meta[0]['first_name'][0]);
         $user->setUsername($user_data[0]->data->user_login);
-        $user->setValueSettore($user_meta[0]['settore'][0]);
-        $user->setValueServizio($user_meta[0]['servizio'][0]);
-        $user->setValueUfficio($user_meta[0]['ufficio'][0]);
         $user->setIdKanboard($user_meta[0]['id_kanboard'][0]);
         $idKanboard = $user->getIdKanboard();
         if ($idKanboard != NULL) {
@@ -167,10 +113,6 @@ function on_profile_update($user_id)
         }
 
     }
-   /* echo "<pre>";
-    print_r($user_meta);
-    echo "</pre>";
-    throw new Exception();*/
 }
 
 add_action('delete_user', 'my_delete_user');
@@ -291,18 +233,18 @@ class User
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("ssi", $this->name, $this->email, $this->idKanboard);
         $res = $stmt->execute();
-        $sql = "UPDATE user_has_metadata SET  value=? WHERE user_id=? AND name=?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("sis", $this->value_settore, $this->idKanboard, $this->settore);
-        $res = $stmt->execute();
-        $sql = "UPDATE user_has_metadata SET value=?  WHERE user_id=? AND name=?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("sis", $this->value_servizio, $this->idKanboard, $this->servizio);
-        $res = $stmt->execute();
-        $sql = "UPDATE user_has_metadata SET  value=?  WHERE user_id=? AND name=?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("sis", $this->value_ufficio, $this->idKanboard, $this->ufficio);
-        $res = $stmt->execute();
+//        $sql = "UPDATE user_has_metadata SET  value=? WHERE user_id=? AND name=?";
+//        $stmt = $mysqli->prepare($sql);
+//        $stmt->bind_param("sis", $this->value_settore, $this->idKanboard, $this->settore);
+//        $res = $stmt->execute();
+//        $sql = "UPDATE user_has_metadata SET value=?  WHERE user_id=? AND name=?";
+//        $stmt = $mysqli->prepare($sql);
+//        $stmt->bind_param("sis", $this->value_servizio, $this->idKanboard, $this->servizio);
+//        $res = $stmt->execute();
+//        $sql = "UPDATE user_has_metadata SET  value=?  WHERE user_id=? AND name=?";
+//        $stmt = $mysqli->prepare($sql);
+//        $stmt->bind_param("sis", $this->value_ufficio, $this->idKanboard, $this->ufficio);
+//        $res = $stmt->execute();
         $mysqli->close();
 
 
