@@ -43,9 +43,9 @@ function extra_user_fields($user)
         <td>Ruolo</td>
         <div>
             <select name='ruolo' id='ruolo'>
-                <option > Dirigente</option>
-                <option > PO</option>
-                <option > Dipendente</option>
+                <option> Dirigente</option>
+                <option> PO</option>
+                <option> Dipendente</option>
             </select>
 
             <script>
@@ -71,6 +71,17 @@ function extra_user_fields($user)
     <?php
 
 }
+include_once 'includes/Connection.php';
+include_once 'includes/ConnectionSarala.php';
+include_once 'classes/Processo.php';
+include_once 'classes/Procedimento.php';
+include_once 'classes/Fase.php';
+include_once 'classes/Atto.php';
+include_once 'classes/OrgChartProcess.php';
+include_once 'classes/Area.php';
+include_once 'classes/Servizio.php';
+include_once 'classes/Ufficio.php';
+include_once 'shortcodes/SCOrgChartProcess.php';
 
 add_action('edit_user_profile_update', 'save_extra_user_field');
 add_action('user_register', 'save_extra_user_field');
@@ -81,10 +92,10 @@ function save_extra_user_field($user_id)
         return false;
     }
     update_user_meta($user_id, 'ruolo', $_POST["ruolo"]);
-   /* echo "<pre>";
-    print_r(get_user_meta($user_id));
-    throw new Exception();
-    echo "</pre>";*/
+    /* echo "<pre>";
+     print_r(get_user_meta($user_id));
+     throw new Exception();
+     echo "</pre>";*/
 
 
 }
@@ -124,6 +135,133 @@ function my_delete_user($user_id)
     $user->deleteUser($id_kan);
 }
 
+function add_user_metadata()
+{
+    $entry_gforms = GFAPI::get_entries(52)[0];
+    $area = new Area();
+    $servizio = new Servizio();
+    $ufficio = new Ufficio();
+    $array_servizio = array();
+    $array_ufficio = array();
+    $area->setArea($entry_gforms[3]);
+    $old_value_servizio = '';
+    $old_value_ufficio = '';
+    foreach ($entry_gforms as $key => $value) {
+        $pattern = "[^1.]";
+        if (preg_match($pattern, $key) && $value && $value!= '') {
+            $wp_userid = $value;
+            update_user_meta($value, 'area', $area->getArea());
+            $user_meta = array(get_user_meta($value));
+            $area->setUserArea($user_meta[0]['id_kanboard'][0]);
+            foreach ($entry_gforms as $key => $value) {
+                $pattern = "[^6.]";
+                if (preg_match($pattern, $key) && $value && $value!= '') {
+                    if($old_value_servizio!=$value)
+                    array_push($array_servizio,$value);
+                    $old_value_servizio = $value;
+                }
+            }
+            foreach ($entry_gforms as $key => $value) {
+                $pattern = "[^7.]";
+                if (preg_match($pattern, $key) && $value && $value!= '') {
+                    if($old_value_ufficio!=$value){
+                        array_push($array_ufficio,$value);
+                    }
+                    $old_value_ufficio = $value;
+
+                }
+            }
+
+//            update_user_meta($wp_userid, 'servizio', implode(",",$array_servizio));
+//            $user_meta = array(get_user_meta($wp_userid));
+//            array_push($user_meta[0]['servizio'],$array_servizio);
+//            //delete_user_meta($wp_userid,['servizio']);
+//            $servizio->setServizio(implode(",",$array_servizio));
+//            $servizio->setUserServizio($user_meta[0]['id_kanboard'][0]);
+//
+//            update_user_meta($wp_userid, 'ufficio', $array_ufficio);
+//            $user_meta = array(get_user_meta($wp_userid));
+//            array_push($user_meta[0]['ufficio'],$array_ufficio);
+//            //delete_user_meta($wp_userid,['ufficio']);
+//            $ufficio->setUfficio(implode(",",$array_ufficio));
+//            $ufficio->setUserUfficio($user_meta[0]['id_kanboard'][0]);
+
+            echo "<pre>";
+            print_r($array_servizio);
+            print_r($user_meta);
+            echo "</pre>";
+
+        }
+
+    }
+
+
+}
+
+add_shortcode('post_addusermetadata', 'add_user_metadata');
+
+function edit_user_metadata()
+{
+    $entry_gforms = GFAPI::get_entries(55)[0];
+    $area = new Area();
+    $servizio = new Servizio();
+    $ufficio = new Ufficio();
+    $array_servizio = array();
+    $array_ufficio = array();
+    $area->setArea($entry_gforms[3]);
+    $old_value_servizio = '';
+    $old_value_ufficio = '';
+    foreach ($entry_gforms as $key => $value) {
+        $pattern = "[^1.]";
+        if (preg_match($pattern, $key) && $value && $value!= '') {
+            $wp_userid = $value;
+            update_user_meta($value, 'area', $area->getArea());
+            $user_meta = array(get_user_meta($value));
+            $area->editUserArea($user_meta[0]['id_kanboard'][0]);
+            foreach ($entry_gforms as $key => $value) {
+                $pattern = "[^4.]";
+                if (preg_match($pattern, $key) && $value && $value!= '') {
+                    if($old_value_servizio!=$value)
+                        array_push($array_servizio,$value);
+                    $old_value_servizio = $value;
+                }
+            }
+            foreach ($entry_gforms as $key => $value) {
+                $pattern = "[^6.]";
+                if (preg_match($pattern, $key) && $value && $value!= '') {
+                    if($old_value_ufficio!=$value){
+                        array_push($array_ufficio,$value);
+
+                    }
+                    $old_value_ufficio = $value;
+
+                }
+            }
+
+            update_user_meta($wp_userid, 'servizio', $array_servizio);
+            $user_meta = array(get_user_meta($wp_userid));
+            array_push($user_meta[0]['servizio'],$array_servizio);
+            //delete_user_meta($wp_userid,['servizio']);
+            $servizio->setServizio(implode(",",$array_servizio));
+            $servizio->editUserServizio($user_meta[0]['id_kanboard'][0]);
+
+            update_user_meta($wp_userid, 'ufficio', $array_ufficio);
+            $user_meta = array(get_user_meta($wp_userid));
+            array_push($user_meta[0]['ufficio'],$array_ufficio);
+            //delete_user_meta($wp_userid,['ufficio']);
+            $ufficio->setUfficio(implode(",",$array_ufficio));
+            $ufficio->editUserUfficio($user_meta[0]['id_kanboard'][0]);
+
+        }
+
+//
+    }
+
+
+}
+
+add_shortcode('post_editusermetadata', 'edit_user_metadata');
+
 include_once 'includes/Connection.php';
 include_once 'includes/ConnectionSarala.php';
 include_once 'classes/Processo.php';
@@ -131,7 +269,9 @@ include_once 'classes/Procedimento.php';
 include_once 'classes/Fase.php';
 include_once 'classes/Atto.php';
 include_once 'classes/OrgChartProcess.php';
-
+include_once 'classes/Area.php';
+include_once 'classes/Servizio.php';
+include_once 'classes/Ufficio.php';
 include_once 'shortcodes/SCOrgChartProcess.php';
 
 class User
@@ -140,12 +280,6 @@ class User
     private $email;
     private $name;
     private $idKanboard;
-    private $settore = "settore";
-    private $servizio = "servizio";
-    private $ufficio = "ufficio";
-    private $value_settore;
-    private $value_servizio;
-    private $value_ufficio;
 
     public function setIdKanboard($idKanboard)
     {
@@ -192,39 +326,6 @@ class User
     }
 
 
-    public function getValueSettore()
-    {
-        return $this->value_settore;
-    }
-
-
-    public function setValueSettore($value_settore)
-    {
-        $this->value_settore = $value_settore;
-    }
-
-    public function getValueServizio()
-    {
-        return $this->value_servizio;
-    }
-
-    public function setValueServizio($value_servizio)
-    {
-        $this->value_servizio = $value_servizio;
-    }
-
-    public function getValueUfficio()
-    {
-        return $this->value_ufficio;
-    }
-
-
-    public function setValueUfficio($value_ufficio)
-    {
-        $this->value_ufficio = $value_ufficio;
-    }
-
-
     public function updateUser()
     {
         $conn = new Connection();
@@ -233,10 +334,7 @@ class User
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("ssi", $this->name, $this->email, $this->idKanboard);
         $res = $stmt->execute();
-//        $sql = "UPDATE user_has_metadata SET  value=? WHERE user_id=? AND name=?";
-//        $stmt = $mysqli->prepare($sql);
-//        $stmt->bind_param("sis", $this->value_settore, $this->idKanboard, $this->settore);
-//        $res = $stmt->execute();
+//
 //        $sql = "UPDATE user_has_metadata SET value=?  WHERE user_id=? AND name=?";
 //        $stmt = $mysqli->prepare($sql);
 //        $stmt->bind_param("sis", $this->value_servizio, $this->idKanboard, $this->servizio);
@@ -246,8 +344,6 @@ class User
 //        $stmt->bind_param("sis", $this->value_ufficio, $this->idKanboard, $this->ufficio);
 //        $res = $stmt->execute();
         $mysqli->close();
-
-
     }
 
     public function createUser()
@@ -258,28 +354,8 @@ class User
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("sss", $this->username, $this->name, $this->email);
         $res = $stmt->execute();
-        $sql = "SELECT id FROM users WHERE username=?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("s", $this->username);
-        $res = $stmt->execute();
-        $res = $stmt->get_result();
-        $user = $res->fetch_assoc();
-        $this->setIdKanboard($user['id']);
-        $sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("iss", $this->idKanboard, $this->settore, $this->value_settore);
-        $res = $stmt->execute();
-        $sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("iss", $this->idKanboard, $this->servizio, $this->value_servizio);
-        $res = $stmt->execute();
-        $sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("iss", $this->idKanboard, $this->ufficio, $this->value_ufficio);
-        $res = $stmt->execute();
         $mysqli->close();
     }
-
 
     public function deleteUser($id_kan)
     {
@@ -294,149 +370,6 @@ class User
     }
 
 
-}
-
-
-class Settore
-{
-    private $formidSettore = 17;
-
-    public function __construct()
-    {
-
-    }
-
-    public function getFormidSettore()
-    {
-        return $this->formidSettore;
-    }
-
-
-    public function setFormidSettore(int $formidSettore)
-    {
-        $this->formidSettore = $formidSettore;
-    }
-
-    public function selectSettore()
-    {
-        $conn = new ConnectionSarala();
-        $mysqli = $conn->connect();
-        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("i", $this->formidSettore);
-        $res = $stmt->execute();
-        $res = $stmt->get_result();
-        $result = array();
-        foreach ($res as $lines) {
-            array_push($result, $lines["meta_value"]);
-        }
-        $mysqli->close();
-        return $result;
-
-    }
-}
-
-class Servizio
-{
-    private $formidServizio = 21;
-    private $metakeyServizio = 1;
-
-    public function __construct()
-    {
-
-    }
-
-    public function getFormidServizio()
-    {
-        return $this->formidServizio;
-    }
-
-
-    public function setFormidServizio(int $formidServizio)
-    {
-        $this->formidServizio = $formidServizio;
-    }
-
-    public function getMetakeyServizio(): int
-    {
-        return $this->metakeyServizio;
-    }
-
-    public function setMetakeyServizio(int $metakeyServizio)
-    {
-        $this->metakeyServizio = $metakeyServizio;
-    }
-
-    public function selectServizio()
-    {
-        $conn = new ConnectionSarala();
-        $mysqli = $conn->connect();
-        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=? and meta_key=?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("ii", $this->formidServizio, $this->metakeyServizio);
-        $res = $stmt->execute();
-        $res = $stmt->get_result();
-        $result = array();
-        foreach ($res as $lines) {
-            array_push($result, $lines["meta_value"]);
-        }
-        $mysqli->close();
-        return $result;
-
-    }
-}
-
-class Ufficio
-{
-    private $formidUfficio = 20;
-    private $metakeyUfficio = 4;
-
-    public function __construct()
-    {
-
-    }
-
-
-    public function getFormidUfficio()
-    {
-        return $this->formidUfficio;
-    }
-
-
-    public function setFormidUfficio(int $formidUfficio)
-    {
-        $this->formidUfficio = $formidUfficio;
-    }
-
-
-    public function getMetakeyUfficio()
-    {
-        return $this->metakeyUfficio;
-    }
-
-
-    public function setMetakeyUfficio(int $metakeyUfficio)
-    {
-        $this->metakeyUfficio = $metakeyUfficio;
-    }
-
-    public function selectUfficio()
-    {
-        $conn = new ConnectionSarala();
-        $mysqli = $conn->connect();
-        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=? and meta_key=?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("ii", $this->formidUfficio, $this->metakeyUfficio);
-        $res = $stmt->execute();
-        $res = $stmt->get_result();
-        $result = array();
-        foreach ($res as $lines) {
-            array_push($result, $lines["meta_value"]);
-        }
-        $mysqli->close();
-        return $result;
-
-    }
 }
 
 
