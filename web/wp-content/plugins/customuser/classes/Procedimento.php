@@ -25,9 +25,12 @@ function crea_procedimento()
             $ufficio = $last_entry[20];
             $procedure->setOwnerId(idProcessCreator::getProcedureOwnerId($settore, $servizio, $ufficio));
             $procedure->setPosition(1);
-            //$procedure->setDateCreated($entry_gforms[0]['date_created']);
-            //$procedure->setDateUpdated($entry_gforms[0]['date_updated']);
+
+            $procedure->setDateCreated(strtotime($last_entry['date_created']));
+            $procedure->setDateUpdated(strtotime($last_entry['date_updated']));
+
             $procedure->createProcedure();
+
         }
     }
 
@@ -83,7 +86,7 @@ function assign_dipendente()
             $procedimento->setTitle($value);
         }
     }
-   $array = array();
+    $array = array();
 
     foreach ($entry_gforms as $key => $value) {
         $pattern = "[^3.]";
@@ -94,7 +97,7 @@ function assign_dipendente()
 
     $procedimento->findTask();
     $procedimento->assignUsers();
-   // $procedimento->setIdProcedureForUsers($temp);
+    // $procedimento->setIdProcedureForUsers($temp);
     echo "<pre>";
     //print_r($procedimento->getIdProcedureForUsers());
 //    print_r($procedimento->getUsers());
@@ -124,6 +127,7 @@ class Procedimento
     private $owner_id;
     private $users;
     private $id_procedure_for_users;
+
     public function __construct()
     {
         $this->users = [];
@@ -424,7 +428,8 @@ class Procedimento
         $mysqli->close();
     }
 
-    public function findTask(){
+    public function findTask()
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
         $sql = "SELECT id FROM tasks WHERE title=?";
@@ -436,7 +441,9 @@ class Procedimento
         $this->setIdProcedure($result['id']);
         $mysqli->close();
     }
-    public function assignUsers(){
+
+    public function assignUsers()
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
         $sql = "INSERT INTO MAPP_task_users (task_id,user_id) VALUES(?,?)";
