@@ -70,6 +70,41 @@ function delete_procedimento()
 
 add_shortcode('post_deleteprocedimento', 'delete_procedimento');
 
+function assign_dipendente()
+{
+    $entry_gforms = GFAPI::get_entries(56)[0];
+
+    $procedimento = new Procedimento();
+    //$temp = array();
+    foreach ($entry_gforms as $key => $value) {
+        $pattern = "[^1.]";
+        if (preg_match($pattern, $key) && $value) {
+            //array_push($temp,$value);
+            $procedimento->setTitle($value);
+        }
+    }
+   $array = array();
+
+    foreach ($entry_gforms as $key => $value) {
+        $pattern = "[^3.]";
+        if (preg_match($pattern, $key) && $value) {
+            $procedimento->addUser($value);
+        }
+    }
+
+    $procedimento->findTask();
+    $procedimento->assignUsers();
+   // $procedimento->setIdProcedureForUsers($temp);
+    echo "<pre>";
+    //print_r($procedimento->getIdProcedureForUsers());
+//    print_r($procedimento->getUsers());
+//    print_r($procedimento->getIdProcedure());
+    echo "</pre>";
+
+}
+
+add_shortcode('post_assigndipendente', 'assign_dipendente');
+
 class Procedimento
 {
     private $id_procedure;
@@ -87,10 +122,12 @@ class Procedimento
     private $position;
     private $old_title;
     private $owner_id;
-
+    private $users;
+    private $id_procedure_for_users;
     public function __construct()
     {
-
+        $this->users = [];
+        $this->id_procedure_for_users = [];
     }
 
     /**
@@ -107,6 +144,38 @@ class Procedimento
     public function setOwnerId($owner_id): void
     {
         $this->owner_id = $owner_id;
+    }
+
+    /**
+     * @return array
+     */
+    public function getIdProcedureForUsers(): array
+    {
+        return $this->id_procedure_for_users;
+    }
+
+    /**
+     * @param array $id_procedure_for_users
+     */
+    public function setIdProcedureForUsers(array $id_procedure_for_users): void
+    {
+        $this->id_procedure_for_users = $id_procedure_for_users;
+    }
+
+    /**
+     * @return array
+     */
+    public function getUsers(): array
+    {
+        return $this->users;
+    }
+
+    /**
+     * @param array $users
+     */
+    public function setUsers(array $users)
+    {
+        $this->users = $users;
     }
 
 
@@ -355,6 +424,31 @@ class Procedimento
         $mysqli->close();
     }
 
+    public function findTask(){
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "SELECT id FROM tasks WHERE title=?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("s", $this->title);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = $res->fetch_assoc();
+        $this->setIdProcedure($result['id']);
+        $mysqli->close();
+    }
+    public function assignUsers(){
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "INSERT INTO MAPP_task_users (task_id,user_id) VALUES(?,?)";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($this->users as $userId) {
+            $stmt->bind_param("ii", $this->id_procedure, $userId);
+            $res = $stmt->execute();
+            print_r($userId);
+        }
+        $mysqli->close();
+    }
+
     /**
      * @return mixed
      */
@@ -371,5 +465,18 @@ class Procedimento
         $this->old_title = $oldTitle;
     }
 
+    public function addUser($value)
+    {
+        $conn = new ConnectionSarala();
+        $mysqli = $conn->connect();
+        $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key='id_kanboard' AND user_id=?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("i", $value);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = $res->fetch_assoc();
+        array_push($this->users, $result['meta_value']);
+        $mysqli->close();
 
+    }
 }

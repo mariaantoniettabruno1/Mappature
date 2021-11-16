@@ -2,7 +2,7 @@
 include_once 'Connection.php';
 include_once 'ConnectionSarala.php';
 
-function visualize_fase()
+function create_fase()
 {
     $entry_gforms = GFAPI::get_entries(23)[0];
 
@@ -26,7 +26,7 @@ function visualize_fase()
 
 }
 
-add_shortcode('post_fase', 'visualize_fase');
+add_shortcode('post_fase', 'create_fase');
 
 function update_fase()
 {
@@ -294,6 +294,7 @@ class Fase
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
         array_push($this->users, $result['meta_value']);
+        $mysqli->close();
 
     }
 

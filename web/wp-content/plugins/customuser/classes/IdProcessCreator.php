@@ -8,7 +8,7 @@ class IdProcessCreator
         $mysqli = $conn->connect();
 
         $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key ='id_kanboard'
-                                      AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value='Apicale')
+                                      AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value='Dirigente')
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value=?)";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $settore_processo);
@@ -25,7 +25,7 @@ class IdProcessCreator
         $mysqli = $conn->connect();
 
         $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key ='id_kanboard'
-                                      AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value='Responsabile Processo')
+                                      AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value='PO')
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value=?)
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value=?)
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value=?)";

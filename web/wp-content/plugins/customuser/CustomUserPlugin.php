@@ -76,7 +76,7 @@ include_once 'includes/ConnectionSarala.php';
 include_once 'classes/Processo.php';
 include_once 'classes/Procedimento.php';
 include_once 'classes/Fase.php';
-include_once 'classes/Atto.php';
+include_once 'classes/Attività.php';
 include_once 'classes/OrgChartProcess.php';
 include_once 'classes/Area.php';
 include_once 'classes/Servizio.php';
@@ -120,9 +120,13 @@ function on_profile_update($user_id)
         } else {
             $user->createUser();
             $idKanboard = $user->getIdKanboard();
-            update_user_meta($user_id, 'id_kanboard', $idKanboard);
+            print_r($idKanboard);
+            add_user_meta($user_id, 'id_kanboard', $idKanboard);
         }
-
+        echo "<pre>";
+        print_r($user_meta);
+        echo "</pre>";
+        throw new Exception();
     }
 }
 
@@ -161,6 +165,7 @@ function add_user_metadata()
                     $old_value_servizio = $value;
                 }
             }
+
             foreach ($entry_gforms as $key => $value) {
                 $pattern = "[^7.]";
                 if (preg_match($pattern, $key) && $value && $value!= '') {
@@ -172,22 +177,20 @@ function add_user_metadata()
                 }
             }
 
-//            update_user_meta($wp_userid, 'servizio', implode(",",$array_servizio));
-//            $user_meta = array(get_user_meta($wp_userid));
-//            array_push($user_meta[0]['servizio'],$array_servizio);
-//            //delete_user_meta($wp_userid,['servizio']);
-//            $servizio->setServizio(implode(",",$array_servizio));
-//            $servizio->setUserServizio($user_meta[0]['id_kanboard'][0]);
-//
-//            update_user_meta($wp_userid, 'ufficio', $array_ufficio);
-//            $user_meta = array(get_user_meta($wp_userid));
-//            array_push($user_meta[0]['ufficio'],$array_ufficio);
-//            //delete_user_meta($wp_userid,['ufficio']);
-//            $ufficio->setUfficio(implode(",",$array_ufficio));
-//            $ufficio->setUserUfficio($user_meta[0]['id_kanboard'][0]);
+            update_user_meta($wp_userid, 'servizio', implode(",",$array_servizio));
+            $user_meta = array(get_user_meta($wp_userid));
+            array_push($user_meta[0]['servizio'],$array_servizio);
+            //delete_user_meta($wp_userid,['servizio']);
+            $servizio->setServizio(implode(",",$array_servizio));
+            $servizio->setUserServizio($user_meta[0]['id_kanboard'][0]);
+
+            update_user_meta($wp_userid, 'ufficio', implode(",",$array_ufficio));
+            $user_meta = array(get_user_meta($wp_userid));
+            array_push($user_meta[0]['ufficio'],$array_ufficio);
+            $ufficio->setUfficio(implode(",",$array_ufficio));
+            $ufficio->setUserUfficio($user_meta[0]['id_kanboard'][0]);
 
             echo "<pre>";
-            print_r($array_servizio);
             print_r($user_meta);
             echo "</pre>";
 
@@ -267,7 +270,7 @@ include_once 'includes/ConnectionSarala.php';
 include_once 'classes/Processo.php';
 include_once 'classes/Procedimento.php';
 include_once 'classes/Fase.php';
-include_once 'classes/Atto.php';
+include_once 'classes/Attività.php';
 include_once 'classes/OrgChartProcess.php';
 include_once 'classes/Area.php';
 include_once 'classes/Servizio.php';
@@ -354,6 +357,13 @@ class User
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("sss", $this->username, $this->name, $this->email);
         $res = $stmt->execute();
+        $sql = "SELECT id FROM users WHERE username=? ORDER BY id DESC LIMIT 1";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("s", $this->username);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = $res->fetch_assoc();
+        $this->setIdKanboard($result['id']);
         $mysqli->close();
     }
 
