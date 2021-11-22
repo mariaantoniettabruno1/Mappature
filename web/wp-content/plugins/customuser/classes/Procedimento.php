@@ -37,6 +37,30 @@ function crea_procedimento()
 }
 
 add_shortcode('post_procedimento', 'crea_procedimento');
+function crea_procedimento_postuma()
+{
+    $last_entry = GFAPI::get_entries(2)[0];
+    $procedure = new Procedimento();
+
+    $procedure->setTitle($last_entry[2]);
+    $procedure->setIdForm($last_entry['form_id']);
+    $procedure->setNameProcess($last_entry[17]);
+    $settore = $last_entry[18];
+    $procedure->setCreatorId(idProcessCreator::getProcessOwnerId($settore));
+    $servizio = $last_entry[19];
+    $ufficio = $last_entry[20];
+    $procedure->setOwnerId(idProcessCreator::getProcedureOwnerId($settore, $servizio, $ufficio));
+    $procedure->setPosition(1);
+
+    $procedure->setDateCreated(strtotime($last_entry['date_created']));
+    $procedure->setDateUpdated(strtotime($last_entry['date_updated']));
+
+    $procedure->createProcedure();
+
+
+}
+
+add_shortcode('post_procedimentopostuma', 'crea_procedimento_postuma');
 
 
 function update_procedimento()
@@ -79,24 +103,30 @@ function assign_dipendente()
 
     $procedimento = new Procedimento();
     //$temp = array();
+    $old_value = '';
     foreach ($entry_gforms as $key => $value) {
         $pattern = "[^1.]";
         if (preg_match($pattern, $key) && $value) {
             //array_push($temp,$value);
             $procedimento->setTitle($value);
+            foreach ($entry_gforms as $key => $value) {
+                $pattern = "[^3.]";
+                if (preg_match($pattern, $key) && $value) {
+                    if ($old_value != $value) {
+                        $procedimento->addUser($value);
+                        $old_value = $value;
+                    }
+
+
+                }
+            }
+            $procedimento->findTask();
+            $procedimento->assignUsers();
         }
     }
     $array = array();
 
-    foreach ($entry_gforms as $key => $value) {
-        $pattern = "[^3.]";
-        if (preg_match($pattern, $key) && $value) {
-            $procedimento->addUser($value);
-        }
-    }
 
-    $procedimento->findTask();
-    $procedimento->assignUsers();
     // $procedimento->setIdProcedureForUsers($temp);
     echo "<pre>";
     //print_r($procedimento->getIdProcedureForUsers());
@@ -413,10 +443,12 @@ class Procedimento
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("is", $creatorId, $value);
         $res = $stmt->execute();
-        print_r($res);
+
         $mysqli->close();
     }
-    public function aggiornaOwnerIdProcedimento($ownerId,$projectId){
+
+    public function aggiornaOwnerIdProcedimento($ownerId, $projectId)
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
         $sql = "UPDATE tasks SET owner_id=? WHERE project_id=?";
@@ -461,7 +493,6 @@ class Procedimento
         foreach ($this->users as $userId) {
             $stmt->bind_param("ii", $this->id_procedure, $userId);
             $res = $stmt->execute();
-            print_r($userId);
         }
         $mysqli->close();
     }

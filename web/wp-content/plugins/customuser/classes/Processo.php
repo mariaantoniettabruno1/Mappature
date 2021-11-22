@@ -58,7 +58,7 @@ function update_processo()
 //    $process->updateProcess();
 //    $result = GFAPI::update_entry($entry, $id_current_form);
     $entry_gforms = GFAPI::get_entries(2);
-    print_r("Sono qui dentro");
+
     /* $procedure = new Procedimento();
      $procedure->setTitle($entry_gforms[0][2]);
      $procedure->setIdForm($entry_gforms[0]['form_id']);

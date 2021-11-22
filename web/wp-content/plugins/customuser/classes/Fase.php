@@ -5,11 +5,6 @@ include_once 'ConnectionSarala.php';
 function create_fase()
 {
     $entry_gforms = GFAPI::get_entries(23)[0];
-
-    /* echo "<pre>";
-     print_r(GFAPI::get_entries(23));
-     echo "</pre>";*/
-
     $fase = new Fase();
     $fase->setTitle($entry_gforms[1]);
     $fase->setNameProcedure($entry_gforms[3]);
@@ -27,6 +22,29 @@ function create_fase()
 }
 
 add_shortcode('post_fase', 'create_fase');
+
+function create_fase_postuma()
+{
+    $entry_gforms = GFAPI::get_entries(60)[0];
+    $fase = new Fase();
+    $fase->setTitle($entry_gforms[1]);
+    $fase->setNameProcedure($entry_gforms[3]);
+    $fase->setNameProcess($entry_gforms[2]);
+    $fase->setIdForm($entry_gforms['form_id']);
+    $fase->setId($entry_gforms['id']);
+    foreach ($entry_gforms as $key => $value) {
+        $pattern = "[^7.]";
+        if (preg_match($pattern, $key) && $value) {
+            $fase->addUser($value);
+        }
+    }
+    $fase->createFase();
+
+
+
+}
+
+add_shortcode('post_fasepostuma', 'create_fase_postuma');
 
 function update_fase()
 {

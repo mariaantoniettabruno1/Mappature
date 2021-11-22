@@ -54,7 +54,6 @@ class IdProcessCreator
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
         $mysqli->close();
-        print_r($result['meta_value']);
         return $result['meta_value'];
 
     }

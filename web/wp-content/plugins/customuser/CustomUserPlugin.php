@@ -84,6 +84,7 @@ include_once 'classes/Servizio.php';
 include_once 'classes/Ufficio.php';
 include_once 'shortcodes/SCOrgChartProcess.php';
 
+
 add_action('edit_user_profile_update', 'save_extra_user_field');
 add_action('user_register', 'save_extra_user_field');
 
@@ -122,7 +123,6 @@ function on_profile_update($user_id)
         } else {
             $user->createUser();
             $idKanboard = $user->getIdKanboard();
-            print_r($idKanboard);
             update_user_meta($user_id, 'id_kanboard', $idKanboard);
         }
 
@@ -180,7 +180,7 @@ function add_user_metadata()
             update_user_meta($wp_userid, 'servizio', implode(",", $array_servizio));
             $user_meta = array(get_user_meta($wp_userid));
             array_push($user_meta[0]['servizio'], $array_servizio);
-            //delete_user_meta($wp_userid,['servizio']);
+
             $servizio->setServizio(implode(",", $array_servizio));
             $servizio->setUserServizio($user_meta[0]['id_kanboard'][0]);
 
@@ -241,14 +241,14 @@ function edit_user_metadata()
             update_user_meta($wp_userid, 'servizio', $array_servizio);
             $user_meta = array(get_user_meta($wp_userid));
             array_push($user_meta[0]['servizio'], $array_servizio);
-            //delete_user_meta($wp_userid,['servizio']);
+
             $servizio->setServizio(implode(",", $array_servizio));
             $servizio->editUserServizio($user_meta[0]['id_kanboard'][0]);
 
             update_user_meta($wp_userid, 'ufficio', $array_ufficio);
             $user_meta = array(get_user_meta($wp_userid));
             array_push($user_meta[0]['ufficio'], $array_ufficio);
-            //delete_user_meta($wp_userid,['ufficio']);
+
             $ufficio->setUfficio(implode(",", $array_ufficio));
             $ufficio->editUserUfficio($user_meta[0]['id_kanboard'][0]);
 
@@ -265,24 +265,22 @@ function edit_user_metadata()
                 if ($entry_gforms_processo[$i][2] == $area->getArea()) {
 
                     if (preg_match($pattern, $key) && $value && $value != '') {
-                       $id_processo = Processo::aggiornaProcesso($ownerId, $value);
-                        Procedimento::aggiornaOwnerIdProcedimento($ownerId,$id_processo);
+                        $id_processo = Processo::aggiornaProcesso($ownerId, $value);
+                        Procedimento::aggiornaOwnerIdProcedimento($ownerId, $id_processo);
                     }
                 }
             }
         }
-    }
-
-    elseif($user_meta[0]['Ruolo'][0] == 'PO'){
+    } elseif ($user_meta[0]['Ruolo'][0] == 'PO') {
         $creatorId = $user_meta[0]['id_kanboard'][0];
         $entry_gforms_procedimento = GFAPI::get_entries(50);
         for ($i = 0; $i < sizeof($entry_gforms_procedimento); $i++) {
             foreach ($entry_gforms_procedimento[$i] as $key => $value) {
                 $pattern = "[^22.]";
                 if ($entry_gforms_procedimento[$i][18] == $area->getArea()) {
-                    print_r("Sono nel primo if");
-                   if (preg_match($pattern, $key) && $value && $value != '') {
-                       print_r("Sono nel secondo if");
+
+                    if (preg_match($pattern, $key) && $value && $value != '') {
+
                         Procedimento::aggiornaProcedimento($creatorId, $value);
                     }
                 }
@@ -291,11 +289,9 @@ function edit_user_metadata()
     }
 
 
-
 }
 
 add_shortcode('post_editusermetadata', 'edit_user_metadata');
-
 
 class User
 {
@@ -416,11 +412,7 @@ class User
         $res = $stmt->execute();
         $mysqli->close();
     }
-
-
 }
-
-
 ?>
 
 

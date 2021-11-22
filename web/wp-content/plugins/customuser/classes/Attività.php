@@ -26,6 +26,17 @@ function create_attivita()
 
 add_shortcode('post_createattivita', 'create_attivita');
 
+function create_attivita_postuma()
+{
+    $entry_gforms = GFAPI::get_entries(59)[0];
+    echo "<pre>";
+    print_r($entry_gforms);
+    echo "</pre>";
+
+}
+
+add_shortcode('post_createattivitapostuma', 'create_attivita_postuma');
+
 function update_attivita()
 {
     $entry_gforms = GFAPI::get_entries(41);
