@@ -71,6 +71,7 @@ function extra_user_fields($user)
     <?php
 
 }
+
 include_once 'includes/Connection.php';
 include_once 'includes/ConnectionSarala.php';
 include_once 'classes/Processo.php';
@@ -113,6 +114,7 @@ function on_profile_update($user_id)
         $user->setEmail($user_data[0]->data->user_email);
         $user->setName($user_meta[0]['first_name'][0]);
         $user->setUsername($user_data[0]->data->user_login);
+        $user->setPassword($user_data[0]->data->user_pass);
         $user->setIdKanboard($user_meta[0]['id_kanboard'][0]);
         $idKanboard = $user->getIdKanboard();
         if ($idKanboard != NULL) {
@@ -121,12 +123,10 @@ function on_profile_update($user_id)
             $user->createUser();
             $idKanboard = $user->getIdKanboard();
             print_r($idKanboard);
-            add_user_meta($user_id, 'id_kanboard', $idKanboard);
+            update_user_meta($user_id, 'id_kanboard', $idKanboard);
         }
-        echo "<pre>";
-        print_r($user_meta);
-        echo "</pre>";
-        throw new Exception();
+
+
     }
 }
 
@@ -152,47 +152,44 @@ function add_user_metadata()
     $old_value_ufficio = '';
     foreach ($entry_gforms as $key => $value) {
         $pattern = "[^1.]";
-        if (preg_match($pattern, $key) && $value && $value!= '') {
+        if (preg_match($pattern, $key) && $value && $value != '') {
             $wp_userid = $value;
             update_user_meta($value, 'area', $area->getArea());
             $user_meta = array(get_user_meta($value));
             $area->setUserArea($user_meta[0]['id_kanboard'][0]);
             foreach ($entry_gforms as $key => $value) {
                 $pattern = "[^6.]";
-                if (preg_match($pattern, $key) && $value && $value!= '') {
-                    if($old_value_servizio!=$value)
-                    array_push($array_servizio,$value);
+                if (preg_match($pattern, $key) && $value && $value != '') {
+                    if ($old_value_servizio != $value)
+                        array_push($array_servizio, $value);
                     $old_value_servizio = $value;
                 }
             }
 
             foreach ($entry_gforms as $key => $value) {
                 $pattern = "[^7.]";
-                if (preg_match($pattern, $key) && $value && $value!= '') {
-                    if($old_value_ufficio!=$value){
-                        array_push($array_ufficio,$value);
+                if (preg_match($pattern, $key) && $value && $value != '') {
+                    if ($old_value_ufficio != $value) {
+                        array_push($array_ufficio, $value);
                     }
                     $old_value_ufficio = $value;
 
                 }
             }
 
-            update_user_meta($wp_userid, 'servizio', implode(",",$array_servizio));
+            update_user_meta($wp_userid, 'servizio', implode(",", $array_servizio));
             $user_meta = array(get_user_meta($wp_userid));
-            array_push($user_meta[0]['servizio'],$array_servizio);
+            array_push($user_meta[0]['servizio'], $array_servizio);
             //delete_user_meta($wp_userid,['servizio']);
-            $servizio->setServizio(implode(",",$array_servizio));
+            $servizio->setServizio(implode(",", $array_servizio));
             $servizio->setUserServizio($user_meta[0]['id_kanboard'][0]);
 
-            update_user_meta($wp_userid, 'ufficio', implode(",",$array_ufficio));
+            update_user_meta($wp_userid, 'ufficio', implode(",", $array_ufficio));
             $user_meta = array(get_user_meta($wp_userid));
-            array_push($user_meta[0]['ufficio'],$array_ufficio);
-            $ufficio->setUfficio(implode(",",$array_ufficio));
+            array_push($user_meta[0]['ufficio'], $array_ufficio);
+            $ufficio->setUfficio(implode(",", $array_ufficio));
             $ufficio->setUserUfficio($user_meta[0]['id_kanboard'][0]);
 
-            echo "<pre>";
-            print_r($user_meta);
-            echo "</pre>";
 
         }
 
@@ -216,24 +213,24 @@ function edit_user_metadata()
     $old_value_ufficio = '';
     foreach ($entry_gforms as $key => $value) {
         $pattern = "[^1.]";
-        if (preg_match($pattern, $key) && $value && $value!= '') {
+        if (preg_match($pattern, $key) && $value && $value != '') {
             $wp_userid = $value;
             update_user_meta($value, 'area', $area->getArea());
             $user_meta = array(get_user_meta($value));
             $area->editUserArea($user_meta[0]['id_kanboard'][0]);
             foreach ($entry_gforms as $key => $value) {
                 $pattern = "[^4.]";
-                if (preg_match($pattern, $key) && $value && $value!= '') {
-                    if($old_value_servizio!=$value)
-                        array_push($array_servizio,$value);
+                if (preg_match($pattern, $key) && $value && $value != '') {
+                    if ($old_value_servizio != $value)
+                        array_push($array_servizio, $value);
                     $old_value_servizio = $value;
                 }
             }
             foreach ($entry_gforms as $key => $value) {
                 $pattern = "[^6.]";
-                if (preg_match($pattern, $key) && $value && $value!= '') {
-                    if($old_value_ufficio!=$value){
-                        array_push($array_ufficio,$value);
+                if (preg_match($pattern, $key) && $value && $value != '') {
+                    if ($old_value_ufficio != $value) {
+                        array_push($array_ufficio, $value);
 
                     }
                     $old_value_ufficio = $value;
@@ -243,39 +240,62 @@ function edit_user_metadata()
 
             update_user_meta($wp_userid, 'servizio', $array_servizio);
             $user_meta = array(get_user_meta($wp_userid));
-            array_push($user_meta[0]['servizio'],$array_servizio);
+            array_push($user_meta[0]['servizio'], $array_servizio);
             //delete_user_meta($wp_userid,['servizio']);
-            $servizio->setServizio(implode(",",$array_servizio));
+            $servizio->setServizio(implode(",", $array_servizio));
             $servizio->editUserServizio($user_meta[0]['id_kanboard'][0]);
 
             update_user_meta($wp_userid, 'ufficio', $array_ufficio);
             $user_meta = array(get_user_meta($wp_userid));
-            array_push($user_meta[0]['ufficio'],$array_ufficio);
+            array_push($user_meta[0]['ufficio'], $array_ufficio);
             //delete_user_meta($wp_userid,['ufficio']);
-            $ufficio->setUfficio(implode(",",$array_ufficio));
+            $ufficio->setUfficio(implode(",", $array_ufficio));
             $ufficio->editUserUfficio($user_meta[0]['id_kanboard'][0]);
 
         }
 
-//
     }
+
+    if ($user_meta[0]['Ruolo'][0] == 'Dirigente') {
+        $ownerId = $user_meta[0]['id_kanboard'][0];
+        $entry_gforms_processo = GFAPI::get_entries(1);
+        for ($i = 0; $i < sizeof($entry_gforms_processo); $i++) {
+            foreach ($entry_gforms_processo[$i] as $key => $value) {
+                $pattern = "[^9.]";
+                if ($entry_gforms_processo[$i][2] == $area->getArea()) {
+
+                    if (preg_match($pattern, $key) && $value && $value != '') {
+                       $id_processo = Processo::aggiornaProcesso($ownerId, $value);
+                        Procedimento::aggiornaOwnerIdProcedimento($ownerId,$id_processo);
+                    }
+                }
+            }
+        }
+    }
+
+    elseif($user_meta[0]['Ruolo'][0] == 'PO'){
+        $creatorId = $user_meta[0]['id_kanboard'][0];
+        $entry_gforms_procedimento = GFAPI::get_entries(50);
+        for ($i = 0; $i < sizeof($entry_gforms_procedimento); $i++) {
+            foreach ($entry_gforms_procedimento[$i] as $key => $value) {
+                $pattern = "[^22.]";
+                if ($entry_gforms_procedimento[$i][18] == $area->getArea()) {
+                    print_r("Sono nel primo if");
+                   if (preg_match($pattern, $key) && $value && $value != '') {
+                       print_r("Sono nel secondo if");
+                        Procedimento::aggiornaProcedimento($creatorId, $value);
+                    }
+                }
+            }
+        }
+    }
+
 
 
 }
 
 add_shortcode('post_editusermetadata', 'edit_user_metadata');
 
-include_once 'includes/Connection.php';
-include_once 'includes/ConnectionSarala.php';
-include_once 'classes/Processo.php';
-include_once 'classes/Procedimento.php';
-include_once 'classes/Fase.php';
-include_once 'classes/Attività.php';
-include_once 'classes/OrgChartProcess.php';
-include_once 'classes/Area.php';
-include_once 'classes/Servizio.php';
-include_once 'classes/Ufficio.php';
-include_once 'shortcodes/SCOrgChartProcess.php';
 
 class User
 {
@@ -283,6 +303,24 @@ class User
     private $email;
     private $name;
     private $idKanboard;
+    private $password;
+
+    /**
+     * @return mixed
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param mixed $password
+     */
+    public function setPassword($password): void
+    {
+        $this->password = $password;
+    }
+
 
     public function setIdKanboard($idKanboard)
     {
@@ -333,9 +371,9 @@ class User
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "UPDATE users SET name=?, email=? WHERE id=?";
+        $sql = "UPDATE users SET name=?, email=?, password=? WHERE id=?";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("ssi", $this->name, $this->email, $this->idKanboard);
+        $stmt->bind_param("sssi", $this->name, $this->email, $this->password, $this->idKanboard);
         $res = $stmt->execute();
 //
 //        $sql = "UPDATE user_has_metadata SET value=?  WHERE user_id=? AND name=?";
@@ -353,9 +391,9 @@ class User
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "INSERT INTO users (username,name,email) VALUES(?,?,?)";
+        $sql = "INSERT INTO users (username,name,email,password) VALUES(?,?,?,?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("sss", $this->username, $this->name, $this->email);
+        $stmt->bind_param("ssss", $this->username, $this->name, $this->email, $this->password);
         $res = $stmt->execute();
         $sql = "SELECT id FROM users WHERE username=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);

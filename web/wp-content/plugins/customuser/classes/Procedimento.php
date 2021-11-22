@@ -405,15 +405,25 @@ class Procedimento
 
     }
 
-    public function updateProcedure()
+    public function aggiornaProcedimento($creatorId, $value)
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-
-        $sql = "UPDATE tasks SET title=? WHERE title=? ORDER BY id DESC LIMIT 1";
+        $sql = "UPDATE tasks SET creator_id=? WHERE title=?";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("ss", $this->title, $this->old_title);
+        $stmt->bind_param("is", $creatorId, $value);
         $res = $stmt->execute();
+        print_r($res);
+        $mysqli->close();
+    }
+    public function aggiornaOwnerIdProcedimento($ownerId,$projectId){
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "UPDATE tasks SET owner_id=? WHERE project_id=?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("ii", $ownerId, $projectId);
+        $res = $stmt->execute();
+
         $mysqli->close();
     }
 
