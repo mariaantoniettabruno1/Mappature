@@ -256,6 +256,7 @@ function edit_user_metadata()
 
     }
 
+
     if ($user_meta[0]['Ruolo'][0] == 'Dirigente') {
         $ownerId = $user_meta[0]['id_kanboard'][0];
         $entry_gforms_processo = GFAPI::get_entries(1);
@@ -268,6 +269,10 @@ function edit_user_metadata()
                         $id_processo = Processo::aggiornaProcesso($ownerId, $value);
                         Procedimento::aggiornaOwnerIdProcedimento($ownerId, $id_processo);
                     }
+                }
+                else{
+                    $id_processo = Processo::aggiornaProcesso(null, $value);
+                    Procedimento::aggiornaOwnerIdProcedimento(null, $id_processo);
                 }
             }
         }
@@ -283,6 +288,9 @@ function edit_user_metadata()
 
                         Procedimento::aggiornaProcedimento($creatorId, $value);
                     }
+                }
+                else{
+                    Procedimento::aggiornaProcedimento(null, $value);
                 }
             }
         }
