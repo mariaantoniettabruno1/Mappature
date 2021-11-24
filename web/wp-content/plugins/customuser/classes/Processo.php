@@ -9,7 +9,6 @@ include_once "IdProcessCreator.php";
 function create_processo()
 {
     $lastEntry = GFAPI::get_entries(1)[0];
-
     $processo = new Processo();
     foreach ($lastEntry as $key => $value) {
         $pattern = "[^9.]";
@@ -17,8 +16,13 @@ function create_processo()
 
             $processo->setNomeProcesso($value);
             $processo->setIdForm($lastEntry['form_id']);
-            $processo->setSettoreProcesso($lastEntry[2]);
-            $id_owner = idProcessCreator::getProcessOwnerId($processo->getSettoreProcesso());
+            $processo->setAreaProcesso($lastEntry[2]);
+            $processo->setServizioProcesso($lastEntry[3]);
+            $processo->setUfficioProcesso($lastEntry[4]);
+            $id_owner = idProcessCreator::getProcessOwnerId($processo->getAreaProcesso());
+            if ($id_owner == NULL || $id_owner == '') {
+                $id_owner = idProcessCreator::getProcedureOwnerId($processo->getAreaProcesso(), $processo->getServizioProcesso(), $processo->getUfficioProcesso());
+            }
             $processo->setIdUser($id_owner);
             $processo->setRuoloUser('project manager');
             $processo->creaProcesso();
@@ -96,7 +100,9 @@ class Processo
     private $token = '';
     private $swimlanes_name = "Corsia predefinita";
     private $vecchio_nome_processo;
-    private $settore_processo;
+    private $area_processo;
+    private $servizio_processo;
+    private $ufficio_processo;
 
     /**
      * @return mixed
@@ -358,17 +364,49 @@ class Processo
     /**
      * @return mixed
      */
-    public function getSettoreProcesso()
+    public function getAreaProcesso()
     {
-        return $this->settore_processo;
+        return $this->area_processo;
     }
 
     /**
-     * @param mixed $settore_processo
+     * @param mixed $area_processo
      */
-    public function setSettoreProcesso($settore_processo): void
+    public function setAreaProcesso($area_processo): void
     {
-        $this->settore_processo = $settore_processo;
+        $this->area_processo = $area_processo;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getServizioProcesso()
+    {
+        return $this->servizio_processo;
+    }
+
+    /**
+     * @param mixed $servizio_processo
+     */
+    public function setServizioProcesso($servizio_processo): void
+    {
+        $this->servizio_processo = $servizio_processo;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUfficioProcesso()
+    {
+        return $this->ufficio_processo;
+    }
+
+    /**
+     * @param mixed $ufficio_processo
+     */
+    public function setUfficioProcesso($ufficio_processo): void
+    {
+        $this->ufficio_processo = $ufficio_processo;
     }
 
 
@@ -458,7 +496,7 @@ class Processo
 
     }
 
-    public function aggiornaProcesso($ownerId,$nome_processo)
+    public function aggiornaProcesso($ownerId, $nome_processo)
     {
 
         $conn = new Connection();
@@ -472,7 +510,7 @@ class Processo
 //        $this->setIdProcess($process['id']);
         $sql = "UPDATE projects SET owner_id=? WHERE name=? ";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("is", $ownerId,$nome_processo);
+        $stmt->bind_param("is", $ownerId, $nome_processo);
         $res = $stmt->execute();
 
         $sql = "SELECT id FROM projects WHERE name=?";

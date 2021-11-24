@@ -5,10 +5,11 @@ include_once 'ConnectionSarala.php';
 function create_fase()
 {
     $entry_gforms = GFAPI::get_entries(23)[0];
+
     $fase = new Fase();
     $fase->setTitle($entry_gforms[1]);
-    $fase->setNameProcedure($entry_gforms[3]);
-    $fase->setNameProcess($entry_gforms[2]);
+    $fase->setNameProcedure($entry_gforms[11]);
+    $fase->setNameProcess($entry_gforms[10]);
     $fase->setIdForm($entry_gforms['form_id']);
     $fase->setId($entry_gforms['id']);
     foreach ($entry_gforms as $key => $value) {
@@ -260,6 +261,16 @@ class Fase
         $sql = "DELETE FROM subtasks WHERE title=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $dbTitle);
+        $res = $stmt->execute();
+        $mysqli->close();
+    }
+
+    public function aggiornaFase($id){
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "UPDATE MAPP_subtask_users SET user_id=? WHERE user_id=?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("ii", $id, $id);
         $res = $stmt->execute();
         $mysqli->close();
     }

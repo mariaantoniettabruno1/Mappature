@@ -124,19 +124,44 @@ function assign_dipendente()
             $procedimento->assignUsers();
         }
     }
-    $array = array();
 
-
-    // $procedimento->setIdProcedureForUsers($temp);
-    echo "<pre>";
-    //print_r($procedimento->getIdProcedureForUsers());
-//    print_r($procedimento->getUsers());
-//    print_r($procedimento->getIdProcedure());
-    echo "</pre>";
 
 }
 
 add_shortcode('post_assigndipendente', 'assign_dipendente');
+
+function edit_assign_dipendente()
+{
+    $entry_gforms = GFAPI::get_entries(63)[0];
+
+    $procedimento = new Procedimento();
+    //$temp = array();
+    $old_value = '';
+    /*foreach ($entry_gforms as $key => $value) {
+        $pattern = "[^1.]";
+        if (preg_match($pattern, $key) && $value) {
+            //array_push($temp,$value);
+            $procedimento->setTitle($value);
+            foreach ($entry_gforms as $key => $value) {
+                $pattern = "[^3.]";
+                if (preg_match($pattern, $key) && $value) {
+                    if ($old_value != $value) {
+                        $procedimento->addUser($value);
+                        $old_value = $value;
+                    }
+
+
+                }
+            }
+            $procedimento->findTask();
+            $procedimento->editAssignUsers();
+        }
+    }*/
+
+
+}
+
+add_shortcode('post_editassigndipendente', 'edit_assign_dipendente');
 
 class Procedimento
 {
@@ -439,7 +464,7 @@ class Procedimento
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "UPDATE tasks SET creator_id=? WHERE title=?";
+        $sql = "UPDATE tasks SET owner_id=? WHERE title=?";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("is", $creatorId, $value);
         $res = $stmt->execute();
@@ -447,13 +472,13 @@ class Procedimento
         $mysqli->close();
     }
 
-    public function aggiornaOwnerIdProcedimento($ownerId, $projectId)
+    public function aggiornaOwnerIdProcedimento($creatorId, $projectId)
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "UPDATE tasks SET owner_id=? WHERE project_id=?";
+        $sql = "UPDATE tasks SET creator_id=? WHERE project_id=?";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("ii", $ownerId, $projectId);
+        $stmt->bind_param("ii", $creatorId, $projectId);
         $res = $stmt->execute();
 
         $mysqli->close();
@@ -489,6 +514,18 @@ class Procedimento
         $conn = new Connection();
         $mysqli = $conn->connect();
         $sql = "INSERT INTO MAPP_task_users (task_id,user_id) VALUES(?,?)";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($this->users as $userId) {
+            $stmt->bind_param("ii", $this->id_procedure, $userId);
+            $res = $stmt->execute();
+        }
+        $mysqli->close();
+    }
+    public function editAssignUsers()
+    {
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "UPDATE MAPP_task_users SET user_id=? WHERE task_id=?";
         $stmt = $mysqli->prepare($sql);
         foreach ($this->users as $userId) {
             $stmt->bind_param("ii", $this->id_procedure, $userId);

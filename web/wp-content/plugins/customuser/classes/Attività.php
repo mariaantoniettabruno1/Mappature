@@ -4,22 +4,25 @@ include_once 'ConnectionSarala.php';
 
 function create_attivita()
 {
-    $entry_gforms = GFAPI::get_entries(24);
+    $entry_gforms = GFAPI::get_entries(24)[0];
     $atto = new Attività();
-    $atto->setTitleAttivita($entry_gforms[0][1]);
-    $atto->setNameProcedureAttivita($entry_gforms[0][3]);
-    $atto->setNameProcessAttivita($entry_gforms[0][2]);
-    $atto->setIdFormAttivita($entry_gforms[0]['form_id']);
-    $atto->setIdAttivita($entry_gforms[0]['id']);
+    $atto->setTitleAttivita($entry_gforms[1]);
+    $atto->setNameProcedureAttivita($entry_gforms[3]);
+    $atto->setNameProcessAttivita($entry_gforms[2]);
+    $atto->setIdFormAttivita($entry_gforms['form_id']);
+    $atto->setIdAttivita($entry_gforms['id']);
 
-   /*foreach ($entry_gforms[0] as $key => $value){
-        $pattern = "[^9.]";
-        if (preg_match($pattern, $key) && $value) {
-           $atto->setUserIdAtto(idProcessCreator::getAttoFaseOwnerId($value));
+    /*foreach ($entry_gforms[0] as $key => $value){
+         $pattern = "[^9.]";
+         if (preg_match($pattern, $key) && $value) {
+            $atto->setUserIdAtto(idProcessCreator::getAttoFaseOwnerId($value));
 
-        }
-        }
-*/
+         }
+         }
+ */
+    echo "<pre>";
+    print_r($entry_gforms);
+    echo "</pre>";
     $atto->createAttivita();
 
 }
@@ -45,7 +48,7 @@ function update_attivita()
     $results_atto = Form::getForm($id_current_form);
     $atto->setTitleAttivita($results_atto[1]);
 
-    $entry = array('1'=>$results_atto[1],'2'=>$results_atto[2],'3'=>$results_atto[3], '4'=>$results_atto[4], '5'=>$results_atto[5], '6'=>$results_atto[6]);
+    $entry = array('1' => $results_atto[1], '2' => $results_atto[2], '3' => $results_atto[3], '4' => $results_atto[4], '5' => $results_atto[5], '6' => $results_atto[6]);
     $entry_gforms = GFAPI::get_entries(24);
     $id_current_form = $entry_gforms[0]['id'];
     $atto->setOldTitleAttivita($entry_gforms[0][1]);
@@ -56,7 +59,8 @@ function update_attivita()
 
 add_shortcode('post_updateattivita', 'update_attivita');
 
-function delete_attivita(){
+function delete_attivita()
+{
     $entry_gforms = GFAPI::get_entries(24);
     $id_current_form = $entry_gforms[0]['id'];
     $atto = new Attività();
@@ -67,7 +71,8 @@ function delete_attivita(){
 
 add_shortcode('post_deleteattivita', 'delete_attivita');
 
-class Attività{
+class Attività
+{
     private $id_attivita;
     private $title_attivita;
     private $user_id;
@@ -119,7 +124,6 @@ class Attività{
     }
 
 
-
     public function getIdAttivita()
     {
         return $this->id_attivita;
@@ -142,7 +146,6 @@ class Attività{
     {
         $this->title_attivita = $title;
     }
-
 
 
     public function getUserIdAttivita()
@@ -179,17 +182,19 @@ class Attività{
         $this->name_procedure_attivita = $name_procedure;
     }
 
-    public function insertDataAttivitaSarala(){
+    public function insertDataAttivitaSarala()
+    {
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
         $sql = "INSERT INTO MAPP_attivita (id_attivita,id_form,id_processo,id_procedimento) VALUES(?,?,?,?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("iiii", $this->id_attivita, $this->id_form_attivita, $this->id_process_attivita,$this->id_procedure_attivita);
+        $stmt->bind_param("iiii", $this->id_attivita, $this->id_form_attivita, $this->id_process_attivita, $this->id_procedure_attivita);
         $res = $stmt->execute();
         $mysqli->close();
     }
 
-    public function createAttivita(){
+    public function createAttivita()
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
         $sql = "SELECT id FROM tasks WHERE title=? ORDER BY id DESC LIMIT 1";
@@ -226,7 +231,8 @@ class Attività{
         $this->insertDataAttivitaSarala();
     }
 
-    public function update(){
+    public function update()
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
 
@@ -235,12 +241,13 @@ class Attività{
 
         $sql = "UPDATE subtasks SET title=? WHERE title=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("ss", $dbTitle,  $dbOldTitle);
+        $stmt->bind_param("ss", $dbTitle, $dbOldTitle);
         $res = $stmt->execute();
         $mysqli->close();
     }
 
-    public function delete(){
+    public function delete()
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
         $dbTitle = $this->getDbTitle($this->title_attivita);
@@ -251,8 +258,9 @@ class Attività{
         $mysqli->close();
     }
 
-    private function getDbTitle($title){
-        return $title." - attività";
+    private function getDbTitle($title)
+    {
+        return $title . " - attività";
     }
 
     /**
