@@ -49,17 +49,17 @@ function extra_user_fields($user)
             </select>
 
             <script>
-                $(function () {
-                    var genderValue = localStorage.getItem("ruoloValue");
-                    if (genderValue != null) {
-                        $("select[name=ruolo]").val(genderValue);
-                    }
+                $(document).ready(function() {
+                        var roleValue = localStorage.getItem("ruoloValue");
 
-                    $("select[name=ruolo]").on("change", function () {
-                        localStorage.setItem("ruoloValue", $(this).val());
-                    });
-                })
+                        if (roleValue != null) {
+                            $("ruolo").val(roleValue);
+                        }
 
+                        $("ruolo").on("change", function () {
+                            localStorage.setItem("ruoloValue", $(this).val());
+                        });
+                    })
             </script>
         </div>
         </td>

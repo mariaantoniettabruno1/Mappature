@@ -4,19 +4,20 @@ class IdProcessCreator
 {
     public static function getProcessOwnerId($area_processo)
     {
+        $res = array();
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
-
-        $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key ='id_kanboard'
+        $sql = "SELECT ALL meta_value FROM wp_usermeta WHERE meta_key ='id_kanboard'
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value='Dirigente')
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value=?)";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $area_processo);
-        $res = $stmt->execute();
-        $res = $stmt->get_result();
-        $result = $res->fetch_assoc();
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_all();
         $mysqli->close();
-        return $result['meta_value'];
+        return $row;
+
     }
 
     public static function getProcedureOwnerId($area_procedimento, $servizio_procedimento, $ufficio_procedimento)
@@ -24,7 +25,7 @@ class IdProcessCreator
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
 
-        $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key ='id_kanboard'
+        $sql = "SELECT ALL meta_value FROM wp_usermeta WHERE meta_key ='id_kanboard'
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value='PO')
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value=?)
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value LIKE ?)
