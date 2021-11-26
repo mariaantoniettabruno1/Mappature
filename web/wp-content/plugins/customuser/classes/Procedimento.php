@@ -11,7 +11,6 @@ function crea_procedimento()
 {
     $last_entry = GFAPI::get_entries(50)[0];
     $procedure = new Procedimento();
-
     foreach ($last_entry as $key => $value) {
         $pattern = "[^22.]";
         if (preg_match($pattern, $key) && $value) {
@@ -20,23 +19,27 @@ function crea_procedimento()
             $procedure->setIdForm($last_entry['form_id']);
             $procedure->setNameProcess($last_entry[24]);
             $settore = $last_entry[18];
-            $procedure->setCreatorId(idProcessCreator::getProcessOwnerId($settore));
+            $creator_id = idProcessCreator::getProcessOwnerId($settore);
+            $procedure->setCreatorId($creator_id);
             $servizio = $last_entry[19];
             $ufficio = $last_entry[20];
             $procedure->setOwnerId(idProcessCreator::getProcedureOwnerId($settore, $servizio, $ufficio));
             $procedure->setPosition(1);
-
             $procedure->setDateCreated(strtotime($last_entry['date_created']));
             $procedure->setDateUpdated(strtotime($last_entry['date_updated']));
-
             $procedure->createProcedure();
+            $procedure->findTask();
+            $procedure->assignUsersOwner($procedure->getOwnerId());
+            $procedure->assignUsersCreator($procedure->getCreatorId());
 
         }
     }
 
 }
 
+
 add_shortcode('post_procedimento', 'crea_procedimento');
+
 function crea_procedimento_postuma()
 {
     $last_entry = GFAPI::get_entries(2)[0];
@@ -46,16 +49,18 @@ function crea_procedimento_postuma()
     $procedure->setIdForm($last_entry['form_id']);
     $procedure->setNameProcess($last_entry[17]);
     $settore = $last_entry[18];
-    $procedure->setCreatorId(idProcessCreator::getProcessOwnerId($settore));
+    $creator_id = idProcessCreator::getProcessOwnerId($settore);
+    $procedure->setCreatorId($creator_id);
     $servizio = $last_entry[19];
     $ufficio = $last_entry[20];
     $procedure->setOwnerId(idProcessCreator::getProcedureOwnerId($settore, $servizio, $ufficio));
     $procedure->setPosition(1);
-
     $procedure->setDateCreated(strtotime($last_entry['date_created']));
     $procedure->setDateUpdated(strtotime($last_entry['date_updated']));
 
     $procedure->createProcedure();
+    $procedure->findTask();
+    $procedure->assignUsersOwner($procedure->getOwnerId());
 
 
 }
@@ -121,7 +126,7 @@ function assign_dipendente()
                 }
             }
             $procedimento->findTask();
-            $procedimento->assignUsers();
+            $procedimento->assegnaDipendenti();
         }
     }
 
@@ -137,7 +142,7 @@ function edit_assign_dipendente()
     $procedimento = new Procedimento();
     //$temp = array();
     $old_value = '';
-    /*foreach ($entry_gforms as $key => $value) {
+    foreach ($entry_gforms as $key => $value) {
         $pattern = "[^1.]";
         if (preg_match($pattern, $key) && $value) {
             //array_push($temp,$value);
@@ -153,10 +158,11 @@ function edit_assign_dipendente()
 
                 }
             }
+            print_r($procedimento->getUsers());
             $procedimento->findTask();
-            $procedimento->editAssignUsers();
+            $procedimento->modificaAssegnazioneDipendenti();
         }
-    }*/
+    }
 
 
 }
@@ -434,10 +440,11 @@ class Procedimento
         $result = $res->fetch_assoc();
         $this->setColumnId($result['id']);
 
-        $sql = "INSERT INTO tasks (title,project_id,column_id,swimlane_id,position,date_creation,date_modification,owner_id,creator_id) VALUES(?,?,?,?,?,?,?,?,?)";
+        $sql = "INSERT INTO tasks (title,project_id,column_id,swimlane_id,position,date_creation,date_modification) VALUES(?,?,?,?,?,?,?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("siiiiiiii", $this->title, $this->id_process, $this->column_id, $this->swimlane_id, $this->position, $this->date_created, $this->date_updated, $this->owner_id, $this->creator_id);
+        $stmt->bind_param("siiiiii", $this->title, $this->id_process, $this->column_id, $this->swimlane_id, $this->position, $this->date_created, $this->date_updated);
         $res = $stmt->execute();
+
         $sql = "SELECT id FROM tasks WHERE title=?";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $this->title);
@@ -445,17 +452,18 @@ class Procedimento
         $res = $stmt->get_result();
         $procedimento = $res->fetch_assoc();
         $this->setIdProcedure($procedimento['id']);
+
         $sql = "INSERT INTO project_daily_column_stats (project_id,column_id) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("ii", $this->id_process, $this->procedure_status_id);
+        $stmt->bind_param("ii", $this->id_process, $this->column_id);
         $res = $stmt->execute();
+
         $sql = "INSERT INTO project_daily_stats (project_id) VALUES(?)";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("i", $this->id_process);
         $res = $stmt->execute();
+
         $this->insertDataProcedureSarala();
-
-
         $mysqli->close();
 
     }
@@ -509,7 +517,7 @@ class Procedimento
         $mysqli->close();
     }
 
-    public function assignUsers()
+    public function assegnaDipendenti()
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
@@ -521,14 +529,47 @@ class Procedimento
         }
         $mysqli->close();
     }
-    public function editAssignUsers()
+
+    public function assignUsersOwner($users)
+    {
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "INSERT INTO MAPP_task_users_owner (task_id,user_id) VALUES(?,?)";
+        $stmt = $mysqli->prepare($sql);
+        for ($i = 0; $i < sizeof($users); $i++) {
+            foreach ($users[$i] as $userId) {
+                $stmt->bind_param("ii", $this->id_procedure, $userId);
+                $res = $stmt->execute();
+
+            }
+        }
+        $mysqli->close();
+    }
+    public function assignUsersCreator($users)
+    {
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "INSERT INTO MAPP_task_users_creator (task_id,user_id) VALUES(?,?)";
+        $stmt = $mysqli->prepare($sql);
+        for ($i = 0; $i < sizeof($users); $i++) {
+            foreach ($users[$i] as $userId) {
+                $stmt->bind_param("ii", $this->id_procedure, $userId);
+                $res = $stmt->execute();
+
+            }
+        }
+        $mysqli->close();
+    }
+    public function modificaAssegnazioneDipendenti()
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
         $sql = "UPDATE MAPP_task_users SET user_id=? WHERE task_id=?";
         $stmt = $mysqli->prepare($sql);
         foreach ($this->users as $userId) {
-            $stmt->bind_param("ii", $this->id_procedure, $userId);
+            $stmt->bind_param("ii",  $userId,$this->id_procedure);
+            print_r($userId);
+            print_r($this->id_procedure);
             $res = $stmt->execute();
         }
         $mysqli->close();

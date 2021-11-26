@@ -33,16 +33,16 @@ class IdProcessCreator
         $stmt = $mysqli->prepare($sql);
         $servizio = "%$servizio_procedimento%";
         $ufficio = "%$ufficio_procedimento%";
-        $stmt->bind_param("sss", $area_procedimento,$servizio,$ufficio);
-        $res = $stmt->execute();
-        $res = $stmt->get_result();
-        $result = $res->fetch_assoc();
+        $stmt->bind_param("sss", $area_procedimento, $servizio, $ufficio);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_all();
         $mysqli->close();
-        if ($result['meta_value'] == NULL) {
+        if (is_null($row)) {
             $id = self::getProcessOwnerId($area_procedimento);
             return $id;
         } else
-            return $result['meta_value'];
+            return $row;
     }
 
     public static function getAttoFaseOwnerId($wp_id)

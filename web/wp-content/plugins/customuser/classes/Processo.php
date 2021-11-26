@@ -572,7 +572,7 @@ class Processo
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "INSERT INTO MAPP_project_users (project_id,user_id) VALUES(?,?)";
+        $sql = "INSERT INTO MAPP_project_users_owner (project_id,user_id) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);
         for($i=0; $i<sizeof($usersArray);$i++){
             foreach ($usersArray[$i] as $userId) {
