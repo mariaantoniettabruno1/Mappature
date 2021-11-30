@@ -468,10 +468,6 @@ class Processo
         $res = $stmt->get_result();
         $process = $res->fetch_assoc();
         $this->setIdProcesso($process['id']);
-        $sql = "INSERT INTO project_has_users (project_id,user_id,role) VALUES(?,?,?)";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("iis", $this->id_processo, $this->id_user, $this->ruolo_user);
-        $res = $stmt->execute();
 
         $sql = "INSERT INTO columns (project_id,position,title) VALUES(?,?,?)";
         $stmt = $mysqli->prepare($sql);
@@ -580,6 +576,14 @@ class Processo
             $res = $stmt->execute();
 
         }}
+        $sql = "INSERT INTO project_has_users (project_id,user_id,role) VALUES(?,?,?)";
+        $stmt = $mysqli->prepare($sql);
+        for($i=0; $i<sizeof($usersArray);$i++){
+            foreach ($usersArray[$i] as $userId) {
+                $stmt->bind_param("iis", $this->id_processo, $userId, $this->ruolo_user);
+                $res = $stmt->execute();
+
+            }}
 
         $mysqli->close();
     }

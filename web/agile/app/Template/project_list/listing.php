@@ -41,7 +41,7 @@
                     'project' => $project,
                 )) ?>
 
-                <?= $project['owner_name'] ?>
+                <?= $project['owner_name']?>
 
                 <?= $this->render('project_list/project_icons', array(
                     'project' => $project,

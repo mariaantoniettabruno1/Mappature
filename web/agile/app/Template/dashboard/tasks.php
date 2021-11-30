@@ -1,8 +1,9 @@
 <div class="page-header">
-    <h2><?= $this->url->link(t('My tasks'), 'DashboardController', 'tasks', array('user_id' => $user['id'])) ?> (<?= $paginator->getTotal() ?>)</h2>
+    <h2><?= $this->url->link(t('My tasks'), 'DashboardController', 'tasks', array('user_id' => $task['id'])) ?> (<?= $paginator->getTotal(); ?>)</h2>
 </div>
 <?php if ($paginator->isEmpty()): ?>
-    <p class="alert"><?= t('There is nothing assigned to you.') ?></p>
+    <p class="alert"><?= t('There is nothing assigned to you.') ?> </p>
+
 <?php else: ?>
     <div class="table-list">
         <?= $this->render('task_list/header', array(
@@ -16,7 +17,7 @@
                     'redirect' => 'dashboard-tasks',
                 )) ?>
 
-                <?= $this->render('task_list/task_details', array(
+                <?=  $this->render('task_list/task_details', array(
                     'task' => $task,
                 )) ?>
 

@@ -346,6 +346,7 @@ class ProjectModel extends Base
             ->columns(self::TABLE . '.*', UserModel::TABLE . '.username AS owner_username', UserModel::TABLE . '.name AS owner_name')
             ->join(UserModel::TABLE, 'id', 'owner_id')
             ->in(self::TABLE . '.id', $projectIds);
+
     }
 
     /**

@@ -47,7 +47,7 @@ class TaskFinderModel extends Base
             ->in(ProjectModel::TABLE . '.id', $project_ids)
             ->join(ProjectModel::TABLE, 'id', 'project_id')
             ->join(ColumnModel::TABLE, 'id', 'column_id', TaskModel::TABLE)
-            ->join(UserModel::TABLE, 'id', 'owner_id', TaskModel::TABLE);
+            ->join(UserModel::TABLE, 'id', 'user_id', 'MAPP_task_users_owner');
     }
 
     /**
@@ -59,14 +59,16 @@ class TaskFinderModel extends Base
      */
     public function getUserQuery($user_id)
     {
-        return $this->getExtendedQuery()
+        $details = $this->getExtendedQuery()
             ->beginOr()
             ->eq(TaskModel::TABLE . '.owner_id', $user_id)
-            ->addCondition(TaskModel::TABLE . ".id IN (SELECT task_id FROM " . SubtaskModel::TABLE . " WHERE " . SubtaskModel::TABLE . ".user_id='$user_id')")
+            ->addCondition(TaskModel::TABLE . ".id IN (SELECT task_id FROM " . SubtaskModel::TABLE . " WHERE " . SubtaskModel::TABLE . ".user_id='$user_id') OR " .
+                TaskModel::TABLE . ".id IN (SELECT task_id FROM MAPP_task_users_owner WHERE MAPP_task_users_owner.user_id=" . $user_id .")")
             ->closeOr()
             ->eq(TaskModel::TABLE . '.is_active', TaskModel::STATUS_OPEN)
             ->eq(ProjectModel::TABLE . '.is_active', ProjectModel::ACTIVE)
             ->eq(ColumnModel::TABLE . '.hide_in_dashboard', 0);
+        return $details;
     }
 
     /**
@@ -136,6 +138,7 @@ class TaskFinderModel extends Base
             ->join(ColumnModel::TABLE, 'id', 'column_id', TaskModel::TABLE)
             ->join(SwimlaneModel::TABLE, 'id', 'swimlane_id', TaskModel::TABLE)
             ->join(ProjectModel::TABLE, 'id', 'project_id', TaskModel::TABLE);
+
     }
 
     /**
@@ -235,7 +238,9 @@ class TaskFinderModel extends Base
      */
     public function getOverdueTasksByUser($user_id)
     {
-        return $this->getOverdueTasksQuery()->eq(TaskModel::TABLE . '.owner_id', $user_id)->findAll();
+        $details = $this->getOverdueTasksQuery()->eq(TaskModel::TABLE . '.owner_id', $user_id)->findAll();
+        //print_r($details);
+        return $details;
     }
 
     /**
@@ -309,6 +314,7 @@ class TaskFinderModel extends Base
         $details['dipendenti'] = $this->getUsers($task_id);
         $details['creator_username'] = $this->getCreatorsId($task_id);
         $details['assignee_username'] = $this->getOwnersId($task_id);
+
         return $details;
     }
 
@@ -417,7 +423,9 @@ class TaskFinderModel extends Base
             ->join(ProjectModel::TABLE, 'id', 'project_id')
             ->findOneColumn(ProjectModel::TABLE . '.token');
     }
-    protected function getUsers($taskId){
+
+    protected function getUsers($taskId)
+    {
         return $this->db
             ->table('MAPP_task_users')
             ->eq('MAPP_task_users.task_id', $taskId)
@@ -425,7 +433,9 @@ class TaskFinderModel extends Base
             ->findAll();
 
     }
-    protected function getCreatorsId($taskId){
+
+    protected function getCreatorsId($taskId)
+    {
         return $this->db
             ->table('MAPP_task_users_creator')
             ->eq('MAPP_task_users_creator.task_id', $taskId)
@@ -433,7 +443,9 @@ class TaskFinderModel extends Base
             ->findAll();
 
     }
-    protected function getOwnersId($taskId){
+
+    protected function getOwnersId($taskId)
+    {
         return $this->db
             ->table('MAPP_task_users_owner')
             ->eq('MAPP_task_users_owner.task_id', $taskId)
