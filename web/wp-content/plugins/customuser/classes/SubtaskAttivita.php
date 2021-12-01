@@ -1,77 +1,82 @@
 <?php
-include_once 'Connection.php';
-include_once 'ConnectionSarala.php';
 
-function create_attivita()
-{
+include_once '../includes/Connection.php';
+include_once '../includes/ConnectionSarala.php';
+
+function create_attivita(){
     $entry_gforms = GFAPI::get_entries(24)[0];
-    $atto = new Attività();
-    $atto->setTitleAttivita($entry_gforms[1]);
-    $atto->setNameProcedureAttivita($entry_gforms[3]);
-    $atto->setNameProcessAttivita($entry_gforms[2]);
-    $atto->setIdFormAttivita($entry_gforms['form_id']);
-    $atto->setIdAttivita($entry_gforms['id']);
+    $attivita = new SubtaskAttivita();
+    $attivita->setTitleAttivita($entry_gforms[1]);
+    $attivita->setNameProcedureAttivita($entry_gforms[11]);
+    $attivita->setNameProcessAttivita($entry_gforms[10]);
+    $attivita->setIdFormAttivita($entry_gforms['form_id']);
+    $attivita->setIdAttivita($entry_gforms['id']);
 
-    /*foreach ($entry_gforms[0] as $key => $value){
-         $pattern = "[^9.]";
-         if (preg_match($pattern, $key) && $value) {
-            $atto->setUserIdAtto(idProcessCreator::getAttoFaseOwnerId($value));
-
-         }
-         }
- */
-    echo "<pre>";
-    print_r($entry_gforms);
-    echo "</pre>";
-    $atto->createAttivita();
+    foreach ($entry_gforms as $key => $value) {
+        $pattern = "[^9.]";
+        if (preg_match($pattern, $key) && $value) {
+            $attivita->addUser($value);
+        }
+    }
+    $attivita->createAttivita();
 
 }
-
-add_shortcode('post_createattivita', 'create_attivita');
-
+add_shortcode('post_create_attivita', 'create_attivita');
 function create_attivita_postuma()
 {
     $entry_gforms = GFAPI::get_entries(59)[0];
-    echo "<pre>";
-    print_r($entry_gforms);
-    echo "</pre>";
+    $attivita = new SubtaskAttivita();
+    $attivita->setTitleAttivita($entry_gforms[1]);
+    $attivita->setNameProcedureAttivita($entry_gforms[3]);
+    $attivita->setNameProcessAttivita($entry_gforms[2]);
+    $attivita->setIdFormAttivita($entry_gforms['form_id']);
+    $attivita->setIdAttivita($entry_gforms['id']);
+
+    foreach ($entry_gforms as $key => $value) {
+        $pattern = "[^7.]";
+        if (preg_match($pattern, $key) && $value) {
+            $attivita->addUser($value);
+        }
+    }
+    $attivita->createAttivita();
+
 
 }
 
 add_shortcode('post_createattivitapostuma', 'create_attivita_postuma');
 
-function update_attivita()
-{
-    $entry_gforms = GFAPI::get_entries(41);
-    $atto = new Attività();
-    $id_current_form = $entry_gforms[0]['id'];
-    $results_atto = Form::getForm($id_current_form);
-    $atto->setTitleAttivita($results_atto[1]);
+//function update_attivita()
+//{
+//    $entry_gforms = GFAPI::get_entries(41);
+//    $atto = new Attività();
+//    $id_current_form = $entry_gforms[0]['id'];
+//    $results_atto = Form::getForm($id_current_form);
+//    $atto->setTitleAttivita($results_atto[1]);
+//
+//    $entry = array('1' => $results_atto[1], '2' => $results_atto[2], '3' => $results_atto[3], '4' => $results_atto[4], '5' => $results_atto[5], '6' => $results_atto[6]);
+//    $entry_gforms = GFAPI::get_entries(24);
+//    $id_current_form = $entry_gforms[0]['id'];
+//    $atto->setOldTitleAttivita($entry_gforms[0][1]);
+//    $atto->update();
+//    $result = GFAPI::update_entry($entry, $id_current_form);
+//
+//}
+//
+//add_shortcode('post_updateattivita', 'update_attivita');
+//
+//function delete_attivita()
+//{
+//    $entry_gforms = GFAPI::get_entries(24);
+//    $id_current_form = $entry_gforms[0]['id'];
+//    $atto = new Attività();
+//    $atto->setTitleAttivita($entry_gforms[0][1]);
+//    $atto->delete();
+//    $result = GFAPI::delete_entry($id_current_form);
+//}
+//
+//add_shortcode('post_deleteattivita', 'delete_attivita');
 
-    $entry = array('1' => $results_atto[1], '2' => $results_atto[2], '3' => $results_atto[3], '4' => $results_atto[4], '5' => $results_atto[5], '6' => $results_atto[6]);
-    $entry_gforms = GFAPI::get_entries(24);
-    $id_current_form = $entry_gforms[0]['id'];
-    $atto->setOldTitleAttivita($entry_gforms[0][1]);
-    $atto->update();
-    $result = GFAPI::update_entry($entry, $id_current_form);
-
-}
-
-add_shortcode('post_updateattivita', 'update_attivita');
-
-function delete_attivita()
-{
-    $entry_gforms = GFAPI::get_entries(24);
-    $id_current_form = $entry_gforms[0]['id'];
-    $atto = new Attività();
-    $atto->setTitleAttivita($entry_gforms[0][1]);
-    $atto->delete();
-    $result = GFAPI::delete_entry($id_current_form);
-}
-
-add_shortcode('post_deleteattivita', 'delete_attivita');
-
-class Attività
+class SubtaskAttivita
 {
     private $id_attivita;
     private $title_attivita;
@@ -88,7 +93,6 @@ class Attività
     {
         $this->users = [];
     }
-
     public function getIdProcessAttivita()
     {
         return $this->id_process_attivita;
@@ -197,13 +201,15 @@ class Attività
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
+
         $sql = "SELECT id FROM tasks WHERE title=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $this->name_procedure_attivita);
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
-        $this->setIdProcedureAtto($result['id']);
+        $this->setIdProcedureAttivita($result['id']);
+
 
         $sql = "SELECT id FROM projects WHERE name=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
@@ -211,14 +217,15 @@ class Attività
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
-        $this->setIdProcessAtto($result['id']);
+        $this->setIdProcessAttivita($result['id']);
 
 
         $a = " - attività";
-        $this->title = $this->title . $a;
+        $this->title_attivita = $this->title_attivita . $a;
+
         $sql = "INSERT INTO subtasks (title,task_id) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("si", $this->title, $this->id_procedure_attivita);
+        $stmt->bind_param("si", $this->title_attivita, $this->id_procedure_attivita);
         $res = $stmt->execute();
         $subtask_id = $mysqli->insert_id;
         $sql = "INSERT INTO MAPP_subtask_users (subtask_id,user_id) VALUES(?,?)";
@@ -278,6 +285,33 @@ class Attività
     {
         $this->old_title_attivita = $old_title_attivita;
     }
+    /**
+     * @return array
+     */
+    public function getUsers(): array
+    {
+        return $this->users;
+    }
 
+    /**
+     * @param array $users
+     */
+    public function setUsers(array $users)
+    {
+        $this->users = $users;
+    }
+    public function addUser($value)
+    {
+        $conn = new ConnectionSarala();
+        $mysqli = $conn->connect();
+        $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key='id_kanboard' AND user_id=?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("i", $value);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = $res->fetch_assoc();
+        array_push($this->users, $result['meta_value']);
+        $mysqli->close();
 
+    }
 }

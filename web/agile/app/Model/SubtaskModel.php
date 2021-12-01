@@ -42,14 +42,14 @@ class SubtaskModel extends Base
      * Get projectId from subtaskId
      *
      * @access public
-     * @param  integer $subtaskId
+     * @param integer $subtaskId
      * @return integer
      */
     public function getProjectId($subtaskId)
     {
         return $this->db
             ->table(self::TABLE)
-            ->eq(self::TABLE.'.id', $subtaskId)
+            ->eq(self::TABLE . '.id', $subtaskId)
             ->join(TaskModel::TABLE, 'id', 'task_id')
             ->findOneColumn(TaskModel::TABLE . '.project_id') ?: 0;
     }
@@ -63,9 +63,9 @@ class SubtaskModel extends Base
     public function getStatusList()
     {
         return array(
-            self::STATUS_TODO       => t('Todo'),
+            self::STATUS_TODO => t('Todo'),
             self::STATUS_INPROGRESS => t('In progress'),
-            self::STATUS_DONE       => t('Done'),
+            self::STATUS_DONE => t('Done'),
         );
     }
 
@@ -76,20 +76,21 @@ class SubtaskModel extends Base
      */
     public function getQuery()
     {
-        return $this->db
+        $query = $this->db
             ->table(self::TABLE)
             ->columns(
-                self::TABLE.'.*',
-                UserModel::TABLE.'.username',
-                UserModel::TABLE.'.name'
+                self::TABLE . '.*',
+                UserModel::TABLE . '.username',
+                UserModel::TABLE . '.name'
             )
             ->subquery($this->subtaskTimeTrackingModel->getTimerQuery($this->userSession->getId()), 'timer_start_date')
             ->join(UserModel::TABLE, 'id', 'user_id')
-            ->asc(self::TABLE.'.position');
+            ->asc(self::TABLE . '.position');
+        return $query;
     }
 
     /**
-     * Count by assignee and task status.
+     * Count by assignee and task status.F
      *
      * @param integer $userId
      * @return integer
@@ -98,11 +99,10 @@ class SubtaskModel extends Base
     {
         $query = $this->db->table(self::TABLE)
             ->eq('user_id', $userId)
-            ->eq(TaskModel::TABLE.'.is_active', TaskModel::STATUS_OPEN)
+            ->eq(TaskModel::TABLE . '.is_active', TaskModel::STATUS_OPEN)
             ->join(Taskmodel::TABLE, 'id', 'task_id');
 
         $this->hook->reference('model:subtask:count:query', $query);
-
         return $query->count();
     }
 
@@ -110,7 +110,7 @@ class SubtaskModel extends Base
      * Get all subtasks for a given task
      *
      * @access public
-     * @param  integer   $taskId
+     * @param integer $taskId
      * @return array
      */
     public function getAll($taskId)
@@ -118,10 +118,9 @@ class SubtaskModel extends Base
         $subtasks = $this->subtaskListFormatter
             ->withQuery($this->getQuery()->eq('task_id', $taskId))
             ->format();
-        foreach ($subtasks as $index=>$st){
+        foreach ($subtasks as $index => $st) {
             $subtasks[$index]['users'] = $this->getUsers($st['id']);
         }
-
         return $subtasks;
     }
 
@@ -145,8 +144,8 @@ class SubtaskModel extends Base
     /**
      * Get subtasks for a list of tasks and a given assignee
      *
-     * @param  array   $taskIds
-     * @param  integer $userId
+     * @param array $taskIds
+     * @param integer $userId
      * @return array
      */
     public function getAllByTaskIdsAndAssignee(array $taskIds, $userId)
@@ -155,16 +154,21 @@ class SubtaskModel extends Base
             return array();
         }
 
-        return $this->subtaskListFormatter
-            ->withQuery($this->getQuery()->in('task_id', $taskIds)->eq(self::TABLE.'.user_id', $userId))
+        $subtasks = $this->subtaskListFormatter
+            ->withQuery($this->getQuery()->in('task_id', $taskIds)->eq(self::TABLE . '.user_id', $userId))
             ->format();
+        foreach ($subtasks as $index => $st) {
+            $subtasks[$index]['users'] = $this->getUsers($st['id']);
+        }
+
+        return $subtasks;
     }
 
     /**
      * Get a subtask by the id
      *
      * @access public
-     * @param  integer   $subtaskId
+     * @param integer $subtaskId
      * @return array
      */
     public function getById($subtaskId)
@@ -175,16 +179,16 @@ class SubtaskModel extends Base
     /**
      * Get subtask with additional information
      *
-     * @param  integer $subtaskId
+     * @param integer $subtaskId
      * @return array|null
      */
     public function getByIdWithDetails($subtaskId)
     {
         $subtasks = $this->subtaskListFormatter
-            ->withQuery($this->getQuery()->eq(self::TABLE.'.id', $subtaskId))
+            ->withQuery($this->getQuery()->eq(self::TABLE . '.id', $subtaskId))
             ->format();
 
-        if (! empty($subtasks)) {
+        if (!empty($subtasks)) {
             return $subtasks[0];
         }
 
@@ -195,23 +199,23 @@ class SubtaskModel extends Base
      * Get the position of the last column for a given project
      *
      * @access public
-     * @param  integer  $taskId
+     * @param integer $taskId
      * @return integer
      */
     public function getLastPosition($taskId)
     {
-        return (int) $this->db
-                        ->table(self::TABLE)
-                        ->eq('task_id', $taskId)
-                        ->desc('position')
-                        ->findOneColumn('position');
+        return (int)$this->db
+            ->table(self::TABLE)
+            ->eq('task_id', $taskId)
+            ->desc('position')
+            ->findOneColumn('position');
     }
 
     /**
      * Create a new subtask
      *
      * @access public
-     * @param  array    $values    Form values
+     * @param array $values Form values
      * @return bool|integer
      */
     public function create(array $values)
@@ -231,8 +235,8 @@ class SubtaskModel extends Base
      * Update a subtask
      *
      * @access public
-     * @param  array $values
-     * @param  bool  $fireEvent
+     * @param array $values
+     * @param bool $fireEvent
      * @return bool
      */
     public function update(array $values, $fireEvent = true)
@@ -256,7 +260,7 @@ class SubtaskModel extends Base
      * Remove
      *
      * @access public
-     * @param  integer $subtaskId
+     * @param integer $subtaskId
      * @return bool
      */
     public function remove($subtaskId)
@@ -269,8 +273,8 @@ class SubtaskModel extends Base
      * Duplicate all subtasks to another task
      *
      * @access public
-     * @param  integer $srcTaskId
-     * @param  integer $dstTaskId
+     * @param integer $srcTaskId
+     * @param integer $dstTaskId
      * @return bool
      */
     public function duplicate($srcTaskId, $dstTaskId)
@@ -286,7 +290,7 @@ class SubtaskModel extends Base
             foreach ($subtasks as &$subtask) {
                 $subtask['task_id'] = $dstTaskId;
 
-                if (! $db->table(SubtaskModel::TABLE)->save($subtask)) {
+                if (!$db->table(SubtaskModel::TABLE)->save($subtask)) {
                     return false;
                 }
             }
@@ -297,7 +301,7 @@ class SubtaskModel extends Base
      * Prepare data before insert/update
      *
      * @access protected
-     * @param  array    $values    Form values
+     * @param array $values Form values
      */
     protected function prepare(array &$values)
     {
@@ -310,7 +314,7 @@ class SubtaskModel extends Base
      * Prepare data before insert
      *
      * @access protected
-     * @param  array    $values    Form values
+     * @param array $values Form values
      */
     protected function prepareCreation(array &$values)
     {
@@ -324,7 +328,8 @@ class SubtaskModel extends Base
         $this->hook->reference('model:subtask:creation:prepare', $values);
     }
 
-    protected function getUsers($subtaskId){
+    protected function getUsers($subtaskId)
+    {
         return $this->db
             ->table('MAPP_subtask_users')
             ->eq('MAPP_subtask_users.subtask_id', $subtaskId)

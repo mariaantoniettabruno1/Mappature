@@ -77,13 +77,13 @@ include_once 'includes/ConnectionSarala.php';
 include_once 'classes/Processo.php';
 include_once 'classes/Procedimento.php';
 include_once 'classes/Fase.php';
-include_once 'classes/Attività.php';
 include_once 'classes/OrgChartProcess.php';
 include_once 'classes/Area.php';
 include_once 'classes/Servizio.php';
 include_once 'classes/Ufficio.php';
 include_once 'shortcodes/SCOrgChartProcess.php';
 include_once 'shortcodes/userMetaData.php';
+include_once 'classes/SubtaskAttivita.php';
 
 
 add_action('edit_user_profile_update', 'save_extra_user_field');

@@ -1,5 +1,4 @@
 <section id="task-summary">
-    <?php  echo "<pre>"; print_r($task); echo "</pre>";?>
     <h2><?= $this->text->e($task['title']); ?></h2>
     <?= $this->hook->render('template:task:details:top', array('task' => $task)) ?>
     <div class="task-summary-container color-<?= $task['color_id'] ?>">
