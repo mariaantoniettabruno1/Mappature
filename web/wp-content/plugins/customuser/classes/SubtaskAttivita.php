@@ -20,6 +20,8 @@ function create_attivita(){
     }
     $attivita->createAttivita();
 
+
+
 }
 add_shortcode('post_create_attivita', 'create_attivita');
 function create_attivita_postuma()

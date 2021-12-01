@@ -18,13 +18,13 @@ class OrgChartProcess
         foreach ($procedimenti as $key => $value){
             //$this->data[$value[2]][$value[1]] = array();
             $this->data[$value[11]][$value[2]]["fasi"] = array();
-            $this->data[$value[11]][$value[2]]["atti"] = array();
+            $this->data[$value[11]][$value[2]]["attivita"] = array();
         }
         foreach ($fasi as $key => $value){
             array_push($this->data[$value[2]][$value[3]]["fasi"], $value[1]);
         }
         foreach ($atti as $key => $value){
-            array_push($this->data[$value[2]][$value[3]]["atti"], $value[1]);
+            array_push($this->data[$value[2]][$value[3]]["attivita"], $value[1]);
         }
 
     }
