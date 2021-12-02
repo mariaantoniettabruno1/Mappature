@@ -68,6 +68,7 @@ class TaskFinderModel extends Base
             ->eq(TaskModel::TABLE . '.is_active', TaskModel::STATUS_OPEN)
             ->eq(ProjectModel::TABLE . '.is_active', ProjectModel::ACTIVE)
             ->eq(ColumnModel::TABLE . '.hide_in_dashboard', 0);
+
         return $details;
     }
 

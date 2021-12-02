@@ -90,7 +90,7 @@ class SubtaskModel extends Base
     }
 
     /**
-     * Count by assignee and task status.F
+     * Count by assignee and task status
      *
      * @param integer $userId
      * @return integer
@@ -160,7 +160,6 @@ class SubtaskModel extends Base
         foreach ($subtasks as $index => $st) {
             $subtasks[$index]['users'] = $this->getUsers($st['id']);
         }
-
         return $subtasks;
     }
 

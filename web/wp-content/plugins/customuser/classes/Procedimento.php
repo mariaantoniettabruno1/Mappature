@@ -57,10 +57,10 @@ function crea_procedimento_postuma()
     $procedure->setPosition(1);
     $procedure->setDateCreated(strtotime($last_entry['date_created']));
     $procedure->setDateUpdated(strtotime($last_entry['date_updated']));
-
     $procedure->createProcedure();
     $procedure->findTask();
     $procedure->assignUsersOwner($procedure->getOwnerId());
+    $procedure->assignUsersCreator($procedure->getCreatorId());
 
 
 }
@@ -158,7 +158,7 @@ function edit_assign_dipendente()
 
                 }
             }
-            print_r($procedimento->getUsers());
+
             $procedimento->findTask();
             $procedimento->modificaAssegnazioneDipendenti();
         }
@@ -568,8 +568,6 @@ class Procedimento
         $stmt = $mysqli->prepare($sql);
         foreach ($this->users as $userId) {
             $stmt->bind_param("ii",  $userId,$this->id_procedure);
-            print_r($userId);
-            print_r($this->id_procedure);
             $res = $stmt->execute();
         }
         $mysqli->close();

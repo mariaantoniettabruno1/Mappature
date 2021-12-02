@@ -526,18 +526,6 @@ class Processo
 
         $conn = new Connection();
         $mysqli = $conn->connect();
-//        $sql = "SELECT id FROM projects WHERE name=? ORDER BY id DESC LIMIT 1";
-//        $stmt = $mysqli->prepare($sql);
-//        $stmt->bind_param("s", $this->old_process_name);
-//        $res = $stmt->execute();
-//        $res = $stmt->get_result();
-//        $process = $res->fetch_assoc();
-//        $this->setIdProcess($process['id']);
-        $sql = "UPDATE projects SET owner_id=? WHERE name=? ";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("is", $ownerId, $nome_processo);
-        $res = $stmt->execute();
-
         $sql = "SELECT id FROM projects WHERE name=?";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $nome_processo);
@@ -545,6 +533,19 @@ class Processo
         $res = $stmt->get_result();
         $processo = $res->fetch_assoc();
         $id_processo = $processo['id'];
+
+        print_r($ownerId);
+        $sql = "UPDATE MAPP_project_users_owner SET user_id=? WHERE project_id=? ";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("i", $ownerId, $id_processo);
+        $res = $stmt->execute();
+        $res;
+
+        $sql = "UPDATE project_has_users SET user_id=? WHERE project_id=? ";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("i", $ownerId, $id_processo);
+        $res = $stmt->execute();
+
 
         $mysqli->close();
 
@@ -562,6 +563,25 @@ class Processo
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
         $this->setIdProcesso($result['id']);
+        $mysqli->close();
+    }
+
+    public function findProjectsOnSarala(){
+        $conn = new ConnectionSarala();
+        $mysqli = $conn->connect();
+        $id_field_processo = 1;
+        $id_form_creazione_processo = 56;
+        $id_form_processo_csv = 1;
+        $id_field_processo_csv = "9.%";
+        $sql = "SELECT ALL meta_value FROM wp_gf_entry_meta WHERE form_id=? AND meta_key=? OR form_id=? AND meta_key LIKE ?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("iiis", $id_form_creazione_processo,$id_field_processo,$id_form_processo_csv,$id_field_processo_csv);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = $res->fetch_assoc();
+        echo "<pre>";
+        print_r($result);
+        echo "</pre>";
         $mysqli->close();
     }
     public function assignUsers($usersArray)

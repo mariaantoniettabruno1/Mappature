@@ -79,15 +79,22 @@ function edit_user_metadata()
     $area->setArea($entry_gforms[3]);
     $old_value_servizio = '';
     $old_value_ufficio = '';
-    $old_ownerId = 0;
-    $old_creatorId = 0;
+    $old_user_area = '';
+    $old_user_servizio = '';
+    $old_user_ufficio = '';
+
+    //foreach per leggere tutti gli utenti dalle entries del form
     foreach ($entry_gforms as $key => $value) {
         $pattern = "[^1.]";
         if (preg_match($pattern, $key) && $value && $value != '') {
+
             $wp_userid = $value;
+            $user_meta = get_user_meta($value);
+            $old_user_area = $user_meta['area'][0];
             update_user_meta($value, 'area', $area->getArea());
-            $user_meta = array(get_user_meta($value));
-            $area->editUserArea($user_meta[0]['id_kanboard'][0]);
+            $area->editUserArea($user_meta['id_kanboard'][0]);
+
+            //foreach per leggere tutti i servizi selezionati da associare agli user
             foreach ($entry_gforms as $key => $value) {
                 $pattern = "[^4.]";
                 if (preg_match($pattern, $key) && $value && $value != '') {
@@ -95,8 +102,10 @@ function edit_user_metadata()
                         array_push($array_servizio, $value);
                     }
                     $old_value_servizio = $value;
+
                 }
             }
+            //foreach per leggere tutti gli uffici selezionati da associare agli user
             foreach ($entry_gforms as $key => $value) {
                 $pattern = "[^6.]";
                 if (preg_match($pattern, $key) && $value && $value != '') {
@@ -107,43 +116,29 @@ function edit_user_metadata()
 
                 }
             }
-
+            $old_user_servizio = $user_meta['servizio'];
             update_user_meta($wp_userid, 'servizio', $array_servizio);
-            $user_meta = array(get_user_meta($wp_userid));
-            array_push($user_meta[0]['servizio'], $array_servizio);
+            $user_meta = get_user_meta($wp_userid);
+            array_push($user_meta['servizio'], $array_servizio);
             $servizio->setServizio(implode(",", $array_servizio));
-            $servizio->editUserServizio($user_meta[0]['id_kanboard'][0]);
+            $servizio->editUserServizio($user_meta['id_kanboard'][0]);
 
+            $old_user_servizio = $user_meta['ufficio'];
             update_user_meta($wp_userid, 'ufficio', $array_ufficio);
-            $user_meta = array(get_user_meta($wp_userid));
-            array_push($user_meta[0]['ufficio'], $array_ufficio);
-
+            $user_meta = get_user_meta($wp_userid);
+            array_push($user_meta['ufficio'], $array_ufficio);
             $ufficio->setUfficio(implode(",", $array_ufficio));
-            $ufficio->editUserUfficio($user_meta[0]['id_kanboard'][0]);
+            $ufficio->editUserUfficio($user_meta['id_kanboard'][0]);
 
         }
-        if ($user_meta[0]['Ruolo'][0] == 'Dirigente' && $user_meta[0]['Ruolo'][0]!='') {
-            $ownerId = $user_meta[0]['id_kanboard'][0];
-            $entry_gforms_processo = GFAPI::get_entries(1);
-            for ($i = 0; $i < sizeof($entry_gforms_processo); $i++) {
-                foreach ($entry_gforms_processo[$i] as $key => $value) {
-                    $pattern = "[^9.]";
-                    if ($entry_gforms_processo[$i][2] == $area->getArea()) {
 
-                        if (preg_match($pattern, $key) && $value && $value != '') {
-                            $id_processo = Processo::aggiornaProcesso($ownerId, $value);
-                            Procedimento::aggiornaOwnerIdProcedimento($ownerId, $id_processo);
-                        }
-                    }
-                    else{
-                        $id_processo = Processo::aggiornaProcesso(null, $value);
-                        Procedimento::aggiornaOwnerIdProcedimento(null, $id_processo);
-                    }
-                }
-            }
+        if ($user_meta['Ruolo'][0] == 'Dirigente' && $user_meta['Ruolo'][0]!='') {
+            $ownerId = $user_meta['id_kanboard'][0];
+
+            Processo::findProjectsOnSarala();
         }
-        elseif ($user_meta[0]['Ruolo'][0] == 'PO' && $user_meta[0]['Ruolo'][0]!='') {
-            $creatorId = $user_meta[0]['id_kanboard'][0];
+        elseif ($user_meta['Ruolo'][0] == 'PO' && $user_meta['Ruolo'][0]!='') {
+            $creatorId = $user_meta['id_kanboard'][0];
             $entry_gforms_procedimento = GFAPI::get_entries(50);
             for ($i = 0; $i < sizeof($entry_gforms_procedimento); $i++) {
                 foreach ($entry_gforms_procedimento[$i] as $key => $value) {
@@ -190,9 +185,7 @@ function edit_user_metadata()
              }
          }
      }*/
-    echo "<pre>";
-    print_r($user_meta);
-    echo "</pre>";
+
 
 }
 
