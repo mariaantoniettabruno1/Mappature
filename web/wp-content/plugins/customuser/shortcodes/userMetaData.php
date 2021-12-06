@@ -76,6 +76,7 @@ function edit_user_metadata()
     $ufficio = new Ufficio();
     $array_servizio = array();
     $array_ufficio = array();
+    $array_users_dirigente = array();
     $area->setArea($entry_gforms[3]);
     $old_value_servizio = '';
     $old_value_ufficio = '';
@@ -94,14 +95,18 @@ function edit_user_metadata()
             update_user_meta($value, 'area', $area->getArea());
             $area->editUserArea($user_meta['id_kanboard'][0]);
 
+            if ($user_meta['Ruolo'][0] == 'Dirigente' && $user_meta['Ruolo'][0] != '')
+                array_push($array_users_dirigente, $user_meta['id_kanboard'][0]);
+
             //foreach per leggere tutti i servizi selezionati da associare agli user
             foreach ($entry_gforms as $key => $value) {
                 $pattern = "[^4.]";
                 if (preg_match($pattern, $key) && $value && $value != '') {
-                    if ($old_value_servizio != $value){
+                    if ($old_value_servizio != $value) {
                         array_push($array_servizio, $value);
                     }
                     $old_value_servizio = $value;
+
 
                 }
             }
@@ -116,28 +121,21 @@ function edit_user_metadata()
 
                 }
             }
-            $old_user_servizio = $user_meta['servizio'];
+            $old_user_servizio = $user_meta['servizio'][0];
             update_user_meta($wp_userid, 'servizio', $array_servizio);
             $user_meta = get_user_meta($wp_userid);
             array_push($user_meta['servizio'], $array_servizio);
             $servizio->setServizio(implode(",", $array_servizio));
             $servizio->editUserServizio($user_meta['id_kanboard'][0]);
 
-            $old_user_servizio = $user_meta['ufficio'];
+            $old_user_ufficio = $user_meta['ufficio'][0];
             update_user_meta($wp_userid, 'ufficio', $array_ufficio);
             $user_meta = get_user_meta($wp_userid);
             array_push($user_meta['ufficio'], $array_ufficio);
             $ufficio->setUfficio(implode(",", $array_ufficio));
             $ufficio->editUserUfficio($user_meta['id_kanboard'][0]);
 
-        }
-
-        if ($user_meta['Ruolo'][0] == 'Dirigente' && $user_meta['Ruolo'][0]!='') {
-            $ownerId = $user_meta['id_kanboard'][0];
-
-            Processo::findProjectsOnSarala();
-        }
-        elseif ($user_meta['Ruolo'][0] == 'PO' && $user_meta['Ruolo'][0]!='') {
+        } elseif ($user_meta['Ruolo'][0] == 'PO' && $user_meta['Ruolo'][0] != '') {
             $creatorId = $user_meta['id_kanboard'][0];
             $entry_gforms_procedimento = GFAPI::get_entries(50);
             for ($i = 0; $i < sizeof($entry_gforms_procedimento); $i++) {
@@ -149,8 +147,7 @@ function edit_user_metadata()
 
                             Procedimento::aggiornaProcedimento($creatorId, $value);
                         }
-                    }
-                    else{
+                    } else {
                         Procedimento::aggiornaProcedimento(null, $value);
                     }
                 }
@@ -158,7 +155,6 @@ function edit_user_metadata()
         }
 
     }
-
 
 
     /* else {
@@ -185,6 +181,14 @@ function edit_user_metadata()
              }
          }
      }*/
+
+
+    $result = Processo::findProjectsOnSarala($old_user_area);
+    $array_ids = Processo::findProjectsOnKanboard($result);
+    Processo::deleteDismatchProject($array_ids,$array_users_dirigente);
+    $temp = Processo::findProjectsOnSarala($area->getArea());
+    $array_ids = Processo::findProjectsOnKanboard($temp);
+    Processo::insertMatchProject($array_ids,$array_users_dirigente);
 
 
 }

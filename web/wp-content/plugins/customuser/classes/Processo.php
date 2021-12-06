@@ -566,22 +566,74 @@ class Processo
         $mysqli->close();
     }
 
-    public function findProjectsOnSarala(){
+    public function findProjectsOnSarala($area){
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
         $id_field_processo = 1;
-        $id_form_creazione_processo = 56;
+        $id_form_creazione_processo = 65;
         $id_form_processo_csv = 1;
-        $id_field_processo_csv = "9.%";
-        $sql = "SELECT ALL meta_value FROM wp_gf_entry_meta WHERE form_id=? AND meta_key=? OR form_id=? AND meta_key LIKE ?";
+        $id_field_processo_csv = "%9.%";
+        $id_area_form = 2;
+        $sql = "SELECT ALL meta_value FROM wp_gf_entry_meta WHERE form_id=? AND meta_key=? AND
+                                                  entry_id IN (SELECT ALL entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)
+                                               OR form_id=? AND meta_key LIKE ? AND
+                                                  entry_id IN (SELECT ALL entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("iiis", $id_form_creazione_processo,$id_field_processo,$id_form_processo_csv,$id_field_processo_csv);
-        $res = $stmt->execute();
-        $res = $stmt->get_result();
-        $result = $res->fetch_assoc();
-        echo "<pre>";
-        print_r($result);
-        echo "</pre>";
+        $stmt->bind_param("iiisisis", $id_form_creazione_processo,$id_field_processo,$id_area_form, $area,
+            $id_form_processo_csv,$id_field_processo_csv,$id_area_form, $area);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_all();
+        $mysqli->close();
+        return $row;
+
+    }
+    public function findProjectsOnKanboard($arrayNameProjects){
+        $conn = new Connection;
+        $mysqli = $conn->connect();
+        $array_ids = array();
+        $sql = "SELECT ALL id FROM projects WHERE name=? ";
+        $stmt = $mysqli->prepare($sql);
+        for($i=0;$i<sizeof($arrayNameProjects);$i++){
+            foreach ($arrayNameProjects[$i] as $nameProject) {
+                $stmt->bind_param("s", $nameProject);
+                $res = $stmt->execute();
+                $result = $stmt->get_result();
+                $row = $result->fetch_all();
+                if($row!=null) array_push($array_ids,$row[0][0]);
+            }
+        }
+
+        $mysqli->close();
+        return $array_ids;
+    }
+    public function deleteDismatchProject($array_ids,$userId){
+        $conn = new Connection;
+        $mysqli = $conn->connect();
+        $sql = "DELETE  FROM MAPP_project_users_owner WHERE project_id=? AND user_id=?";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($array_ids as $id) {
+            foreach ($userId as $user){
+                $stmt->bind_param("ii", $id,$user);
+                $res = $stmt->execute();
+            }
+        }
+        $mysqli->close();
+    }
+
+    public function insertMatchProject($array_ids,$userId){
+        $conn = new Connection;
+        $mysqli = $conn->connect();
+        $sql = "INSERT INTO MAPP_project_users_owner (project_id,user_id) VALUES (?,?)";
+        $stmt = $mysqli->prepare($sql);
+            foreach ($array_ids as $id) {
+                foreach ($userId as $user){
+                    $stmt->bind_param("ii", $id,$user);
+                    $res = $stmt->execute();
+                }
+
+        }
+
         $mysqli->close();
     }
     public function assignUsers($usersArray)
