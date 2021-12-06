@@ -521,37 +521,7 @@ class Processo
 
     }
 
-    public function aggiornaProcesso($ownerId, $nome_processo)
-    {
 
-        $conn = new Connection();
-        $mysqli = $conn->connect();
-        $sql = "SELECT id FROM projects WHERE name=?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("s", $nome_processo);
-        $res = $stmt->execute();
-        $res = $stmt->get_result();
-        $processo = $res->fetch_assoc();
-        $id_processo = $processo['id'];
-
-        print_r($ownerId);
-        $sql = "UPDATE MAPP_project_users_owner SET user_id=? WHERE project_id=? ";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("i", $ownerId, $id_processo);
-        $res = $stmt->execute();
-        $res;
-
-        $sql = "UPDATE project_has_users SET user_id=? WHERE project_id=? ";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("i", $ownerId, $id_processo);
-        $res = $stmt->execute();
-
-
-        $mysqli->close();
-
-        return $id_processo;
-
-    }
     public function findProject()
     {
         $conn = new Connection();

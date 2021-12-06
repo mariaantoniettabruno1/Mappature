@@ -480,17 +480,6 @@ class Procedimento
         $mysqli->close();
     }
 
-    public function aggiornaOwnerIdProcedimento($creatorId, $projectId)
-    {
-        $conn = new Connection();
-        $mysqli = $conn->connect();
-        $sql = "UPDATE tasks SET creator_id=? WHERE project_id=?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("ii", $creatorId, $projectId);
-        $res = $stmt->execute();
-
-        $mysqli->close();
-    }
 
     public function deleteProcedure()
     {
@@ -572,7 +561,32 @@ class Procedimento
         }
         $mysqli->close();
     }
+    public function findTaskOnSarala($area,$servizio){
+        $conn = new ConnectionSarala();
+        $mysqli = $conn->connect();
+        $id_field_procedimento = 2;
+        $id_form_creazione_procedimento = 2;
+        $id_form_procedimento_csv = 50;
+        $id_field_procedimento_csv = "%22.%";
+        $id_area_form = 18;
+        $id_servizio_form = 19;
+        $temp = "%$servizio%";
+        $sql = "SELECT ALL meta_value FROM wp_gf_entry_meta WHERE form_id=? AND meta_key=? AND
+                                                  entry_id IN (SELECT ALL entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND  
+                                                  entry_id IN (SELECT ALL entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)
+                                               OR form_id=? AND meta_key LIKE ? AND
+                                                  entry_id IN (SELECT ALL entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND 
+                                                  entry_id IN (SELECT ALL entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value LIKE ?) ";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("iiisisisisis", $id_form_creazione_procedimento,$id_field_procedimento,$id_area_form,$area,$id_servizio_form,$servizio,
+            $id_form_creazione_procedimento_csv, $id_field_procedimento_csv,$id_area_form,$area,$id_servizio_form,$temp);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_all();
+        $mysqli->close();
+        return $row;
 
+    }
     /**
      * @return mixed
      */
