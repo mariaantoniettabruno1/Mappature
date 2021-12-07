@@ -92,9 +92,7 @@ function edit_user_metadata()
 
             $wp_userid = $value;
             $user_meta = get_user_meta($value);
-            echo "<pre>";
-            print_r($user_meta);
-            echo "</pre>";
+            $old_user_servizio = $user_meta['servizio'];
             $old_user_area = $user_meta['area'][0];
             update_user_meta($value, 'area', $area->getArea());
             $area->editUserArea($user_meta['id_kanboard'][0]);
@@ -103,6 +101,7 @@ function edit_user_metadata()
                 array_push($array_users_dirigente, $user_meta['id_kanboard'][0]);
             elseif ($user_meta['Ruolo'][0] == 'PO' && $user_meta['Ruolo'][0] != '')
                 array_push($array_users_po, $user_meta['id_kanboard'][0]);
+            print_r($array_users_po);
 
             //foreach per leggere tutti i servizi selezionati da associare agli user
             foreach ($entry_gforms as $key => $value) {
@@ -133,9 +132,7 @@ function edit_user_metadata()
             update_user_meta($wp_userid, 'servizio', $array_servizio);
             $user_meta = get_user_meta($wp_userid);
             array_push($user_meta['servizio'], $array_servizio);
-
             $servizio->setServizio(implode(",", $array_servizio));
-            print_r($servizio->getServizio());
             $servizio->editUserServizio($user_meta['id_kanboard'][0]);
 
             //aggiornamento meta utente wp per ufficio
@@ -177,17 +174,20 @@ function edit_user_metadata()
      }*/
 
 
-    /*$processi_sarala = Processo::findProjectsOnSarala($old_user_area);
-    $array_ids = Processo::findProjectsOnKanboard($processi_sarala);
+    /*$processi_wp= Processo::findProjectsOnWordpress($old_user_area);
+    $array_ids = Processo::findProjectsOnKanboard($processi_wp);
     Processo::deleteDismatchProject($array_ids, $array_users_dirigente);
-    $nuovi_processi_sarala = Processo::findProjectsOnSarala($area->getArea());
-    $array_ids = Processo::findProjectsOnKanboard($nuovi_processi_sarala);
+    $nuovi_processi_wp = Processo::findProjectsOnSarala($area->getArea());
+    $array_ids = Processo::findProjectsOnKanboard($nuovi_processi_wp);
     Processo::insertMatchProject($array_ids, $array_users_dirigente);*/
 
-    $procedimenti_sarala = Procedimento::findTaskOnSarala($old_user_area, $old_user_servizio);
-    echo "<pre>";
-    print_r($old_user_servizio);
-    echo "</pre>";
+    $procedimenti_wp = Procedimento::findTaskOnWordpress($old_user_area, implode(",",$old_user_servizio));
+    $array_ids_procedimento = Procedimento::findTasksOnKanboard($procedimenti_wp);
+    print_r($array_ids_procedimento);
+    Procedimento::deleteDismatchTasks($array_ids_procedimento, $array_users_po);
+    $nuovi_procedimenti_wp = Procedimento::findTaskOnWordpress($area->getArea(),$array_servizio);
+    $array_ids_procedimento = Procedimento::findTasksOnKanboard($nuovi_procedimenti_wp);
+    Procedimento::insertMatchTasks($array_ids_procedimento, $array_users_po);
 
     /* $entry_gforms_procedimento = GFAPI::get_entries(50);
      for ($i = 0; $i < sizeof($entry_gforms_procedimento); $i++) {
@@ -202,7 +202,7 @@ function edit_user_metadata()
              } else {
                  Procedimento::aggiornaProcedimento(null, $value);
              }
-         }*/
+       }*/
 
 
 }

@@ -536,7 +536,7 @@ class Processo
         $mysqli->close();
     }
 
-    public function findProjectsOnSarala($area){
+    public function findProjectsOnWordpress($area){
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
         $id_field_processo = 1;
@@ -545,7 +545,7 @@ class Processo
         $id_field_processo_csv = "%9.%";
         $id_area_form = 2;
         $sql = "SELECT ALL meta_value FROM wp_gf_entry_meta WHERE form_id=? AND meta_key=? AND
-                                                  entry_id IN (SELECT ALL entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)
+                                                  entry_id IN (SELECT ALL entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND
                                                OR form_id=? AND meta_key LIKE ? AND
                                                   entry_id IN (SELECT ALL entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)";
         $stmt = $mysqli->prepare($sql);

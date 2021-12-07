@@ -534,6 +534,7 @@ class Procedimento
         }
         $mysqli->close();
     }
+
     public function assignUsersCreator($users)
     {
         $conn = new Connection();
@@ -549,6 +550,7 @@ class Procedimento
         }
         $mysqli->close();
     }
+
     public function modificaAssegnazioneDipendenti()
     {
         $conn = new Connection();
@@ -556,36 +558,99 @@ class Procedimento
         $sql = "UPDATE MAPP_task_users SET user_id=? WHERE task_id=?";
         $stmt = $mysqli->prepare($sql);
         foreach ($this->users as $userId) {
-            $stmt->bind_param("ii",  $userId,$this->id_procedure);
+            $stmt->bind_param("ii", $userId, $this->id_procedure);
             $res = $stmt->execute();
         }
         $mysqli->close();
     }
-    public function findTaskOnSarala($area,$servizio){
+
+    public function findTaskOnWordpress($area, $servizio)
+    {
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
-        $id_field_procedimento = 2;
+        $id_field_creazione_procedimento = 2;
         $id_form_creazione_procedimento = 2;
         $id_form_procedimento_csv = 50;
         $id_field_procedimento_csv = "%22.%";
         $id_area_form = 18;
         $id_servizio_form = 19;
-        $temp = "%$servizio%";
-        $sql = "SELECT ALL meta_value FROM wp_gf_entry_meta WHERE form_id=? AND meta_key=? AND
-                                                  entry_id IN (SELECT ALL entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND  
-                                                  entry_id IN (SELECT ALL entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)
-                                               OR form_id=? AND meta_key LIKE ? AND
-                                                  entry_id IN (SELECT ALL entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND 
-                                                  entry_id IN (SELECT ALL entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value LIKE ?) ";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("iiisisisisis", $id_form_creazione_procedimento,$id_field_procedimento,$id_area_form,$area,$id_servizio_form,$servizio,
-            $id_form_creazione_procedimento_csv, $id_field_procedimento_csv,$id_area_form,$area,$id_servizio_form,$temp);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_all();
-        $mysqli->close();
-        return $row;
+        $servizi = array();
 
+        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=? AND meta_key=? AND
+                                              entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND 
+                                              entry_id IN (SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=? )
+                                           OR 
+                                              form_id=? AND meta_key LIKE ? AND
+                                                  entry_id IN (SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND 
+                                              entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)";
+        $stmt = $mysqli->prepare($sql);
+        if(gettype($servizio)=='string')
+            $temp=unserialize($servizio);
+        elseif (gettype($servizio)=='array')
+            $temp = $servizio;
+        foreach ($temp as $item) {
+            $stmt->bind_param("iiisisisisis", $id_form_creazione_procedimento, $id_field_creazione_procedimento, $id_area_form, $area, $id_servizio_form, $item,
+                $id_form_procedimento_csv, $id_field_procedimento_csv, $id_area_form, $area, $id_servizio_form, $item);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_all();
+            if ($row != null)
+                array_push($servizi, $row);
+        }
+
+        $mysqli->close();
+        return $servizi[0];
+
+    }
+    public function findTasksOnKanboard($arrayNameTasks){
+        $conn = new Connection;
+        $mysqli = $conn->connect();
+        $array_ids = array();
+        $sql = "SELECT ALL id FROM tasks WHERE title=? ";
+        $stmt = $mysqli->prepare($sql);
+
+        for($i=0;$i<sizeof($arrayNameTasks);$i++){
+            foreach ($arrayNameTasks[$i] as $nameTask) {
+                $stmt->bind_param("s", $nameTask);
+                $res = $stmt->execute();
+                $result = $stmt->get_result();
+                $row = $result->fetch_all();
+                if($row!=null) array_push($array_ids,$row[0][0]);
+            }
+        }
+
+        $mysqli->close();
+        return $array_ids;
+    }
+    public function deleteDismatchTasks($array_ids,$userId){
+        $conn = new Connection;
+        $mysqli = $conn->connect();
+        $sql = "DELETE  FROM MAPP_task_users_owner WHERE task_id=? AND user_id=?";
+        $stmt = $mysqli->prepare($sql);
+        print_r($userId);
+        foreach ($array_ids as $id) {
+            foreach ($userId as $user){
+                $stmt->bind_param("ii", $id,$user);
+                $res = $stmt->execute();
+
+            }
+        }
+        $mysqli->close();
+    }
+    public function insertMatchTasks($array_ids,$userId){
+        $conn = new Connection;
+        $mysqli = $conn->connect();
+        $sql = "INSERT INTO MAPP_task_users_owner (task_id,user_id) VALUES (?,?)";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($array_ids as $id) {
+            foreach ($userId as $user){
+                $stmt->bind_param("ii", $id,$user);
+                $res = $stmt->execute();
+            }
+
+        }
+
+        $mysqli->close();
     }
     /**
      * @return mixed
