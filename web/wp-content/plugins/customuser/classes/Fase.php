@@ -264,16 +264,7 @@ class Fase
         $mysqli->close();
     }
 
-    public function aggiornaFase($id)
-    {
-        $conn = new Connection();
-        $mysqli = $conn->connect();
-        $sql = "UPDATE MAPP_subtask_users SET user_id=? WHERE user_id=?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("ii", $id, $id);
-        $res = $stmt->execute();
-        $mysqli->close();
-    }
+
 
     public function findFaseOnWordpress($area, $servizio, $ufficio)
     {

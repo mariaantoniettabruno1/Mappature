@@ -55,9 +55,7 @@ function add_user_metadata()
             array_push($user_meta[0]['ufficio'], $array_ufficio);
             $ufficio->setUfficio(implode(",", $array_ufficio));
             $ufficio->setUserUfficio($user_meta[0]['id_kanboard'][0]);
-            echo "<pre>";
-            print_r($user_meta);
-            echo "</pre>";
+
 
         }
 
@@ -180,11 +178,35 @@ elseif(!empty(array_filter($array_users_po))){
 
     elseif(!empty((array_filter($array_users_dipendente)))){
         $fase_wp = Fase::findFaseOnWordpress($old_user_area, implode(",", $old_user_servizio),implode(",", $old_user_ufficio));
-        $array_ids_fase = Fase::findFaseOnKanboard($fase_wp);
-        Fase::deleteDismatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
-        $nuova_fase_wp = Fase::findFaseOnWordpress($area->getArea(), $array_servizio,$array_ufficio);
-        $array_ids_fase = Fase::findFaseOnKanboard($nuova_fase_wp);
-        Fase::insertMatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
+        $attivita_wp = SubtaskAttivita::findAttivitaOnWordpress($old_user_area, implode(",", $old_user_servizio),implode(",", $old_user_ufficio));
+
+        if(!empty((array_filter($fase_wp))) && empty(array_filter($attivita_wp))){
+            $array_ids_fase = Fase::findFaseOnKanboard($fase_wp);
+            Fase::deleteDismatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
+            $nuova_fase_wp = Fase::findFaseOnWordpress($area->getArea(), $array_servizio,$array_ufficio);
+            $array_ids_fase = Fase::findFaseOnKanboard($nuova_fase_wp);
+            Fase::insertMatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
+        }
+        elseif(empty((array_filter($fase_wp))) && !empty(array_filter($attivita_wp))){
+            $array_ids_attivita = SubtaskAttivita::findAttivitaOnKanboard($attivita_wp);
+            SubtaskAttivita::deleteDismatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
+            $attivita_wp = SubtaskAttivita::findAttivitaOnWordpress($area->getArea(), $array_servizio,$array_ufficio);
+            $array_ids_attivita = SubtaskAttivita::findAttivitaOnKanboard($attivita_wp);
+            SubtaskAttivita::insertMatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
+        }
+        elseif (!empty((array_filter($fase_wp))) && !empty(array_filter($attivita_wp))){
+            $array_ids_fase = Fase::findFaseOnKanboard($fase_wp);
+            Fase::deleteDismatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
+            $nuova_fase_wp = Fase::findFaseOnWordpress($area->getArea(), $array_servizio,$array_ufficio);
+            $array_ids_fase = Fase::findFaseOnKanboard($nuova_fase_wp);
+            Fase::insertMatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
+            $array_ids_attivita = SubtaskAttivita::findAttivitaOnKanboard($attivita_wp);
+            SubtaskAttivita::deleteDismatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
+            $attivita_wp = SubtaskAttivita::findAttivitaOnWordpress($area->getArea(), $array_servizio,$array_ufficio);
+            $array_ids_attivita = SubtaskAttivita::findAttivitaOnKanboard($attivita_wp);
+            SubtaskAttivita::insertMatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
+        }
+
     }
 
 
