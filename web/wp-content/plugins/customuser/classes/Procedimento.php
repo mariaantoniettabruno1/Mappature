@@ -584,9 +584,9 @@ class Procedimento
                                                   entry_id IN (SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND 
                                               entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)";
         $stmt = $mysqli->prepare($sql);
-        if(gettype($servizio)=='string')
-            $temp=unserialize($servizio);
-        elseif (gettype($servizio)=='array')
+        if (gettype($servizio) == 'string')
+            $temp = unserialize($servizio);
+        elseif (gettype($servizio) == 'array')
             $temp = $servizio;
         foreach ($temp as $item) {
             $stmt->bind_param("iiisisisisis", $id_form_creazione_procedimento, $id_field_creazione_procedimento, $id_area_form, $area, $id_servizio_form, $item,
@@ -602,56 +602,91 @@ class Procedimento
         return $servizi[0];
 
     }
-    public function findTasksOnKanboard($arrayNameTasks){
+
+    public function findTasksOnKanboard($arrayNameTasks)
+    {
         $conn = new Connection;
         $mysqli = $conn->connect();
         $array_ids = array();
         $sql = "SELECT ALL id FROM tasks WHERE title=? ";
         $stmt = $mysqli->prepare($sql);
 
-        for($i=0;$i<sizeof($arrayNameTasks);$i++){
+        for ($i = 0; $i < sizeof($arrayNameTasks); $i++) {
             foreach ($arrayNameTasks[$i] as $nameTask) {
                 $stmt->bind_param("s", $nameTask);
                 $res = $stmt->execute();
                 $result = $stmt->get_result();
                 $row = $result->fetch_all();
-                if($row!=null) array_push($array_ids,$row[0][0]);
+                if ($row != null) array_push($array_ids, $row[0][0]);
             }
         }
 
         $mysqli->close();
         return $array_ids;
     }
-    public function deleteDismatchTasks($array_ids,$userId){
+
+    public function deleteDismatchTasksOwner($array_ids, $userId)
+    {
         $conn = new Connection;
         $mysqli = $conn->connect();
         $sql = "DELETE  FROM MAPP_task_users_owner WHERE task_id=? AND user_id=?";
         $stmt = $mysqli->prepare($sql);
-        print_r($userId);
         foreach ($array_ids as $id) {
-            foreach ($userId as $user){
-                $stmt->bind_param("ii", $id,$user);
+            foreach ($userId as $user) {
+                $stmt->bind_param("ii", $id, $user);
                 $res = $stmt->execute();
-
             }
         }
         $mysqli->close();
     }
-    public function insertMatchTasks($array_ids,$userId){
+
+    public function insertMatchTasksOwner($array_ids, $userId)
+    {
         $conn = new Connection;
         $mysqli = $conn->connect();
         $sql = "INSERT INTO MAPP_task_users_owner (task_id,user_id) VALUES (?,?)";
         $stmt = $mysqli->prepare($sql);
         foreach ($array_ids as $id) {
-            foreach ($userId as $user){
-                $stmt->bind_param("ii", $id,$user);
+            foreach ($userId as $user) {
+                $stmt->bind_param("ii", $id, $user);
                 $res = $stmt->execute();
             }
 
         }
+    }
 
+    public function deleteDismatchTasksCreator($array_ids, $userId)
+    {
+        $conn = new Connection;
+        $mysqli = $conn->connect();
+        $sql = "DELETE  FROM MAPP_task_users_creator WHERE task_id=? AND user_id=?";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($array_ids as $id) {
+            foreach ($userId as $user) {
+                $stmt->bind_param("ii", $id, $user);
+                $res = $stmt->execute();
+
+            }
+        }
         $mysqli->close();
     }
+
+    public function insertMatchTasksCreator($array_ids, $userId)
+    {
+        $conn = new Connection;
+        $mysqli = $conn->connect();
+        $sql = "INSERT INTO MAPP_task_users_creator (task_id,user_id) VALUES (?,?)";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($array_ids as $id) {
+            foreach ($userId as $user) {
+                $stmt->bind_param("ii", $id, $user);
+                $res = $stmt->execute();
+            }
+
+        }
+        $mysqli->close();
+    }
+
     /**
      * @return mixed
      */

@@ -78,6 +78,7 @@ function edit_user_metadata()
     $array_ufficio = array();
     $array_users_dirigente = array();
     $array_users_po = array();
+    $array_users_dipendente = array();
     $area->setArea($entry_gforms[3]);
     $old_value_servizio = '';
     $old_value_ufficio = '';
@@ -93,6 +94,7 @@ function edit_user_metadata()
             $wp_userid = $value;
             $user_meta = get_user_meta($value);
             $old_user_servizio = $user_meta['servizio'];
+            $old_user_ufficio = $user_meta['ufficio'];
             $old_user_area = $user_meta['area'][0];
             update_user_meta($value, 'area', $area->getArea());
             $area->editUserArea($user_meta['id_kanboard'][0]);
@@ -101,7 +103,9 @@ function edit_user_metadata()
                 array_push($array_users_dirigente, $user_meta['id_kanboard'][0]);
             elseif ($user_meta['Ruolo'][0] == 'PO' && $user_meta['Ruolo'][0] != '')
                 array_push($array_users_po, $user_meta['id_kanboard'][0]);
-            print_r($array_users_po);
+            elseif($user_meta['Ruolo'][0] == 'Dipendente' && $user_meta['Ruolo'][0] != '')
+                array_push($array_users_dipendente, $user_meta['id_kanboard'][0]);
+
 
             //foreach per leggere tutti i servizi selezionati da associare agli user
             foreach ($entry_gforms as $key => $value) {
@@ -148,61 +152,45 @@ function edit_user_metadata()
     }
 
 
-    /* else {
 
-          $dipendenteId = $user_meta[0]['id_kanboard'][0];
-          $entry_gforms_fase = GFAPI::get_entries(23);
-         $entry_gforms_procedimento = GFAPI::get_entries(50);
-         echo "<pre>";
-         print_r($user_meta);
-         echo "<pre>";
-         for ($i = 0; $i < sizeof($entry_gforms_fase); $i++) {
-             foreach ($entry_gforms_fase[$i] as $key => $value) {
-                 $pattern = "[^9.]";
-                 if ($entry_gforms_fase[$i][12] == $area->getArea()) {
+    if (!empty(array_filter($array_users_dirigente))) {
+        $processi_wp = Processo::findProjectsOnWordpress($old_user_area);
+        $array_ids = Processo::findProjectsOnKanboard($processi_wp);
+        Processo::deleteDismatchProject($array_ids, $array_users_dirigente);
+        $nuovi_processi_wp = Processo::findProjectsOnWordpress($area->getArea());
+        $array_ids = Processo::findProjectsOnKanboard($nuovi_processi_wp);
+        Processo::insertMatchProject($array_ids, $array_users_dirigente);
+        $procedimenti_wp = Procedimento::findTaskOnWordpress($old_user_area, implode(",", $old_user_servizio));
+        $array_ids_procedimento = Procedimento::findTasksOnKanboard($procedimenti_wp);
+        Procedimento::deleteDismatchTasksCreator($array_ids_procedimento, $array_users_dirigente);
+        $nuovi_procedimenti_wp = Procedimento::findTaskOnWordpress($area->getArea(), $array_servizio);
+        $array_ids_procedimento = Procedimento::findTasksOnKanboard($nuovi_procedimenti_wp);
+        Procedimento::insertMatchTasksCreator($array_ids_procedimento, $array_users_dirigente);
 
-                     if (preg_match($pattern, $key) && $value && $value != '') {
+    }
 
-                         Fase::aggiornaFase($dipendenteId);
-                     }
-                 }
-                 else{
-                     Fase::aggiornaFase(null);
-                 }
-             }
-         }
-     }*/
-
-
-    /*$processi_wp= Processo::findProjectsOnWordpress($old_user_area);
-    $array_ids = Processo::findProjectsOnKanboard($processi_wp);
-    Processo::deleteDismatchProject($array_ids, $array_users_dirigente);
-    $nuovi_processi_wp = Processo::findProjectsOnSarala($area->getArea());
-    $array_ids = Processo::findProjectsOnKanboard($nuovi_processi_wp);
-    Processo::insertMatchProject($array_ids, $array_users_dirigente);*/
-
-    $procedimenti_wp = Procedimento::findTaskOnWordpress($old_user_area, implode(",",$old_user_servizio));
+elseif(!empty(array_filter($array_users_po))){
+    $procedimenti_wp = Procedimento::findTaskOnWordpress($old_user_area, implode(",", $old_user_servizio));
     $array_ids_procedimento = Procedimento::findTasksOnKanboard($procedimenti_wp);
-    print_r($array_ids_procedimento);
-    Procedimento::deleteDismatchTasks($array_ids_procedimento, $array_users_po);
-    $nuovi_procedimenti_wp = Procedimento::findTaskOnWordpress($area->getArea(),$array_servizio);
+    Procedimento::deleteDismatchTasksOwner($array_ids_procedimento, $array_users_po);
+    $nuovi_procedimenti_wp = Procedimento::findTaskOnWordpress($area->getArea(), $array_servizio);
     $array_ids_procedimento = Procedimento::findTasksOnKanboard($nuovi_procedimenti_wp);
-    Procedimento::insertMatchTasks($array_ids_procedimento, $array_users_po);
+    Procedimento::insertMatchTasksOwner($array_ids_procedimento, $array_users_po);
+}
 
-    /* $entry_gforms_procedimento = GFAPI::get_entries(50);
-     for ($i = 0; $i < sizeof($entry_gforms_procedimento); $i++) {
-         foreach ($entry_gforms_procedimento[$i] as $key => $value) {
-             $pattern = "[^22.]";
-             if ($entry_gforms_procedimento[$i][18] == $area->getArea() && $entry_gforms_procedimento[$i][19] == $area->getArea()) {
+    elseif(!empty((array_filter($array_users_dipendente)))){
+        $fase_wp = Fase::findFaseOnWordpress($old_user_area, implode(",", $old_user_servizio),implode(",", $old_user_ufficio));
+        $array_ids_fase = Fase::findFaseOnKanboard($fase_wp);
+        Fase::deleteDismatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
+        $nuova_fase_wp = Fase::findFaseOnWordpress($area->getArea(), $array_servizio,$array_ufficio);
+        $array_ids_fase = Fase::findFaseOnKanboard($nuova_fase_wp);
+        Fase::insertMatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
+    }
 
-                 if (preg_match($pattern, $key) && $value && $value != '') {
 
-                     Procedimento::aggiornaProcedimento($creatorId, $value);
-                 }
-             } else {
-                 Procedimento::aggiornaProcedimento(null, $value);
-             }
-       }*/
+
+
+
 
 
 }

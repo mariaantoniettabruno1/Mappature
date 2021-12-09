@@ -42,7 +42,6 @@ function create_fase_postuma()
     $fase->createFase();
 
 
-
 }
 
 add_shortcode('post_fasepostuma', 'create_fase_postuma');
@@ -265,7 +264,8 @@ class Fase
         $mysqli->close();
     }
 
-    public function aggiornaFase($id){
+    public function aggiornaFase($id)
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
         $sql = "UPDATE MAPP_subtask_users SET user_id=? WHERE user_id=?";
@@ -273,6 +273,113 @@ class Fase
         $stmt->bind_param("ii", $id, $id);
         $res = $stmt->execute();
         $mysqli->close();
+    }
+
+    public function findFaseOnWordpress($area, $servizio, $ufficio)
+    {
+        $conn = new ConnectionSarala();
+        $mysqli = $conn->connect();
+        $id_field_creazione_fase = 1;
+        $id_form_creazione_fase = 23;
+        $id_form_fase_postuma = 60;
+        $id_field_fase_postuma = 1;
+        $id_area_form_postuma = 4;
+        $id_servizio_form_postuma= 5;
+        $id_ufficio_form_postuma= 6;
+        $id_area_form = 12;
+        $id_servizio_form = 13;
+        $id_ufficio_form = 14;
+        $servizi = array();
+
+        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=? AND meta_key=? AND
+                                              entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND 
+                                              entry_id IN (SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=? ) AND 
+                                              entry_id IN (SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=? ) 
+                                           OR 
+                                              form_id=? AND meta_key=? AND
+                                              entry_id IN (SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND 
+                                              entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND
+                                              entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)";
+        $stmt = $mysqli->prepare($sql);
+        if (gettype($servizio) == 'string' && gettype($ufficio) == 'string'){
+            $temp_servizio = unserialize($servizio);
+            $temp_ufficio = unserialize($ufficio);
+        }
+
+        elseif (gettype($servizio) == 'array' && gettype($ufficio) == 'array'){
+            $temp_servizio = $servizio;
+            $temp_ufficio = $ufficio;
+        }
+
+        foreach ($temp_servizio as $item_servizio) {
+            foreach ($temp_ufficio as $item_ufficio){
+                $stmt->bind_param("iiisisisiiisisis",$id_form_creazione_fase,$id_field_creazione_fase,$id_area_form,$area,$id_servizio_form,$item_servizio,$id_ufficio_form,$item_ufficio,
+            $id_form_fase_postuma,$id_field_fase_postuma,$id_area_form_postuma,$area,$id_servizio_form_postuma,$item_servizio,$id_ufficio_form_postuma,$item_ufficio);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $row = $result->fetch_all();
+                if ($row != null)
+                    array_push($servizi, $row);
+
+            }
+
+        }
+
+        $mysqli->close();
+        return $servizi[0];
+
+    }
+
+    public function findFaseOnKanboard($arrayNameSubtasks)
+    {
+        $conn = new Connection;
+        $mysqli = $conn->connect();
+        $array_ids = array();
+        $sql = "SELECT  id FROM subtasks WHERE title LIKE ? ";
+        $stmt = $mysqli->prepare($sql);
+        for ($i = 0; $i < sizeof($arrayNameSubtasks); $i++) {
+            foreach ($arrayNameSubtasks[$i] as $nameSubtask) {
+                $nameSubtask = "%$nameSubtask%";
+                $stmt->bind_param("s", $nameSubtask);
+                $res = $stmt->execute();
+                $result = $stmt->get_result();
+                $row = $result->fetch_all();
+                if ($row != null) array_push($array_ids, $row[0][0]);
+            }
+        }
+
+        $mysqli->close();
+        return $array_ids;
+    }
+
+    public function deleteDismatchSubtaskUsers($array_ids, $userId)
+    {
+        $conn = new Connection;
+        $mysqli = $conn->connect();
+        $sql = "DELETE  FROM MAPP_subtask_users WHERE subtask_id=? AND user_id=?";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($array_ids as $id) {
+            foreach ($userId as $user) {
+                $stmt->bind_param("ii", $id, $user);
+                $res = $stmt->execute();
+            }
+        }
+        $mysqli->close();
+    }
+
+    public function insertMatchSubtaskUsers($array_ids, $userId)
+    {
+        $conn = new Connection;
+        $mysqli = $conn->connect();
+        $sql = "INSERT INTO MAPP_subtask_users (subtask_id,user_id) VALUES (?,?)";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($array_ids as $id) {
+            foreach ($userId as $user) {
+                $stmt->bind_param("ii", $id, $user);
+                $res = $stmt->execute();
+            }
+
+        }
     }
 
     private function getDbTitle($title)
