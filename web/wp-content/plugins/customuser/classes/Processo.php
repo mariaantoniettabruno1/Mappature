@@ -20,28 +20,26 @@ function create_processo()
             $processo->setServizioProcesso($lastEntry[3]);
             $processo->setUfficioProcesso($lastEntry[4]);
             $id_owner = idProcessCreator::getProcessOwnerId($processo->getAreaProcesso());
+            if ($id_owner == NULL || $id_owner == '') {
+                $id_owner = idProcessCreator::getProcedureOwnerId($processo->getAreaProcesso(), $processo->getServizioProcesso(), $processo->getUfficioProcesso());
+            }
+            $processo->setIdUser($id_owner);
             $processo->setRuoloUser('project manager');
             $processo->creaProcesso();
-            $processo->findProject();
-            $processo->assignUsers($id_owner);
+        }
+    }
+    $processo->findProject();
+    $processo->assignUsers($id_owner);
 
-            /* if ($id_owner == NULL || $id_owner == '') {
-                 $id_owner = idProcessCreator::getProcedureOwnerId($processo->getAreaProcesso(), $processo->getServizioProcesso(), $processo->getUfficioProcesso());
-             }
-             $processo->setIdUser($id_owner);
-
-
-         }
-     }
-     $procedimento = new Procedimento();
+   /*  $procedimento = new Procedimento();
      //$temp = array();
      $old_value = '';
-     foreach ($entry_gforms as $key => $value) {
+     foreach ($lastEntry as $key => $value) {
          $pattern = "[^1.]";
          if (preg_match($pattern, $key) && $value) {
              //array_push($temp,$value);
              $procedimento->setTitle($value);
-             foreach ($entry_gforms as $key => $value) {
+             foreach ($lastEntry as $key => $value) {
                  $pattern = "[^3.]";
                  if (preg_match($pattern, $key) && $value) {
                      if ($old_value != $value) {
@@ -55,10 +53,10 @@ function create_processo()
              $procedimento->findTask();
              $procedimento->assignUsers();
          }
-     }  */
+     }*/
 
-        }
-    }}
+
+    }
 
 add_shortcode('post_processo', 'create_processo');
 
@@ -594,6 +592,18 @@ class Processo
     public function insertMatchProject($array_ids,$userId){
         $conn = new Connection;
         $mysqli = $conn->connect();
+       /* $sql="SELECT FROM MAPP_project_users_owner WHERE project_id=? AND user_id=? ";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($array_ids as $id) {
+            foreach ($userId as $user){
+                $stmt->bind_param("ii", $id,$user);
+                $res = $stmt->execute();
+                $result = $stmt->get_result();
+                $row = $result->fetch_all();
+                print_r($row);
+            }
+
+        }*/
         $sql = "INSERT INTO MAPP_project_users_owner (project_id,user_id) VALUES (?,?)";
         $stmt = $mysqli->prepare($sql);
             foreach ($array_ids as $id) {
@@ -610,6 +620,7 @@ class Processo
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
+
         $sql = "INSERT INTO MAPP_project_users_owner (project_id,user_id) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);
         for($i=0; $i<sizeof($usersArray);$i++){

@@ -101,7 +101,7 @@ function edit_user_metadata()
                 array_push($array_users_dirigente, $user_meta['id_kanboard'][0]);
             elseif ($user_meta['Ruolo'][0] == 'PO' && $user_meta['Ruolo'][0] != '')
                 array_push($array_users_po, $user_meta['id_kanboard'][0]);
-            elseif($user_meta['Ruolo'][0] == 'Dipendente' && $user_meta['Ruolo'][0] != '')
+            elseif ($user_meta['Ruolo'][0] == 'Dipendente' && $user_meta['Ruolo'][0] != '')
                 array_push($array_users_dipendente, $user_meta['id_kanboard'][0]);
 
 
@@ -150,7 +150,7 @@ function edit_user_metadata()
     }
 
 
-
+//aggioranmento di processi e procedimenti che hanno il dirigente collegato
     if (!empty(array_filter($array_users_dirigente))) {
         $processi_wp = Processo::findProjectsOnWordpress($old_user_area);
         $array_ids = Processo::findProjectsOnKanboard($processi_wp);
@@ -165,54 +165,47 @@ function edit_user_metadata()
         $array_ids_procedimento = Procedimento::findTasksOnKanboard($nuovi_procedimenti_wp);
         Procedimento::insertMatchTasksCreator($array_ids_procedimento, $array_users_dirigente);
 
+    } elseif (!empty(array_filter($array_users_po))) { //aggiornamenti di procedimenti che hanno il PO collegato
+        $procedimenti_wp = Procedimento::findTaskOnWordpress($old_user_area, implode(",", $old_user_servizio));
+        $array_ids_procedimento = Procedimento::findTasksOnKanboard($procedimenti_wp);
+        Procedimento::deleteDismatchTasksOwner($array_ids_procedimento, $array_users_po);
+        $nuovi_procedimenti_wp = Procedimento::findTaskOnWordpress($area->getArea(), $array_servizio);
+        $array_ids_procedimento = Procedimento::findTasksOnKanboard($nuovi_procedimenti_wp);
+        Procedimento::insertMatchTasksOwner($array_ids_procedimento, $array_users_po);
     }
 
-elseif(!empty(array_filter($array_users_po))){
-    $procedimenti_wp = Procedimento::findTaskOnWordpress($old_user_area, implode(",", $old_user_servizio));
-    $array_ids_procedimento = Procedimento::findTasksOnKanboard($procedimenti_wp);
-    Procedimento::deleteDismatchTasksOwner($array_ids_procedimento, $array_users_po);
-    $nuovi_procedimenti_wp = Procedimento::findTaskOnWordpress($area->getArea(), $array_servizio);
-    $array_ids_procedimento = Procedimento::findTasksOnKanboard($nuovi_procedimenti_wp);
-    Procedimento::insertMatchTasksOwner($array_ids_procedimento, $array_users_po);
-}
+    elseif (!empty((array_filter($array_users_dipendente)))) {//aggiornamento dei dipendenti che hanno fase e attività collegata
+        $fase_wp = Fase::findFaseOnWordpress($old_user_area, implode(",", $old_user_servizio), implode(",", $old_user_ufficio));
+        $attivita_wp = SubtaskAttivita::findAttivitaOnWordpress($old_user_area, implode(",", $old_user_servizio), implode(",", $old_user_ufficio));
 
-    elseif(!empty((array_filter($array_users_dipendente)))){
-        $fase_wp = Fase::findFaseOnWordpress($old_user_area, implode(",", $old_user_servizio),implode(",", $old_user_ufficio));
-        $attivita_wp = SubtaskAttivita::findAttivitaOnWordpress($old_user_area, implode(",", $old_user_servizio),implode(",", $old_user_ufficio));
-
-        if(!empty((array_filter($fase_wp))) && empty(array_filter($attivita_wp))){
+        if (!empty((array_filter($fase_wp))) && empty(array_filter($attivita_wp))) { //se ci sono delle fasi collegate ma non delle attività lavoro solo sulle fasi
             $array_ids_fase = Fase::findFaseOnKanboard($fase_wp);
             Fase::deleteDismatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
-            $nuova_fase_wp = Fase::findFaseOnWordpress($area->getArea(), $array_servizio,$array_ufficio);
+            $nuova_fase_wp = Fase::findFaseOnWordpress($area->getArea(), $array_servizio, $array_ufficio);
             $array_ids_fase = Fase::findFaseOnKanboard($nuova_fase_wp);
             Fase::insertMatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
         }
-        elseif(empty((array_filter($fase_wp))) && !empty(array_filter($attivita_wp))){
+        elseif (empty((array_filter($fase_wp))) && !empty(array_filter($attivita_wp))) { //se ci sono delle attivita collegate ma non delle fasi lavoro solo sulle attività
             $array_ids_attivita = SubtaskAttivita::findAttivitaOnKanboard($attivita_wp);
             SubtaskAttivita::deleteDismatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
-            $attivita_wp = SubtaskAttivita::findAttivitaOnWordpress($area->getArea(), $array_servizio,$array_ufficio);
+            $attivita_wp = SubtaskAttivita::findAttivitaOnWordpress($area->getArea(), $array_servizio, $array_ufficio);
             $array_ids_attivita = SubtaskAttivita::findAttivitaOnKanboard($attivita_wp);
             SubtaskAttivita::insertMatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
         }
-        elseif (!empty((array_filter($fase_wp))) && !empty(array_filter($attivita_wp))){
+        elseif (!empty((array_filter($fase_wp))) && !empty(array_filter($attivita_wp))) { //altrimenti lavoro su entrambe
             $array_ids_fase = Fase::findFaseOnKanboard($fase_wp);
             Fase::deleteDismatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
-            $nuova_fase_wp = Fase::findFaseOnWordpress($area->getArea(), $array_servizio,$array_ufficio);
+            $nuova_fase_wp = Fase::findFaseOnWordpress($area->getArea(), $array_servizio, $array_ufficio);
             $array_ids_fase = Fase::findFaseOnKanboard($nuova_fase_wp);
             Fase::insertMatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
             $array_ids_attivita = SubtaskAttivita::findAttivitaOnKanboard($attivita_wp);
             SubtaskAttivita::deleteDismatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
-            $attivita_wp = SubtaskAttivita::findAttivitaOnWordpress($area->getArea(), $array_servizio,$array_ufficio);
+            $attivita_wp = SubtaskAttivita::findAttivitaOnWordpress($area->getArea(), $array_servizio, $array_ufficio);
             $array_ids_attivita = SubtaskAttivita::findAttivitaOnKanboard($attivita_wp);
             SubtaskAttivita::insertMatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
         }
 
     }
-
-
-
-
-
 
 
 }

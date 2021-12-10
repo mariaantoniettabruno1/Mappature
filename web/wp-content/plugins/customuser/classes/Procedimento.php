@@ -468,18 +468,6 @@ class Procedimento
 
     }
 
-    public function aggiornaProcedimento($creatorId, $value)
-    {
-        $conn = new Connection();
-        $mysqli = $conn->connect();
-        $sql = "UPDATE tasks SET owner_id=? WHERE title=?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("is", $creatorId, $value);
-        $res = $stmt->execute();
-
-        $mysqli->close();
-    }
-
 
     public function deleteProcedure()
     {
@@ -539,6 +527,7 @@ class Procedimento
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
+
         $sql = "INSERT INTO MAPP_task_users_creator (task_id,user_id) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);
         for ($i = 0; $i < sizeof($users); $i++) {
@@ -644,6 +633,7 @@ class Procedimento
     {
         $conn = new Connection;
         $mysqli = $conn->connect();
+
         $sql = "INSERT INTO MAPP_task_users_owner (task_id,user_id) VALUES (?,?)";
         $stmt = $mysqli->prepare($sql);
         foreach ($array_ids as $id) {
@@ -653,6 +643,7 @@ class Procedimento
             }
 
         }
+        $mysqli->close();
     }
 
     public function deleteDismatchTasksCreator($array_ids, $userId)
@@ -675,6 +666,18 @@ class Procedimento
     {
         $conn = new Connection;
         $mysqli = $conn->connect();
+       /* $sql = "SELECT FROM MAPP_task_users_creator WHERE task_id=? AND user_id=?";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($array_ids as $id) {
+            foreach ($userId as $item) {
+                $stmt->bind_param("ii", $id, $item);
+                $res = $stmt->execute();
+                $result = $stmt->get_result();
+                $row = $result->fetch_assoc();
+            }
+        }*/
+
+
         $sql = "INSERT INTO MAPP_task_users_creator (task_id,user_id) VALUES (?,?)";
         $stmt = $mysqli->prepare($sql);
         foreach ($array_ids as $id) {

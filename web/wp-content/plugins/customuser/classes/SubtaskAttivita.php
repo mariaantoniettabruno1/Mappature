@@ -330,7 +330,6 @@ class SubtaskAttivita
         $array_ids = array();
         $sql = "SELECT  id FROM subtasks WHERE title LIKE ? ";
         $stmt = $mysqli->prepare($sql);
-        print_r($arrayNameSubtasks);
         for ($i = 0; $i < sizeof($arrayNameSubtasks); $i++) {
             foreach ($arrayNameSubtasks[$i] as $nameSubtask) {
                 $nameSubtask = "%$nameSubtask%";
