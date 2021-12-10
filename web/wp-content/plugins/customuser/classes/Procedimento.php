@@ -643,6 +643,7 @@ class Procedimento
             }
 
         }
+
         $mysqli->close();
     }
 

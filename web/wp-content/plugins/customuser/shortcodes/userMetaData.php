@@ -166,6 +166,15 @@ function edit_user_metadata()
         Procedimento::insertMatchTasksCreator($array_ids_procedimento, $array_users_dirigente);
 
     } elseif (!empty(array_filter($array_users_po))) { //aggiornamenti di procedimenti che hanno il PO collegato
+        //se ci sono dei processi collegati ai po, aggiorno i dati nel db
+        $processi_wp = Processo::findProjectsOnWordpress($old_user_area);
+        $array_ids = Processo::findProjectsOnKanboard($processi_wp);
+        Processo::deleteDismatchProject($array_ids, $array_users_po);
+        $nuovi_processi_wp = Processo::findProjectsOnWordpress($area->getArea());
+        $array_ids = Processo::findProjectsOnKanboard($nuovi_processi_wp);
+        Processo::insertMatchProject($array_ids, $array_users_po);
+
+        //se ci sono dei procedimenti associati ai po selezionati, aggiorno i dati
         $procedimenti_wp = Procedimento::findTaskOnWordpress($old_user_area, implode(",", $old_user_servizio));
         $array_ids_procedimento = Procedimento::findTasksOnKanboard($procedimenti_wp);
         Procedimento::deleteDismatchTasksOwner($array_ids_procedimento, $array_users_po);
