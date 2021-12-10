@@ -114,7 +114,8 @@ function on_profile_update($user_id)
     if (isset($user_data[0]->data) && isset($user_meta[0])) {
         $user = new User();
         $user->setEmail($user_data[0]->data->user_email);
-        $user->setName($user_meta[0]['first_name'][0]);
+        $first_and_second_name = $user_meta[0]['first_name'][0].$user_meta[0]['last_name'][0];
+        $user->setName($first_and_second_name);
         $user->setUsername($user_data[0]->data->user_login);
         $user->setPassword($user_data[0]->data->user_pass);
         $user->setIdKanboard($user_meta[0]['id_kanboard'][0]);

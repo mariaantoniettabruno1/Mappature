@@ -34,7 +34,7 @@
             <div class="table-list-row table-border-left">
                 <?= $this->render('user_list/user_title', array(
                     'user' => $user,
-                )) ?>
+                ))  ?>
 
                 <?= $this->render('user_list/user_details', array(
                     'user' => $user,
