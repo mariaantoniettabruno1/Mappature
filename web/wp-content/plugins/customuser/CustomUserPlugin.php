@@ -114,7 +114,7 @@ function on_profile_update($user_id)
     if (isset($user_data[0]->data) && isset($user_meta[0])) {
         $user = new User();
         $user->setEmail($user_data[0]->data->user_email);
-        $first_and_second_name = $user_meta[0]['first_name'][0].$user_meta[0]['last_name'][0];
+        $first_and_second_name = $user_meta[0]['first_name'][0].' '.$user_meta[0]['last_name'][0];
         $user->setName($first_and_second_name);
         $user->setUsername($user_data[0]->data->user_login);
         $user->setPassword($user_data[0]->data->user_pass);
@@ -140,6 +140,31 @@ function my_delete_user($user_id)
     $user->deleteUser($id_kan);
 }
 
+add_action('pmxi_saved_post', 'on_saved_user');
+//pmxi_update_post_meta($post_id,$meta_key,$meta_value)
+function on_saved_user($post_id, $xml_node, $is_update){
+    $user_data = array(get_userdata($post_id));
+    $user_meta = array(get_user_meta($post_id));
+
+    if (isset($user_data[0]->data) && isset($user_meta[0])) {
+        $user = new User();
+        $user->setEmail($user_data[0]->data->user_email);
+        $first_and_second_name = $user_meta[0]['first_name'][0].' '.$user_meta[0]['last_name'][0];
+        $user->setName($first_and_second_name);
+        $user->setUsername($user_data[0]->data->user_login);
+        $user->setPassword($user_data[0]->data->user_pass);
+        $user->setIdKanboard($user_meta[0]['id_kanboard'][0]);
+        $idKanboard = $user->getIdKanboard();
+        if ($idKanboard != NULL) {
+            $user->updateUser();
+        } else {
+            $user->createUser();
+            $idKanboard = $user->getIdKanboard();
+            update_user_meta($post_id, 'id_kanboard', $idKanboard);
+        }
+
+    }
+}
 
 
 class User
