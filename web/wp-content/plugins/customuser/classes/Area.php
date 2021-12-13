@@ -42,41 +42,4 @@ public function editUserArea($userid){
     $mysqli->close();
 }
 }
-//class Settore
-//{
-//    private $formidSettore = 17;
-//
-//    public function __construct()
-//    {
-//
-//    }
-//
-//    public function getFormidSettore()
-//    {
-//        return $this->formidSettore;
-//    }
-//
-//
-//    public function setFormidSettore(int $formidSettore)
-//    {
-//        $this->formidSettore = $formidSettore;
-//    }
-//
-//    public function selectSettore()
-//    {
-//        $conn = new ConnectionSarala();
-//        $mysqli = $conn->connect();
-//        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=?";
-//        $stmt = $mysqli->prepare($sql);
-//        $stmt->bind_param("i", $this->formidSettore);
-//        $res = $stmt->execute();
-//        $res = $stmt->get_result();
-//        $result = array();
-//        foreach ($res as $lines) {
-//            array_push($result, $lines["meta_value"]);
-//        }
-//        $mysqli->close();
-//        return $result;
-//
-//    }
-//}
+

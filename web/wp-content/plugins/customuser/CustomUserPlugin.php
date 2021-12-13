@@ -49,17 +49,17 @@ function extra_user_fields($user)
             </select>
 
             <script>
-                $(document).ready(function() {
-                        var roleValue = localStorage.getItem("ruoloValue");
+                $(document).ready(function () {
+                    var roleValue = localStorage.getItem("ruoloValue");
 
-                        if (roleValue != null) {
-                            $("ruolo").val(roleValue);
-                        }
+                    if (roleValue != null) {
+                        $("ruolo").val(roleValue);
+                    }
 
-                        $("ruolo").on("change", function () {
-                            localStorage.setItem("ruoloValue", $(this).val());
-                        });
-                    })
+                    $("ruolo").on("change", function () {
+                        localStorage.setItem("ruoloValue", $(this).val());
+                    });
+                })
             </script>
         </div>
         </td>
@@ -95,10 +95,6 @@ function save_extra_user_field($user_id)
         return false;
     }
     update_user_meta($user_id, 'ruolo', $_POST["ruolo"]);
-    /* echo "<pre>";
-     print_r(get_user_meta($user_id));
-     throw new Exception();
-     echo "</pre>";*/
 
 
 }
@@ -114,7 +110,7 @@ function on_profile_update($user_id)
     if (isset($user_data[0]->data) && isset($user_meta[0])) {
         $user = new User();
         $user->setEmail($user_data[0]->data->user_email);
-        $first_and_second_name = $user_meta[0]['first_name'][0].' '.$user_meta[0]['last_name'][0];
+        $first_and_second_name = $user_meta[0]['first_name'][0] . ' ' . $user_meta[0]['last_name'][0];
         $user->setName($first_and_second_name);
         $user->setUsername($user_data[0]->data->user_login);
         $user->setPassword($user_data[0]->data->user_pass);
@@ -122,6 +118,7 @@ function on_profile_update($user_id)
         $idKanboard = $user->getIdKanboard();
         if ($idKanboard != NULL) {
             $user->updateUser();
+
         } else {
             $user->createUser();
             $idKanboard = $user->getIdKanboard();
@@ -129,6 +126,16 @@ function on_profile_update($user_id)
         }
 
     }
+    $area = new Area();
+    $servizio = new Servizio();
+    $ufficio = new Ufficio();
+    $area->setArea($user_meta[0]['area'][0]);
+    $area->setUserArea($idKanboard);
+    $servizio->setServizio($user_meta[0]['servizio'][0]);
+    $servizio->setUserServizio($idKanboard);
+    $ufficio->setUfficio($user_meta[0]['ufficio'][0]);
+    $ufficio->setUserUfficio($idKanboard);
+
 }
 
 add_action('delete_user', 'my_delete_user');
@@ -141,15 +148,15 @@ function my_delete_user($user_id)
 }
 
 add_action('pmxi_saved_post', 'on_saved_user');
-//pmxi_update_post_meta($post_id,$meta_key,$meta_value)
-function on_saved_user($post_id, $xml_node, $is_update){
+function on_saved_user($post_id, $xml_node, $is_update)
+{
     $user_data = array(get_userdata($post_id));
     $user_meta = array(get_user_meta($post_id));
 
     if (isset($user_data[0]->data) && isset($user_meta[0])) {
         $user = new User();
         $user->setEmail($user_data[0]->data->user_email);
-        $first_and_second_name = $user_meta[0]['first_name'][0].' '.$user_meta[0]['last_name'][0];
+        $first_and_second_name = $user_meta[0]['first_name'][0] . ' ' . $user_meta[0]['last_name'][0];
         $user->setName($first_and_second_name);
         $user->setUsername($user_data[0]->data->user_login);
         $user->setPassword($user_data[0]->data->user_pass);
@@ -157,10 +164,12 @@ function on_saved_user($post_id, $xml_node, $is_update){
         $idKanboard = $user->getIdKanboard();
         if ($idKanboard != NULL) {
             $user->updateUser();
+
         } else {
             $user->createUser();
             $idKanboard = $user->getIdKanboard();
             update_user_meta($post_id, 'id_kanboard', $idKanboard);
+
         }
 
     }
@@ -280,13 +289,14 @@ class User
         $conn = new Connection();
         $mysqli = $conn->connect();
         $this->setIdKanboard($id_kan);
-        $sql = "DELETE  FROM users WHERE id=?";
+        $sql = "DELETE FROM users WHERE id=?";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("i", $this->idKanboard);
         $res = $stmt->execute();
         $mysqli->close();
     }
 }
+
 ?>
 
 
