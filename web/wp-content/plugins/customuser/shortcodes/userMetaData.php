@@ -5,6 +5,7 @@ include_once "../classes/Ufficio.php";
 include_once "../classes/Procedimento.php";
 include_once "../classes/Processo.php";
 include_once "../classes/IdProcessCreator.php";
+include_once "../classes/User.php";
 function add_user_metadata()
 {
     $entry_gforms = GFAPI::get_entries(52)[0];
@@ -167,6 +168,7 @@ function edit_user_metadata()
 
     } elseif (!empty(array_filter($array_users_po))) { //aggiornamenti di procedimenti che hanno il PO collegato
         //se ci sono dei processi collegati ai po, aggiorno i dati nel db
+        print_r("Sono dentro il secondo if");
         $processi_wp = Processo::findProjectsOnWordpress($old_user_area);
         $array_ids = Processo::findProjectsOnKanboard($processi_wp);
         Processo::deleteDismatchProject($array_ids, $array_users_po);
@@ -186,7 +188,7 @@ function edit_user_metadata()
     elseif (!empty((array_filter($array_users_dipendente)))) {//aggiornamento dei dipendenti che hanno fase e attività collegata
         $fase_wp = Fase::findFaseOnWordpress($old_user_area, implode(",", $old_user_servizio), implode(",", $old_user_ufficio));
         $attivita_wp = SubtaskAttivita::findAttivitaOnWordpress($old_user_area, implode(",", $old_user_servizio), implode(",", $old_user_ufficio));
-
+        print_r("Sono dentro il terzo if");
         if (!empty((array_filter($fase_wp))) && empty(array_filter($attivita_wp))) { //se ci sono delle fasi collegate ma non delle attività lavoro solo sulle fasi
             $array_ids_fase = Fase::findFaseOnKanboard($fase_wp);
             Fase::deleteDismatchSubtaskUsers($array_ids_fase, $array_users_dipendente);

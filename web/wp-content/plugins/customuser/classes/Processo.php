@@ -31,32 +31,32 @@ function create_processo()
     $processo->findProject();
     $processo->assignUsers($id_owner);
 
-   /*  $procedimento = new Procedimento();
-     //$temp = array();
-     $old_value = '';
-     foreach ($lastEntry as $key => $value) {
-         $pattern = "[^1.]";
-         if (preg_match($pattern, $key) && $value) {
-             //array_push($temp,$value);
-             $procedimento->setTitle($value);
-             foreach ($lastEntry as $key => $value) {
-                 $pattern = "[^3.]";
-                 if (preg_match($pattern, $key) && $value) {
-                     if ($old_value != $value) {
-                         $procedimento->addUser($value);
-                         $old_value = $value;
-                     }
+    /*  $procedimento = new Procedimento();
+      //$temp = array();
+      $old_value = '';
+      foreach ($lastEntry as $key => $value) {
+          $pattern = "[^1.]";
+          if (preg_match($pattern, $key) && $value) {
+              //array_push($temp,$value);
+              $procedimento->setTitle($value);
+              foreach ($lastEntry as $key => $value) {
+                  $pattern = "[^3.]";
+                  if (preg_match($pattern, $key) && $value) {
+                      if ($old_value != $value) {
+                          $procedimento->addUser($value);
+                          $old_value = $value;
+                      }
 
 
-                 }
-             }
-             $procedimento->findTask();
-             $procedimento->assignUsers();
-         }
-     }*/
+                  }
+              }
+              $procedimento->findTask();
+              $procedimento->assignUsers();
+          }
+      }*/
 
 
-    }
+}
 
 add_shortcode('post_processo', 'create_processo');
 
@@ -131,6 +131,7 @@ class Processo
     private $servizio_processo;
     private $ufficio_processo;
     private $users;
+
     /**
      * @return mixed
      */
@@ -534,7 +535,8 @@ class Processo
         $mysqli->close();
     }
 
-    public function findProjectsOnWordpress($area){
+    public function findProjectsOnWordpress($area)
+    {
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
         $id_field_processo = 1;
@@ -542,46 +544,54 @@ class Processo
         $id_form_processo_csv = 1;
         $id_field_processo_csv = "%9.%";
         $id_area_form = 2;
-        $sql = "SELECT  meta_value FROM wp_gf_entry_meta WHERE form_id=? AND meta_key=? AND
+        $sql = "SELECT ALL meta_value FROM wp_gf_entry_meta WHERE form_id=? AND meta_key=? AND
                                                   entry_id IN (SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) 
                                                OR form_id=? AND meta_key LIKE ? AND
                                                   entry_id IN (SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("iiisisis", $id_form_creazione_processo,$id_field_processo,$id_area_form, $area,
-            $id_form_processo_csv,$id_field_processo_csv,$id_area_form, $area);
+        $stmt->bind_param("iiisisis", $id_form_creazione_processo, $id_field_processo, $id_area_form, $area,
+            $id_form_processo_csv, $id_field_processo_csv, $id_area_form, $area);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_all();
         $mysqli->close();
 
-        return $row[0];
+        return $row;
 
     }
-    public function findProjectsOnKanboard($arrayNameProjects){
+
+    public function findProjectsOnKanboard($arrayNameProjects)
+    {
         $conn = new Connection;
         $mysqli = $conn->connect();
         $array_ids = array();
-        $sql = "SELECT ALL id FROM projects WHERE name=? ";
+        $sql = "SELECT ALL id FROM projects WHERE name=?";
         $stmt = $mysqli->prepare($sql);
-            foreach ($arrayNameProjects as $nameProject) {
-                $stmt->bind_param("s", $nameProject);
-                $res = $stmt->execute();
+        foreach ($arrayNameProjects as $nameProject) {
+            foreach ($nameProject as $item) {
+                $stmt->bind_param("s", $item);
+                $stmt->execute();
                 $result = $stmt->get_result();
                 $row = $result->fetch_all();
-                if($row!=null) array_push($array_ids,$row[0][0]);
             }
+            if (!empty($row)) {
+                array_push($array_ids, $row[0][0]);
+            }
+        }
 
         $mysqli->close();
         return $array_ids;
     }
-    public function deleteDismatchProject($array_ids,$userId){
+
+    public function deleteDismatchProject($array_ids, $userId)
+    {
         $conn = new Connection;
         $mysqli = $conn->connect();
         $sql = "DELETE  FROM MAPP_project_users_owner WHERE project_id=? AND user_id=?";
         $stmt = $mysqli->prepare($sql);
         foreach ($array_ids as $id) {
-            foreach ($userId as $user){
-                $stmt->bind_param("ii", $id,$user);
+            foreach ($userId as $user) {
+                $stmt->bind_param("ii", $id, $user);
                 $res = $stmt->execute();
             }
 
@@ -589,33 +599,34 @@ class Processo
         $mysqli->close();
     }
 
-    public function insertMatchProject($array_ids,$userId){
+    public function insertMatchProject($array_ids, $userId)
+    {
         $conn = new Connection;
         $mysqli = $conn->connect();
-       /* $sql="SELECT FROM MAPP_project_users_owner WHERE project_id=? AND user_id=? ";
+        $sql = "SELECT id FROM MAPP_project_users_owner WHERE project_id=? AND user_id=? ";
         $stmt = $mysqli->prepare($sql);
         foreach ($array_ids as $id) {
-            foreach ($userId as $user){
-                $stmt->bind_param("ii", $id,$user);
-                $res = $stmt->execute();
+            foreach ($userId as $user) {
+                $stmt->bind_param("ii", $id, $user);
+                $stmt->execute();
                 $result = $stmt->get_result();
                 $row = $result->fetch_all();
-                print_r($row);
             }
 
-        }*/
+        }
         $sql = "INSERT INTO MAPP_project_users_owner (project_id,user_id) VALUES (?,?)";
         $stmt = $mysqli->prepare($sql);
-            foreach ($array_ids as $id) {
-                foreach ($userId as $user){
-                    $stmt->bind_param("ii", $id,$user);
-                    $res = $stmt->execute();
-                }
-
+        foreach ($array_ids as $id) {
+            foreach ($userId as $user) {
+                $stmt->bind_param("ii", $id, $user);
+                $res = $stmt->execute();
+            }
         }
 
         $mysqli->close();
     }
+
+
     public function assignUsers($usersArray)
     {
         $conn = new Connection();
@@ -623,20 +634,22 @@ class Processo
 
         $sql = "INSERT INTO MAPP_project_users_owner (project_id,user_id) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);
-        for($i=0; $i<sizeof($usersArray);$i++){
+        for ($i = 0; $i < sizeof($usersArray); $i++) {
             foreach ($usersArray[$i] as $userId) {
-            $stmt->bind_param("ii", $this->id_processo, $userId);
-            $res = $stmt->execute();
+                $stmt->bind_param("ii", $this->id_processo, $userId);
+                $res = $stmt->execute();
 
-        }}
+            }
+        }
         $sql = "INSERT INTO project_has_users (project_id,user_id,role) VALUES(?,?,?)";
         $stmt = $mysqli->prepare($sql);
-        for($i=0; $i<sizeof($usersArray);$i++){
+        for ($i = 0; $i < sizeof($usersArray); $i++) {
             foreach ($usersArray[$i] as $userId) {
                 $stmt->bind_param("iis", $this->id_processo, $userId, $this->ruolo_user);
                 $res = $stmt->execute();
 
-            }}
+            }
+        }
 
         $mysqli->close();
     }

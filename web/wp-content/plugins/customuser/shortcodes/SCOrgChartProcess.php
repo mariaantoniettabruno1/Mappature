@@ -1,5 +1,4 @@
 <?php
-
 function printOrgChartProcess(){
 
     $oc = new OrgChartProcess();

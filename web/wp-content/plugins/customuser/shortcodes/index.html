@@ -1,19 +1,4 @@
-<?php
-
-/*
-Plugin Name: Chart Plugin
-Plugin URI:
-Description:
-Version: 0.1
-Author: MG3
-Author URI:
-
-*/
-
-
-function visualize_orgchart()
-{?>
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -43,20 +28,20 @@ function visualize_orgchart()
                 <div class="checkbox">
                   <label>
                     <input type="checkbox" class="checkbox" id="chk-ignore-case" value="true">
-    Ignore Case
+                    Ignore Case
                   </label>
                 </div>
                 <div class="checkbox">
                   <label>
                     <input type="checkbox" class="checkbox" id="chk-exact-match" value="false">
-    Exact Match
+                    Exact Match
                   </label>
                 </div>
                 <div class="checkbox">
                   <label>
                     <input type="checkbox" class="checkbox" id="chk-reveal-results" value="true">
-    Reveal Results
-</label>
+                    Reveal Results
+                  </label>
                 </div>
                 <button type="button" class="btn btn-success" id="btn-search">Search</button>
                 <button type="button" class="btn btn-default" id="btn-clear-search">Clear</button>
@@ -76,8 +61,3 @@ function visualize_orgchart()
               <div id="tree"></div>
   </body>
 </html>
-
-    <?php
-}
-
-add_shortcode('post_orgchart', 'visualize_orgchart');
