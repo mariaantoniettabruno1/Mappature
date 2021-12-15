@@ -168,7 +168,6 @@ function edit_user_metadata()
 
     } elseif (!empty(array_filter($array_users_po))) { //aggiornamenti di procedimenti che hanno il PO collegato
         //se ci sono dei processi collegati ai po, aggiorno i dati nel db
-        print_r("Sono dentro il secondo if");
         $processi_wp = Processo::findProjectsOnWordpress($old_user_area);
         $array_ids = Processo::findProjectsOnKanboard($processi_wp);
         Processo::deleteDismatchProject($array_ids, $array_users_po);

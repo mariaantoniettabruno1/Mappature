@@ -455,9 +455,9 @@ class Processo
         $conn = new Connection();
         $mysqli = $conn->connect();
 
-        $sql = "INSERT INTO projects (name,owner_id,token) VALUES(?,?,?)";
+        $sql = "INSERT INTO projects (name,token) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("sis", $this->nome_processo, $this->id_user, $this->token);
+        $stmt->bind_param("ss", $this->nome_processo,  $this->token);
         $res = $stmt->execute();
 
         $sql = "SELECT id FROM projects WHERE name=? ORDER BY id DESC LIMIT 1";
@@ -603,8 +603,9 @@ class Processo
     {
         $conn = new Connection;
         $mysqli = $conn->connect();
-        $sql = "SELECT id FROM MAPP_project_users_owner WHERE project_id=? AND user_id=? ";
+        /*$sql = "SELECT ALL id FROM MAPP_project_users_owner WHERE project_id=? AND user_id=? ";
         $stmt = $mysqli->prepare($sql);
+        $array = array();
         foreach ($array_ids as $id) {
             foreach ($userId as $user) {
                 $stmt->bind_param("ii", $id, $user);
@@ -612,8 +613,8 @@ class Processo
                 $result = $stmt->get_result();
                 $row = $result->fetch_all();
             }
+        }*/
 
-        }
         $sql = "INSERT INTO MAPP_project_users_owner (project_id,user_id) VALUES (?,?)";
         $stmt = $mysqli->prepare($sql);
         foreach ($array_ids as $id) {
