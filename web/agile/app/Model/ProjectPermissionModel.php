@@ -171,7 +171,9 @@ class ProjectPermissionModel extends Base
      */
     public function getActiveProjectIds($user_id)
     {
-        return array_keys($this->projectUserRoleModel->getActiveProjectsByUser($user_id));
+        $value = array_keys($this->projectUserRoleModel->getActiveProjectsByUser($user_id));
+
+        return $value;
     }
 
     /**

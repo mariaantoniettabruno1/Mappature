@@ -18,9 +18,9 @@ class ProjectPagination extends Base
      * Get dashboard pagination
      *
      * @access public
-     * @param  integer $user_id
-     * @param  string  $method
-     * @param  integer $max
+     * @param integer $user_id
+     * @param string $method
+     * @param integer $max
      * @return Paginator
      */
     public function getDashboardPaginator($user_id, $method, $max)
@@ -28,11 +28,14 @@ class ProjectPagination extends Base
         $query = $this->projectModel->getQueryColumnStats($this->projectPermissionModel->getActiveProjectIds($user_id));
         $this->hook->reference('pagination:dashboard:project:query', $query);
 
-        return $this->paginator
+        $details = $this->paginator
             ->setUrl('DashboardController', $method, array('pagination' => 'projects', 'user_id' => $user_id))
             ->setMax($max)
-            ->setOrder(ProjectModel::TABLE.'.name')
+            ->setOrder(ProjectModel::TABLE . '.name')
             ->setQuery($query)
             ->calculateOnlyIf($this->request->getStringParam('pagination') === 'projects');
+
+        return $details;
+
     }
 }

@@ -78,6 +78,7 @@ class ProjectModel extends Base
             ->join(UserModel::TABLE, 'id', 'owner_id')
             ->findOne();
         $details['owner_name'] = $this->getOwnersId($project_id);
+        $details['owner_username'] = $this->getOwnersId($project_id);
         echo "<pre>";
         print_r($details);
         echo "</pre>";

@@ -14,10 +14,13 @@
 
 <?php if (! $project_paginator->isEmpty()): ?>
     <div class="table-list">
+        <?php $project_paginator;?>
+
         <?= $this->render('project_list/header', array('paginator' => $project_paginator)) ?>
         <?php foreach ($project_paginator->getCollection() as $project): ?>
             <div class="table-list-row table-border-left">
                 <div>
+
                     <?php if ($this->user->hasProjectAccess('ProjectViewController', 'show', $project['id'])): ?>
                         <?= $this->render('project/dropdown', array('project' => $project)) ?>
                     <?php else: ?>
@@ -46,12 +49,12 @@
 <?php endif ?>
 
 <?php if (empty($overview_paginator)): ?>
-    <p class="alert"><?= t('There is nothing assigned to you.') ?></p>
+    <p class="alert"><?=t('There is nothing assigned to you.');?></p>
 <?php else: ?>
     <?php foreach ($overview_paginator as $result): ?>
         <?php if (! $result['paginator']->isEmpty()): ?>
             <div class="page-header">
-                <h2 id="project-tasks-<?= $result['project_id'] ?>"><?= $this->url->link($this->text->e($result['project_name']), 'BoardViewController', 'show', array('project_id' => $result['project_id'])) ?></h2>
+                <h2 id="project-tasks-<?= $result['project_id']?>"><?= $this->url->link($this->text->e($result['project_name']), 'BoardViewController', 'show', array('project_id' => $result['project_id'])) ?></h2>
             </div>
 
             <div class="table-list">
