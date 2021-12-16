@@ -1,8 +1,8 @@
 <div class="page-header">
-    <h2><?= $this->url->link(t('My projects'), 'DashboardController', 'projects', array('user_id' => $user['id'])) ?> (<?= $paginator->getTotal() ?>)</h2>
+    <h2><?= $this->url->link(t('I miei processi'), 'DashboardController', 'projects', array('user_id' => $user['id'])) ?> (<?= $paginator->getTotal() ?>)</h2>
 </div>
 <?php if ($paginator->isEmpty()): ?>
-    <p class="alert"><?= t('Your are not member of any project.');?></p>
+    <p class="alert"><?= t('Your are not member of any processo.');?></p>
 
 <?php else: ?>
     <div class="table-list">

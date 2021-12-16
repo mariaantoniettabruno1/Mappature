@@ -4,13 +4,13 @@
             <?= $this->url->link(t('Overview'), 'DashboardController', 'show', array('user_id' => $user['id'])) ?>
         </li>
         <li <?= $this->app->checkMenuSelection('DashboardController', 'projects') ?>>
-            <?= $this->url->link(t('My projects'), 'DashboardController', 'projects', array('user_id' => $user['id'])) ?>
+            <?= $this->url->link(t('I miei processi'), 'DashboardController', 'projects', array('user_id' => $user['id'])) ?>
         </li>
         <li <?= $this->app->checkMenuSelection('DashboardController', 'tasks') ?>>
-            <?= $this->url->link(t('My tasks'), 'DashboardController', 'tasks', array('user_id' => $user['id'])) ?>
+            <?= $this->url->link(t('I miei procedimenti'), 'DashboardController', 'tasks', array('user_id' => $user['id'])) ?>
         </li>
         <li <?= $this->app->checkMenuSelection('DashboardController', 'subtasks') ?>>
-            <?= $this->url->link(t('My subtasks'), 'DashboardController', 'subtasks', array('user_id' => $user['id'])) ?>
+            <?= $this->url->link(t('Le mie fasi/attività'), 'DashboardController', 'subtasks', array('user_id' => $user['id'])) ?>
         </li>
         <?= $this->hook->render('template:dashboard:sidebar', array('user' => $user)) ?>
     </ul>

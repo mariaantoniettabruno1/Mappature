@@ -1,5 +1,5 @@
 <div class="page-header">
-    <h2><?= $this->url->link(t('My tasks'), 'DashboardController', 'tasks', array('user_id' => $task['id'])) ?> (<?= $paginator->getTotal(); ?>)</h2>
+    <h2><?= $this->url->link(t('I miei procedimenti'), 'DashboardController', 'tasks', array('user_id' => $task['id'])) ?> (<?= $paginator->getTotal(); ?>)</h2>
 </div>
 <?php if ($paginator->isEmpty()): ?>
     <p class="alert"><?= t('There is nothing assigned to you.') ?> </p>

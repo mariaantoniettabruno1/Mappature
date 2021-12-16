@@ -61,6 +61,7 @@ class TaskViewController extends BaseController
     public function show()
     {
         $task = $this->getTask();
+
         $subtasks = $this->subtaskModel->getAll($task['id']);
         $commentSortingDirection = $this->userMetadataCacheDecorator->get(UserMetadataModel::KEY_COMMENT_SORTING_DIRECTION, 'ASC');
 
@@ -76,6 +77,8 @@ class TaskViewController extends BaseController
             'link_label_list' => $this->linkModel->getList(0, false),
             'tags' => $this->taskTagModel->getTagsByTask($task['id']),
         )));
+
+
     }
 
     /**
@@ -86,7 +89,6 @@ class TaskViewController extends BaseController
     public function analytics()
     {
         $task = $this->getTask();
-
         $this->response->html($this->helper->layout->task('task/analytics', array(
             'task' => $task,
             'project' => $this->projectModel->getById($task['project_id']),

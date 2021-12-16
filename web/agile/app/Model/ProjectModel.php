@@ -79,9 +79,6 @@ class ProjectModel extends Base
             ->findOne();
         $details['owner_name'] = $this->getOwnersId($project_id);
         $details['owner_username'] = $this->getOwnersId($project_id);
-        echo "<pre>";
-        print_r($details);
-        echo "</pre>";
         return $details;
     }
 

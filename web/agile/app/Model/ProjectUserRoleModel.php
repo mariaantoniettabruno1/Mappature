@@ -57,24 +57,30 @@ class ProjectUserRoleModel extends Base
             ->eq('MAPP_task_users_owner.user_id', $user_id)
             ->join('tasks', 'id', 'task_id')
             ->findAll();
+
         $userProjectTaskOwner = $this->db
             ->table(ProjectModel::TABLE)
             ->eq(ProjectModel::TABLE . '.id', $userTaskOwner[0]['project_id'])
             ->findAll();
+
         $userTaskCreator = $this->db
             ->table('MAPP_task_users_creator')
             ->eq('MAPP_task_users_creator.user_id', $user_id)
             ->join('tasks', 'id', 'task_id')
             ->findAll();
+
         $userProjectTaskCreator = $this->db
             ->table(ProjectModel::TABLE)
             ->eq(ProjectModel::TABLE . '.id', $userTaskCreator[0]['project_id'])
             ->findAll();
+
+        //salvataggio dei dati in un array
         for ($i = 0; $i < sizeof($userProjectTaskOwner); $i++) {
             array_push($tempOwner,$userProjectTaskOwner[$i]['name']);
             $tempOwner[$userProjectTaskOwner[$i]['id']] = $tempOwner[$i];
             unset($tempOwner[$i]);
         }
+
         for ($i = 0; $i < sizeof($userProjectTaskCreator); $i++) {
             array_push($tempCreator,$userProjectTaskCreator[$i]['name']);
             $tempOwner[$userProjectTaskCreator[$i]['id']] = $tempCreator[$i];

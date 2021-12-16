@@ -17,7 +17,9 @@ class TaskModificationController extends BaseController
     public function assignToMe()
     {
         $task = $this->getTask();
+
         $values = ['id' => $task['id'], 'owner_id' => $this->userSession->getId()];
+
 
         if (! $this->helper->projectRole->canUpdateTask($task)) {
             throw new AccessForbiddenException(t('You are not allowed to update tasks assigned to someone else.'));
