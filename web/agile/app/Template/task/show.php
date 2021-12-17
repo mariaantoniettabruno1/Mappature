@@ -1,5 +1,6 @@
 <?= $this->hook->render('template:task:show:top', array('task' => $task, 'project' => $project)) ?>
 
+
 <?= $this->render('task/details', array(
     'task' => $task,
     'tags' => $tags,

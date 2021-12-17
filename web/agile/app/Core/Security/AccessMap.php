@@ -172,4 +172,5 @@ class AccessMap
 
         return $this->getRoleHierarchy($this->defaultRole);
     }
+
 }

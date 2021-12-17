@@ -61,6 +61,14 @@ function extra_user_fields($user)
                     });
                 })
             </script>
+            <br>
+            <form>
+                <input type="radio" name="choice" value="yes" id="choice-yes">
+                <label for="choice-yes">Si</label>
+                <br>
+                <input type="radio" name="choice" value="no" id="choice-no">
+                <label for="choice-no">No</label>
+            </form>
         </div>
         </td>
     </tr>

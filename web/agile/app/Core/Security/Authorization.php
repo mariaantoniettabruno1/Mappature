@@ -41,6 +41,10 @@ class Authorization
     public function isAllowed($controller, $method, $role)
     {
         $roles = $this->accessMap->getRoles($controller, $method);
+
+
+
         return in_array($role, $roles);
+
     }
 }

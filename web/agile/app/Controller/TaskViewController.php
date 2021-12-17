@@ -2,6 +2,7 @@
 
 namespace Kanboard\Controller;
 
+use Dompdf\Exception;
 use Kanboard\Core\Controller\AccessForbiddenException;
 use Kanboard\Core\Controller\PageNotFoundException;
 use Kanboard\Model\UserMetadataModel;

@@ -24,7 +24,7 @@ function create_processo()
                 $id_owner = idProcessCreator::getProcedureOwnerId($processo->getAreaProcesso(), $processo->getServizioProcesso(), $processo->getUfficioProcesso());
             }
             $processo->setIdUser($id_owner);
-            $processo->setRuoloUser('project manager');
+            $processo->setRuoloUser('project-manager');
             $processo->creaProcesso();
         }
     }
@@ -505,7 +505,7 @@ class Processo
         $res = $stmt->get_result();
         $process = $res->fetch_assoc();
         $this->setIdProcesso($process['id']);
-        $sql = "DELETE  FROM projects WHERE id=? ORDER BY id DESC LIMIT 1";
+        $sql = "DELETE FROM projects WHERE id=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("i", $this->id_processo);
         $res = $stmt->execute();

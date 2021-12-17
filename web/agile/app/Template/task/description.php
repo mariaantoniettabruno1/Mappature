@@ -3,6 +3,7 @@
     <div class="accordion-content">
         <article class="markdown">
             <?= $this->text->markdown($task['description'], isset($is_public) && $is_public) ?>
+
         </article>
     </div>
 </details>
