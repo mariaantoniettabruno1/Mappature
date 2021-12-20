@@ -43,32 +43,54 @@ function extra_user_fields($user)
         <td>Ruolo</td>
         <div>
             <select name='ruolo' id='ruolo'>
-                <option> Dirigente</option>
-                <option> PO</option>
-                <option> Dipendente</option>
+                <option value="Dirigente"> Dirigente</option>
+                <option value="PO"> PO</option>
+                <option value="Dipendente"> Dipendente</option>
             </select>
 
             <script>
-                $(document).ready(function () {
-                    var roleValue = localStorage.getItem("ruoloValue");
-
-                    if (roleValue != null) {
-                        $("ruolo").val(roleValue);
+                if (localStorage.getItem('ruolo') === null) {
+                    localStorage.setItem('ruolo', "Dirigente");
+                    document.write("Dirigente");
+                }
+                else {
+                    if (localStorage.getItem('ruolo') === "Dirigente") {
+                        document.write("Dirigente");
+                    } else if (localStorage.getItem('ruolo') === "PO") {
+                        document.write("PO");
+                    } else if (localStorage.getItem('ruolo') === "Dipendente") {
+                        document.write("Dipendente");
                     }
-
-                    $("ruolo").on("change", function () {
-                        localStorage.setItem("ruoloValue", $(this).val());
+                $(document).ready(function(){
+                    $('#ruolo').change(function(){
+                        localStorage.setItem('ruolo', $(this).val());
+                        $('#ruolo').value(localStorage.getItem('ruolo'));
                     });
-                })
+                });
             </script>
             <br>
             <form>
-                <input type="radio" name="choice" value="yes" id="choice-yes">
-                <label for="choice-yes">Si</label>
                 <br>
-                <input type="radio" name="choice" value="no" id="choice-no">
-                <label for="choice-no">No</label>
-            </form>
+                <p> Attivo: </p>
+                <input type="radio" name="choice" id="choice" value="si">Si<br>
+                <input type="radio" name="choice" id="choice" value="no">No<br>
+                <script>
+                    $(document).ready(function () {
+                        var radios = document.getElementsByName("choice");
+                        var val = localStorage.getItem('choice');
+                        for (var i = 0; i < radios.length; i++) {
+                            if (radios[i].value == val) {
+                                radios[i].checked = true;
+                            }
+                        }
+                        $('input[name="choice"]').on('change', function () {
+                            localStorage.setItem('choice', $(this).val());
+
+                        });
+                    });
+
+                </script>
+
         </div>
         </td>
     </tr>
@@ -92,6 +114,7 @@ include_once 'classes/Ufficio.php';
 include_once 'shortcodes/SCOrgChartProcess.php';
 include_once 'shortcodes/userMetaData.php';
 include_once 'classes/SubtaskAttivita.php';
+include_once 'shortcodes/shortcodeOrgChartView.php';
 include_once 'classes/User.php';
 
 
@@ -104,6 +127,7 @@ function save_extra_user_field($user_id)
         return false;
     }
     update_user_meta($user_id, 'ruolo', $_POST["ruolo"]);
+    update_user_meta($user_id, 'choice', $_POST["choice"]);
 
 
 }
@@ -145,6 +169,7 @@ function on_profile_update($user_id)
     $ufficio->setUfficio($user_meta[0]['ufficio'][0]);
     $ufficio->setUserUfficio($idKanboard);
 
+
 }
 
 add_action('delete_user', 'my_delete_user');
@@ -183,8 +208,6 @@ function on_saved_user($post_id, $xml_node, $is_update)
 
     }
 }
-
-
 
 
 ?>

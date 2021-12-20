@@ -505,7 +505,7 @@ class Processo
         $res = $stmt->get_result();
         $process = $res->fetch_assoc();
         $this->setIdProcesso($process['id']);
-        $sql = "DELETE FROM projects WHERE id=? ORDER BY id DESC LIMIT 1";
+        $sql = "DELETES FROM projects WHERE id=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("i", $this->id_processo);
         $res = $stmt->execute();
