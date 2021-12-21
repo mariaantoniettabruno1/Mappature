@@ -1,10 +1,11 @@
 <?php
 
 include_once '../includes/Connection.php';
+
 class Area
 {
-private $meta_key = 'area';
-private $area;
+    private $meta_key = 'area';
+    private $area;
 
     /**
      * @return mixed
@@ -22,7 +23,8 @@ private $area;
         $this->area = $area;
     }
 
-    public function setUserArea($userid){
+    public function setUserArea($userid)
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
         $sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
@@ -32,14 +34,30 @@ private $area;
         $mysqli->close();
     }
 
-public function editUserArea($userid){
-    $conn = new Connection();
-    $mysqli = $conn->connect();
-    $sql = "UPDATE user_has_metadata SET  value=? WHERE user_id=? AND name=?";
+    public function editUserArea($userid)
+    {
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "UPDATE user_has_metadata SET  value=? WHERE user_id=? AND name=?";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("sis", $this->area, $userid, $this->meta_key);
         $res = $stmt->execute();
-    $mysqli->close();
-}
+        $mysqli->close();
+    }
+
+    public function selectArea()
+    {
+        $form_id = 17;
+        $conn = new ConnectionSarala();
+        $mysqli = $conn->connect();
+        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("i", $form_id);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = $res->fetch_all();
+        $mysqli->close();
+        return $result;
+    }
 }
 

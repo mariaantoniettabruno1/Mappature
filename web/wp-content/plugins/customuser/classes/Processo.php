@@ -457,7 +457,7 @@ class Processo
 
         $sql = "INSERT INTO projects (name,token) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("ss", $this->nome_processo,  $this->token);
+        $stmt->bind_param("ss", $this->nome_processo, $this->token);
         $res = $stmt->execute();
 
         $sql = "SELECT id FROM projects WHERE name=? ORDER BY id DESC LIMIT 1";
@@ -505,7 +505,7 @@ class Processo
         $res = $stmt->get_result();
         $process = $res->fetch_assoc();
         $this->setIdProcesso($process['id']);
-        $sql = "DELETES FROM projects WHERE id=? ORDER BY id DESC LIMIT 1";
+        $sql = "DELETE FROM projects WHERE id=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("i", $this->id_processo);
         $res = $stmt->execute();
@@ -533,6 +533,42 @@ class Processo
         $result = $res->fetch_assoc();
         $this->setIdProcesso($result['id']);
         $mysqli->close();
+    }
+
+    public function findProjectByUser($username)
+    {
+        $project_names = array();
+        $id_projects = array();
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "SELECT project_id FROM MAPP_project_users_owner WHERE user_id IN (SELECT id FROM users WHERE username=?)";
+        $stmt = $mysqli->prepare($sql);
+        $id_projects = array();
+        foreach ($username as $nickname) {
+            $stmt->bind_param("s", $nickname);
+            $res = $stmt->execute();
+            $res = $stmt->get_result();
+            $rows = $res->fetch_all();
+            foreach ($rows as $row) {
+                array_push($id_projects, $row[0]);
+            }
+        }
+        $project_names = array();
+        $sql = "SELECT name FROM projects WHERE id=?";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($id_projects as $item) {
+            $stmt->bind_param("i", $item);
+            $res = $stmt->execute();
+            $res = $stmt->get_result();
+            $result = $res->fetch_all();
+
+            foreach ($result as $row) {
+                array_push($project_names, $row[0]);
+            }
+        }
+        $mysqli->close();
+
+        return $project_names;
     }
 
     public function findProjectsOnWordpress($area)
@@ -565,7 +601,7 @@ class Processo
         $conn = new Connection;
         $mysqli = $conn->connect();
         $array_ids = array();
-        $sql = "SELECT ALL id FROM projects WHERE name=?";
+        $sql = "SELECT  id FROM projects WHERE name=?";
         $stmt = $mysqli->prepare($sql);
         foreach ($arrayNameProjects as $nameProject) {
             foreach ($nameProject as $item) {
@@ -603,7 +639,7 @@ class Processo
     {
         $conn = new Connection;
         $mysqli = $conn->connect();
-        /*$sql = "SELECT ALL id FROM MAPP_project_users_owner WHERE project_id=? AND user_id=? ";
+        /*$sql = "SELECT  id FROM MAPP_project_users_owner WHERE project_id=? AND user_id=? ";
         $stmt = $mysqli->prepare($sql);
         $array = array();
         foreach ($array_ids as $id) {

@@ -9,11 +9,45 @@ Author URI:
 
 */
 include_once "../classes/OrgChartProcess.php";
+include "../classes/User.php";
 
 
 function orgchartview()
 {
+    $area = new Area();
+    $array_area = $area->selectArea();
+    $user = new User();
+    $dirigenti = [];
+    foreach ($array_area as $item) {
+        if (!empty($user->selectDirigente($item[0])))
+            array_push($dirigenti, $user->selectDirigente($item[0]));
+    }
 
+
+    $processo = new Processo();
+    $processi = [];
+    foreach ($dirigenti as $dirigente) {
+        if (!empty($processo->findProjectByUser($dirigente)))
+            array_push($processi, $processo->findProjectByUser($dirigente));
+
+    }
+
+    $servizio = new Servizio();
+    $array_servizio = $servizio->selectServizio();
+    $array_po = array();
+    foreach ($array_area as $area) {
+        foreach ($array_servizio as $servizio){
+            if (!empty($user->selectPO($area, $servizio)))
+                array_push($dirigenti, $user->selectPO($area, $servizio));
+        }
+
+    }
+
+    $procedimento = new Procedimento();
+    $procedimenti = $procedimento->findTaskByUser($po);
+    $dipendenti = $user->selectDipendente("Corpo di Polizia Locale", $array_servizio, $array_servizio);
+    $fase = new Fase();
+    $fasi_attivita = $fase->findFaseByUser($dipendenti);
 
     ?>
     <!DOCTYPE html>
@@ -31,7 +65,6 @@ function orgchartview()
 
     <body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-treeview/1.2.0/bootstrap-treeview.min.js"></script>
 
 
@@ -85,6 +118,7 @@ function orgchartview()
     </style>
 
     <script>
+
         var tree = [
             {
                 text: "Parent 1",
@@ -120,7 +154,7 @@ function orgchartview()
         ];
 
         function getTree() {
-            // Some logic to retrieve, or generate tree structure
+
             return tree;
         }
 
@@ -129,32 +163,31 @@ function orgchartview()
             data: getTree(),
         });
 
-        /*
-        var search = function(e) {
-          var pattern = $('#input-search').val();
-          var options = {
-            ignoreCase: $('#chk-ignore-case').is(':checked'),
-            exactMatch: $('#chk-exact-match').is(':checked'),
-            revealResults: $('#chk-reveal-results').is(':checked')
-          };
-          var results = $searchableTree.treeview('search', [ pattern, options ]);
 
-          var output = '<p>' + results.length + ' matches found</p>';
-          $.each(results, function (index, result) {
-            output += '<p>- ' + result.text + '</p>';
-          });
-          $('#search-output').html(output);
+        var search = function (e) {
+            var pattern = $('#input-search').val();
+            var options = {
+                ignoreCase: $('#chk-ignore-case').is(':checked'),
+                exactMatch: $('#chk-exact-match').is(':checked'),
+                revealResults: $('#chk-reveal-results').is(':checked')
+            };
+            var results = $searchableTree.treeview('search', [pattern, options]);
+
+            var output = '<p>' + results.length + ' matches found</p>';
+            $.each(results, function (index, result) {
+                output += '<p>- ' + result.text + '</p>';
+            });
+            $('#search-output').html(output);
         }
 
         $('#btn-search').on('click', search);
         $('#input-search').on('keyup', search);
 
         $('#btn-clear-search').on('click', function (e) {
-          $searchableTree.treeview('clearSearch');
-          $('#input-search').val('');
-          $('#search-output').html('');
+            $searchableTree.treeview('clearSearch');
+            $('#input-search').val('');
+            $('#search-output').html('');
         });
-        */
 
         //$(function () {
         var selectors = {
@@ -225,7 +258,9 @@ function orgchartview()
     </script>
     </body>
     </html>
+
     <?php
+
 
 }
 

@@ -372,6 +372,42 @@ class Fase
 
         }
     }
+    public function findFaseByUser($username)
+    {
+        $subtask_names = array();
+        $id_subtask = array();
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "SELECT subtask_id FROM MAPP_subtask_users WHERE user_id IN (SELECT id FROM users WHERE username=?)";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($username as $item) {
+            foreach ($item as $nickname) {
+                $stmt->bind_param("s", $nickname);
+                $res = $stmt->execute();
+                $res = $stmt->get_result();
+                $result = $res->fetch_all();
+                if(!empty($result))
+                array_push($id_subtask,$result);
+            }
+
+        }
+
+        $sql = "SELECT title FROM subtasks WHERE id=?";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($id_subtask[0] as $item) {
+            foreach ($item as $id) {
+                $stmt->bind_param("i", $id);
+                $res = $stmt->execute();
+                $res = $stmt->get_result();
+                $result = $res->fetch_all();
+                if(!empty($result))
+                    array_push($subtask_names,$result);
+            }
+        }
+
+        $mysqli->close();
+        return $subtask_names;
+    }
 
     private function getDbTitle($title)
     {
