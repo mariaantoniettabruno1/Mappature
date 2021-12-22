@@ -88,8 +88,7 @@ class Ufficio
 //    }
     public function selectUfficio($area,$servizi)
     {
-        print_r($area);
-        print_r($servizi);
+
         $uffici = array();
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();

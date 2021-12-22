@@ -23,25 +23,60 @@ function orgchartview()
     $servizio = new Servizio();
     $procedimento = new Procedimento();
     $ufficio = new Ufficio();
-
+    $fase = new Fase();
+    $array_servizio = array();
+    $array_procedimenti = array();
+    $array_fasi_attivita = array();
+    $temp_array = array();
     foreach ($array_area as $item) {
         if (!empty($user->selectDirigente($item[0]))) {
             $dirigente = $user->selectDirigente($item[0]);
             $proc = $processo->findProjectByUser($dirigente);
             $servizio_user = $servizio->selectServizio($item[0]);
-            $po = $user->selectPO($item, $servizio_user);
-            $procedimenti = $procedimento->findTaskByUser($po);
-            $dipendenti_procedimenti = $user->selectDipendenteProcedimento($procedimenti);
-            //$ufficio_user = $ufficio->selectUfficio($item[0],$servizio_user);
-            $dirigenti = array('Area' => $item, 'Dirigente' => array($user->selectDirigente($item[0]), "Processo" => array($proc)), 'Servizio' => array($servizio_user, 'PO' => array($po,"Procedimenti"=>array($procedimenti[0], "Dipendenti associati"=>$dipendenti_procedimenti[0]))));
 
-            array_push($array, $dirigenti);
+            foreach ($servizio_user as $serv) {
+                $po = $user->selectPO($item, $serv);
+                $procedimenti = $procedimento->findTaskByUser($po[0]);
+
+                foreach ($procedimenti as $procedimento_dipendente) {
+                    $dipendenti_procedimenti = $user->selectDipendenteProcedimento($procedimento_dipendente);
+                    array_push($array_procedimenti, array('Procedimento' => $procedimento_dipendente, 'Dipendente Associato' => $dipendenti_procedimenti[0]));
+                }
+                array_push($array_servizio, array('Servizio' => array($serv,
+                    'PO' => array($po,
+                        "Procedimenti" => $array_procedimenti))));
+                $array_procedimenti = array();
+                $ufficio_user = $ufficio->selectUfficio($item[0], $serv);
+                foreach ($ufficio_user as $uff) {
+                    $dipendenti = $user->selectDipendente($item[0], $serv, $uff);
+                    $fasi_attivita = $fase->findFaseByUser($dipendenti);
+
+                    foreach ($fasi_attivita as $fase_attivita) {
+                        $dipendenti_fasi_attivita = $user->selectDipendenteFaseAttivita($fase_attivita);
+                        array_push($array_fasi_attivita, array('Fase/Attivita' => $fase_attivita, 'Dipendente' => $dipendenti_fasi_attivita));
+                    }
+                    array_push($array_ufficio, array('Ufficio' => array($uff,
+                        'Dipendenti' => array($dipendenti,
+                            "Fase/Attività" => $array_fasi_attivita))));
+                }
+                array_push($array_servizio,$array_ufficio);
+                array_push($temp_array, $array_servizio);
+                $array_fasi_attivita = array();
+                $array_ufficio = array();
+                $array_servizio = array();
+
+            }
+
         }
 
+        $dirigenti = array('Area' => $item,
+            'Dirigente' => array($user->selectDirigente($item[0]),
+                "Processo" => array($proc)),
+            'Servizio' => $temp_array
+        );
+        array_push($array, $dirigenti);
+
     }
-    echo "<pre>";
-    print_r($array);
-    echo "</pre>";
 
 
 

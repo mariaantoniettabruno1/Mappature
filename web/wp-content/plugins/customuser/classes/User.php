@@ -143,7 +143,6 @@ class User
 
     public function selectPO($area, $servizi)
     {
-
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
         $po_names = array();
@@ -152,23 +151,21 @@ class User
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_key= 'area' AND meta_value=?)
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_key='servizio' AND meta_value LIKE ?)";
         $stmt = $mysqli->prepare($sql);
-        foreach ($servizi as $servizio) {
-            $temp = "%$servizio%";
-            $stmt->bind_param("ss", $area[0], $temp);
-            $res = $stmt->execute();
-            $result = $stmt->get_result();
-            $row = $result->fetch_all();
-            foreach ($row as $item) {
-                array_push($po_names, $item[0]);
-            }
+        $temp = "%$servizi%";
+        $stmt->bind_param("ss", $area[0], $temp);
+        $res = $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_all();
+        foreach ($row as $item) {
+            array_push($po_names, $item[0]);
         }
-
         $mysqli->close();
         return $po_names;
     }
 
     public function selectDipendente($area, $servizio, $ufficio)
     {
+
         $servizio_user = "%$servizio%";
         $ufficio_user = "%$ufficio%";
         $conn = new ConnectionSarala();
@@ -189,6 +186,7 @@ class User
 
     public function selectDipendenteProcedimento($procedimenti)
     {
+
         $task_id = array();
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
@@ -196,7 +194,7 @@ class User
         $mysqli = $conn->connect();
         $sql = "SELECT id FROM tasks WHERE title=?";
         $stmt = $mysqli->prepare($sql);
-        foreach ($procedimenti[0] as $procedimento) {
+        foreach ($procedimenti as $procedimento) {
             $stmt->bind_param("s", $procedimento);
             $res = $stmt->execute();
             $result = $stmt->get_result();
@@ -205,11 +203,58 @@ class User
                 array_push($task_id, $result[0]);
             }
         }
-        print_r($task_id);
+
         $user_id = array();
         $sql = "SELECT user_id FROM MAPP_task_users WHERE task_id=?";
         $stmt = $mysqli->prepare($sql);
         foreach ($task_id[0] as $id) {
+            $stmt->bind_param("i", $id);
+            $res = $stmt->execute();
+            $result = $stmt->get_result();
+            $result = $result->fetch_all();
+            if (!empty($result)) {
+                array_push($user_id, $result[0]);
+            }
+        }
+        $username = array();
+        $sql = "SELECT username FROM users WHERE id=?";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($user_id[0] as $id) {
+            $stmt->bind_param("i", $id);
+            $res = $stmt->execute();
+            $result = $stmt->get_result();
+            $result = $result->fetch_all();
+            if (!empty($result)) {
+                array_push($username, $result[0]);
+            }
+        }
+
+        return $username;
+    }
+    public function selectDipendenteFaseAttivita($fasi_attivita)
+    {
+
+        $subtask_id = array();
+        $conn = new ConnectionSarala();
+        $mysqli = $conn->connect();
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "SELECT id FROM subtasks WHERE title=?";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($fasi_attivita as $fase_attivita) {
+            $stmt->bind_param("s", $fase_attivita);
+            $res = $stmt->execute();
+            $result = $stmt->get_result();
+            $result = $result->fetch_all();
+            if (!empty($result)) {
+                array_push($subtask_id, $result[0]);
+            }
+        }
+
+        $user_id = array();
+        $sql = "SELECT user_id FROM MAPP_subtask_users WHERE subtask_id=?";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($subtask_id[0] as $id) {
             $stmt->bind_param("i", $id);
             $res = $stmt->execute();
             $result = $stmt->get_result();

@@ -502,14 +502,13 @@ class Procedimento
         $mysqli = $conn->connect();
         $sql = "SELECT task_id FROM MAPP_task_users_owner WHERE user_id IN (SELECT id FROM users WHERE username=?)";
         $stmt = $mysqli->prepare($sql);
-        foreach ($username as $nickname) {
-                $stmt->bind_param("s", $nickname);
+                $stmt->bind_param("s", $username);
                 $res = $stmt->execute();
                 $res = $stmt->get_result();
                 $result = $res->fetch_all();
                 if(!empty($result)){
                     array_push($id_task,$result);
-                }
+
         }
 
 
