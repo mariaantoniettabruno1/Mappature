@@ -11,7 +11,7 @@
    <li><?= t('Login:') ?> <strong><?= $this->text->e($user['username']) ?></strong></li>
     <li><?= t('Full Name:') ?> <strong><?= $this->text->e($user['name']) ?: t('None') ?></strong></li>
     <li><?= t('Email:') ?> <strong><?= $this->text->e($user['email']) ?: t('None') ?></strong></li>
-    <li><?= t('Settore:') ?> <strong><?= $this->text->e($usermeta['area']) ?: t('None') ?></strong></li>
+    <li><?= t('Area:') ?> <strong><?= $this->text->e($usermeta['area']) ?: t('None') ?></strong></li>
     <li><?= t('Servizio:') ?> <strong><?= $this->text->e($usermeta['servizio']) ?: t('None') ?></strong></li>
     <li><?= t('Ufficio:') ?> <strong><?= $this->text->e($usermeta['ufficio']) ?: t('None') ?></strong></li>
     <li><?= t('Status:') ?> <strong><?= $user['is_active'] ? t('Active') : t('Inactive') ?></strong></li>

@@ -17,37 +17,33 @@ function orgchartview()
     $area = new Area();
     $array_area = $area->selectArea();
     $user = new User();
-    $dirigenti = [];
-    foreach ($array_area as $item) {
-        if (!empty($user->selectDirigente($item[0])))
-            array_push($dirigenti, $user->selectDirigente($item[0]));
-    }
-
-
     $processo = new Processo();
-    $processi = [];
-    foreach ($dirigenti as $dirigente) {
-        if (!empty($processo->findProjectByUser($dirigente)))
-            array_push($processi, $processo->findProjectByUser($dirigente));
-
-    }
-
+    $dirigenti = array("Parent" => "", "nodes" => array("Child" => "", "Grandchild" => array()));
+    $array = array();
     $servizio = new Servizio();
-    $array_servizio = $servizio->selectServizio();
-    $array_po = array();
-    foreach ($array_area as $area) {
-        foreach ($array_servizio as $servizio){
-            if (!empty($user->selectPO($area, $servizio)))
-                array_push($dirigenti, $user->selectPO($area, $servizio));
+    $procedimento = new Procedimento();
+    $ufficio = new Ufficio();
+
+    foreach ($array_area as $item) {
+        if (!empty($user->selectDirigente($item[0]))) {
+            $dirigente = $user->selectDirigente($item[0]);
+            $proc = $processo->findProjectByUser($dirigente);
+            $servizio_user = $servizio->selectServizio($item[0]);
+            $po = $user->selectPO($item, $servizio_user);
+            $procedimenti = $procedimento->findTaskByUser($po);
+            $dipendenti_procedimenti = $user->selectDipendenteProcedimento($procedimenti);
+            //$ufficio_user = $ufficio->selectUfficio($item[0],$servizio_user);
+            $dirigenti = array('Area' => $item, 'Dirigente' => array($user->selectDirigente($item[0]), "Processo" => array($proc)), 'Servizio' => array($servizio_user, 'PO' => array($po,"Procedimenti"=>array($procedimenti[0], "Dipendenti associati"=>$dipendenti_procedimenti[0]))));
+
+            array_push($array, $dirigenti);
         }
 
     }
+    echo "<pre>";
+    print_r($array);
+    echo "</pre>";
 
-    $procedimento = new Procedimento();
-    $procedimenti = $procedimento->findTaskByUser($po);
-    $dipendenti = $user->selectDipendente("Corpo di Polizia Locale", $array_servizio, $array_servizio);
-    $fase = new Fase();
-    $fasi_attivita = $fase->findFaseByUser($dipendenti);
+
 
     ?>
     <!DOCTYPE html>
@@ -152,6 +148,8 @@ function orgchartview()
                 text: "Parent 5"
             }
         ];
+        dirigenti = <?php echo json_encode($dirigenti);?>;
+        console.log(dirigenti);
 
         function getTree() {
 

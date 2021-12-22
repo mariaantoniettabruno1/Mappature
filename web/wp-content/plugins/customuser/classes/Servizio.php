@@ -87,18 +87,22 @@ class Servizio
 //        return $result;
 //
 //    }
-    public function selectServizio()
+    public function selectServizio($area)
     {
-        $form_id = 21;
+        $servizi = array();
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
-        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=? AND meta_key=1";
+        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=21 AND meta_key=1 
+                                          AND entry_id IN (SELECT entry_id FROM wp_gf_entry_meta WHERE meta_key=3 AND meta_value=?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("i", $form_id);
+        $stmt->bind_param("s", $area);
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $result = $res->fetch_all();
+        foreach ($result as $item) {
+            array_push($servizi, $item[0]);
+        }
         $mysqli->close();
-        return $result;
+        return $servizi;
     }
 }

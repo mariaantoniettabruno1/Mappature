@@ -495,20 +495,24 @@ class Procedimento
     }
     public function findTaskByUser($username)
     {
+
         $task_names = array();
         $id_task = array();
         $conn = new Connection();
         $mysqli = $conn->connect();
         $sql = "SELECT task_id FROM MAPP_task_users_owner WHERE user_id IN (SELECT id FROM users WHERE username=?)";
         $stmt = $mysqli->prepare($sql);
-        foreach ($username as $item) {
-            foreach ($item as $nickname) {
+        foreach ($username as $nickname) {
                 $stmt->bind_param("s", $nickname);
                 $res = $stmt->execute();
                 $res = $stmt->get_result();
-                array_push($id_task, $res->fetch_all());
-            }
+                $result = $res->fetch_all();
+                if(!empty($result)){
+                    array_push($id_task,$result);
+                }
         }
+
+
         $sql = "SELECT title FROM tasks WHERE id=?";
         $stmt = $mysqli->prepare($sql);
         foreach ($id_task[0] as $item) {
@@ -517,11 +521,11 @@ class Procedimento
                 $res = $stmt->execute();
                 $res = $stmt->get_result();
                 $result = $res->fetch_all();
-                if(!empty($result))
-                    array_push($task_names,$result);
+                if(!empty($result)){
+                    array_push($task_names,$result[0]);
+                }
             }
         }
-
         $mysqli->close();
         return $task_names;
     }
