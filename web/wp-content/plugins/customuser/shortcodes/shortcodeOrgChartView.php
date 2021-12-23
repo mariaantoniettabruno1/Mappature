@@ -18,15 +18,10 @@ function orgchartview()
     $array_area = $area->selectArea();
     $user = new User();
     $processo = new Processo();
-    $array = array();
     $servizio = new Servizio();
     $procedimento = new Procedimento();
     $ufficio = new Ufficio();
     $fase = new Fase();
-    $array_servizio = array();
-    $array_procedimenti = array();
-    $array_fasi_attivita = array();
-    $temp_array = array();
     $tree_array = array();
 
     foreach ($array_area as $item) {
@@ -173,30 +168,8 @@ function orgchartview()
     <script>
 
         var organigramma_string = '<?php echo json_encode($tree_array);?>';
-        console.log(organigramma_string);
-        const organigramma = JSON.parse(organigramma_string);
 
-        /*for (const [index, element] of dirigenti.entries()) {
-            tree.push({
-                text: dirigenti[index]['Area'],
-                nodes: [
-                    {
-                        text: dirigenti[index]['Dirigente']
-                    }
-                ]
-            });
-        }
-        tree = function (dirigenti, root) {
-            var t = {};
-            dirigenti.forEach(({ Area, Dirigente, Servizio }) => {
-                Object.assign(t[Area] = t[Area] || {}, { label: Area, name: Dirigente });
-                t[Servizio] = t[Servizio] || {};
-                t[Servizio].children = t[Servizio].children || [];
-                t[Servizio].children.push(t[Area]);
-            });
-            return t[root].children;
-        }(dirigenti, null);
-        console.log(tree);*/
+        const organigramma = JSON.parse(organigramma_string);
 
         function getTree() {
             return organigramma;
