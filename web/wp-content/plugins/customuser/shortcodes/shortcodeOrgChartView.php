@@ -25,17 +25,17 @@ function orgchartview()
     $tree_array = array();
 
     foreach ($array_area as $item) {
-        $area_array = array('text' => $item[0], 'nodes' => array());
+        $area_array = array('text' => $item[0],'tags'=>['Area'], 'nodes' => array(),'state'=>array('expanded'=>false));
 
         $dirigenti = $user->selectDirigente($item[0]);
 
         foreach ($dirigenti as $dirigente) {
 
-            $dirigente_array = array('text' => $dirigente, 'nodes' => array());
+            $dirigente_array = array('text' => $dirigente, 'tags'=>['Dirigente'], 'nodes' => array());
             $processi = $processo->findProjectByUser($dirigente);
-
+            array_push($dirigente_array['tags'],sizeof($processi).' Processi');
             foreach ($processi as $proc) {
-                $processo_array = array('text' => $proc, 'nodes' => array());
+                $processo_array = array('text' => $proc,'tags'=>['Processo'], 'nodes' => array());
 
                 array_push($dirigente_array['nodes'], $processo_array);
             }
@@ -46,15 +46,15 @@ function orgchartview()
         $servizi = $servizio->selectServizio($item[0]);
 
         foreach ($servizi as $serv) {
-            $servizio_array = array('text' => $serv, 'nodes' => array());
+            $servizio_array = array('text' => $serv,'tags'=>['Servizio'], 'nodes' => array());
             $array_po = $user->selectPO($item, $serv);
 
             foreach ($array_po as $po) {
-                $po_array = array('text' => $po, 'nodes' => array());
+                $po_array = array('text' => $po,'tags'=>['PO'], 'nodes' => array());
                 $procedimenti = $procedimento->findTaskByUser($po);
 
                 foreach ($procedimenti as $procedim) {
-                    $procedimento_array = array('text' => $procedim, 'nodes' => array());
+                    $procedimento_array = array('text' => $procedim,'tags'=>['Procedimento'], 'nodes' => array());
                     $dipendenti_procedimenti = $user->selectDipendenteProcedimento($procedim);
 
                     foreach ($dipendenti_procedimenti as $dipendente_procedimento) {
@@ -108,6 +108,8 @@ function orgchartview()
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
               integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
               crossorigin="anonymous">
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-treeview/1.2.0/bootstrap-treeview.min.css"
               rel="stylesheet">
 
@@ -129,7 +131,7 @@ function orgchartview()
             </div>
             <div class="checkbox">
                 <label>
-                    <input type="checkbox" class="checkbox" id="chk-ignore-case" value="true">
+                    <input type="checkbox" class="checkbox" id="chk-ignore-case" value="false">
                     Ignore Case
                 </label>
             </div>
@@ -141,7 +143,7 @@ function orgchartview()
             </div>
             <div class="checkbox">
                 <label>
-                    <input type="checkbox" class="checkbox" id="chk-reveal-results" value="true">
+                    <input type="checkbox" class="checkbox" id="chk-reveal-results" value="false">
                     Reveal Results
                 </label>
             </div>
@@ -151,14 +153,14 @@ function orgchartview()
         </div>
         <div class="col-sm-12">
             <h2>Tree</h2>
-            <div id="treeview-searchable" class="treeview"></div>
-
+            <div id="treeview-searchable" class="treeview"><ul class="list-group"><li class="list-group-item node-treeview-searchable" data-nodeid="0" style="color:undefined;background-color:undefined;"><span class="icon expand-icon glyphicon glyphicon-plus"></span><span class="icon node-icon"></span>Parent 1</li><li class="list-group-item node-treeview-searchable" data-nodeid="5" style="color:undefined;background-color:undefined;"><span class="icon glyphicon"></span><span class="icon node-icon"></span>Parent 2</li><li class="list-group-item node-treeview-searchable" data-nodeid="6" style="color:undefined;background-color:undefined;"><span class="icon glyphicon"></span><span class="icon node-icon"></span>Parent 3</li><li class="list-group-item node-treeview-searchable" data-nodeid="7" style="color:undefined;background-color:undefined;"><span class="icon glyphicon"></span><span class="icon node-icon"></span>Parent 4</li><li class="list-group-item node-treeview-searchable" data-nodeid="8" style="color:undefined;background-color:undefined;"><span class="icon glyphicon"></span><span class="icon node-icon"></span>Parent 5</li></ul></div>
         </div>
         <div class="col-sm-6">
             <h2>Results</h2>
             <div id="search-output"></div>
         </div>
     </div>
+    <div id="tree"></div>
     <style>
         #treeview-searchable .node-disabled {
             display: none;
@@ -166,6 +168,7 @@ function orgchartview()
     </style>
 
     <script>
+
 
         var organigramma_string = '<?php echo json_encode($tree_array);?>';
 
@@ -179,6 +182,14 @@ function orgchartview()
         var $searchableTree = $('#treeview-searchable').treeview({
             data: getTree(),
             levels: 6,
+            expandIcon: "fas fa-plus",
+            collapseIcon : "fas fa-minus",
+            state: {
+                expanded: true,
+            },
+            showTags : true,
+
+
         });
 
 
