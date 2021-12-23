@@ -537,6 +537,7 @@ class Processo
 
     public function findProjectByUser($username)
     {
+
         $project_names = array();
         $id_projects = array();
         $conn = new Connection();
@@ -544,15 +545,14 @@ class Processo
         $sql = "SELECT project_id FROM MAPP_project_users_owner WHERE user_id IN (SELECT id FROM users WHERE username=?)";
         $stmt = $mysqli->prepare($sql);
         $id_projects = array();
-        foreach ($username as $nickname) {
-            $stmt->bind_param("s", $nickname);
+            $stmt->bind_param("s", $username);
             $res = $stmt->execute();
             $res = $stmt->get_result();
             $rows = $res->fetch_all();
             foreach ($rows as $row) {
                 array_push($id_projects, $row[0]);
             }
-        }
+
         $project_names = array();
         $sql = "SELECT name FROM projects WHERE id=?";
         $stmt = $mysqli->prepare($sql);

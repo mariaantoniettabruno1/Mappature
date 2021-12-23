@@ -18,7 +18,6 @@ function orgchartview()
     $array_area = $area->selectArea();
     $user = new User();
     $processo = new Processo();
-    $dirigenti = array("Parent" => "", "nodes" => array("Child" => "", "Grandchild" => array()));
     $array = array();
     $servizio = new Servizio();
     $procedimento = new Procedimento();
@@ -28,57 +27,80 @@ function orgchartview()
     $array_procedimenti = array();
     $array_fasi_attivita = array();
     $temp_array = array();
+    $tree_array = array();
+
     foreach ($array_area as $item) {
-        if (!empty($user->selectDirigente($item[0]))) {
-            $dirigente = $user->selectDirigente($item[0]);
-            $proc = $processo->findProjectByUser($dirigente);
-            $servizio_user = $servizio->selectServizio($item[0]);
+        $area_array = array('text' => $item[0], 'nodes' => array());
 
-            foreach ($servizio_user as $serv) {
-                $po = $user->selectPO($item, $serv);
-                $procedimenti = $procedimento->findTaskByUser($po[0]);
+        $dirigenti = $user->selectDirigente($item[0]);
 
-                foreach ($procedimenti as $procedimento_dipendente) {
-                    $dipendenti_procedimenti = $user->selectDipendenteProcedimento($procedimento_dipendente);
-                    array_push($array_procedimenti, array('Procedimento' => $procedimento_dipendente, 'Dipendente Associato' => $dipendenti_procedimenti[0]));
-                }
-                array_push($array_servizio, array('Servizio' => array($serv,
-                    'PO' => array($po,
-                        "Procedimenti" => $array_procedimenti))));
-                $array_procedimenti = array();
-                $ufficio_user = $ufficio->selectUfficio($item[0], $serv);
-                foreach ($ufficio_user as $uff) {
-                    $dipendenti = $user->selectDipendente($item[0], $serv, $uff);
-                    $fasi_attivita = $fase->findFaseByUser($dipendenti);
+        foreach ($dirigenti as $dirigente) {
 
-                    foreach ($fasi_attivita as $fase_attivita) {
-                        $dipendenti_fasi_attivita = $user->selectDipendenteFaseAttivita($fase_attivita);
-                        array_push($array_fasi_attivita, array('Fase/Attivita' => $fase_attivita, 'Dipendente' => $dipendenti_fasi_attivita));
-                    }
-                    array_push($array_ufficio, array('Ufficio' => array($uff,
-                        'Dipendenti' => array($dipendenti,
-                            "Fase/Attività" => $array_fasi_attivita))));
-                }
-                array_push($array_servizio,$array_ufficio);
-                array_push($temp_array, $array_servizio);
-                $array_fasi_attivita = array();
-                $array_ufficio = array();
-                $array_servizio = array();
+            $dirigente_array = array('text' => $dirigente, 'nodes' => array());
+            $processi = $processo->findProjectByUser($dirigente);
 
+            foreach ($processi as $proc) {
+                $processo_array = array('text' => $proc, 'nodes' => array());
+
+                array_push($dirigente_array['nodes'], $processo_array);
             }
+            array_push($area_array['nodes'], $dirigente_array);
 
         }
 
-        $dirigenti = array('Area' => $item,
-            'Dirigente' => array($user->selectDirigente($item[0]),
-                "Processo" => array($proc)),
-            'Servizio' => $temp_array
-        );
-        array_push($array, $dirigenti);
+        $servizi = $servizio->selectServizio($item[0]);
+
+        foreach ($servizi as $serv) {
+            $servizio_array = array('text' => $serv, 'nodes' => array());
+            $array_po = $user->selectPO($item, $serv);
+
+            foreach ($array_po as $po) {
+                $po_array = array('text' => $po, 'nodes' => array());
+                $procedimenti = $procedimento->findTaskByUser($po);
+
+                foreach ($procedimenti as $procedim) {
+                    $procedimento_array = array('text' => $procedim, 'nodes' => array());
+                    $dipendenti_procedimenti = $user->selectDipendenteProcedimento($procedim);
+
+                    foreach ($dipendenti_procedimenti as $dipendente_procedimento) {
+                        $procedimento_dipendente_array = array('text' => $dipendente_procedimento, 'nodes' => array());
+                        array_push($procedimento_array['nodes'], $procedimento_dipendente_array);
+                    }
+
+                    array_push($po_array['nodes'], $procedimento_array);
+                }
+                array_push($servizio_array['nodes'], $po_array);
+            }
+
+
+            $uffici = $ufficio->selectUfficio($item[0], $serv);
+            foreach ($uffici as $uff) {
+                $ufficio_array = array('text' => $uff, 'nodes' => array());
+                $dipendenti = $user->selectDipendente($item[0], $serv, $uff);
+
+                foreach ($dipendenti as $dipendente) {
+                    $dipendenti_array = array('text' => $dipendente, 'nodes' => array());
+                    $fasi_attivita = $fase->findFaseByUser($dipendente);
+
+                    foreach ($fasi_attivita as $fase_attivita) {
+                        $fase_attivita_array = array('text' => $fase_attivita, 'nodes' => array());
+
+                        array_push($dipendenti_array['nodes'], $fase_attivita_array);
+                    }
+                    array_push($ufficio_array['nodes'], $dipendenti_array);
+                }
+                array_push($servizio_array['nodes'], $ufficio_array);
+
+            }
+            array_push($area_array['nodes'], $servizio_array);
+
+        }
+
+
+        array_push($tree_array, $area_array);
+
 
     }
-
-
 
     ?>
     <!DOCTYPE html>
@@ -132,12 +154,12 @@ function orgchartview()
             <button type="button" class="btn btn-default" id="btn-clear-search">Clear</button>
             <!-- </form> -->
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-12">
             <h2>Tree</h2>
             <div id="treeview-searchable" class="treeview"></div>
 
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-6">
             <h2>Results</h2>
             <div id="search-output"></div>
         </div>
@@ -150,50 +172,40 @@ function orgchartview()
 
     <script>
 
-        var tree = [
-            {
-                text: "Parent 1",
+        var organigramma_string = '<?php echo json_encode($tree_array);?>';
+        console.log(organigramma_string);
+        const organigramma = JSON.parse(organigramma_string);
+
+        /*for (const [index, element] of dirigenti.entries()) {
+            tree.push({
+                text: dirigenti[index]['Area'],
                 nodes: [
                     {
-                        text: "Child 1",
-                        nodes: [
-                            {
-                                text: "Grandchild 1"
-                            },
-                            {
-                                text: "Grandchild 2"
-                            }
-                        ]
-                    },
-                    {
-                        text: "Child 2"
+                        text: dirigenti[index]['Dirigente']
                     }
                 ]
-            },
-            {
-                text: "Parent 2"
-            },
-            {
-                text: "Parent 3"
-            },
-            {
-                text: "Parent 4"
-            },
-            {
-                text: "Parent 5"
-            }
-        ];
-        dirigenti = <?php echo json_encode($dirigenti);?>;
-        console.log(dirigenti);
+            });
+        }
+        tree = function (dirigenti, root) {
+            var t = {};
+            dirigenti.forEach(({ Area, Dirigente, Servizio }) => {
+                Object.assign(t[Area] = t[Area] || {}, { label: Area, name: Dirigente });
+                t[Servizio] = t[Servizio] || {};
+                t[Servizio].children = t[Servizio].children || [];
+                t[Servizio].children.push(t[Area]);
+            });
+            return t[root].children;
+        }(dirigenti, null);
+        console.log(tree);*/
 
         function getTree() {
-
-            return tree;
+            return organigramma;
         }
 
 
         var $searchableTree = $('#treeview-searchable').treeview({
             data: getTree(),
+            levels: 6,
         });
 
 
