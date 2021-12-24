@@ -12,7 +12,7 @@ include_once "../classes/OrgChartProcess.php";
 include "../classes/User.php";
 
 
-function orgchartview()
+function processiorgchartview()
 {
     $area = new Area();
     $array_area = $area->selectArea();
@@ -24,53 +24,63 @@ function orgchartview()
     $procedimento = new Procedimento();
     $fase_attività = new Fase();
     $second_tree_array = array();
-    foreach ($array_area as $item) {
+    $procedimenti_array = array();
 
-        $area_array = array('text' => $item[0], 'tags' => ['Area'], 'nodes' => array(), 'state' => array('expanded' => false));
+    foreach ($array_area as $item) {
         $dirigenti = $user->selectDirigente($item[0]);
 
         foreach ($dirigenti as $dirigente) {
-            $dirigente_array = array('text' => $dirigente, 'tags' => ['Dirigente']);
-            array_push($area_array['nodes'], $dirigente_array);
+            $dirigente_array = array('text' => $dirigente,'tags' => ['Dirigente di:', $item[0] . ' (Area)']);
+            $processi = $processo->findProjectByUser($dirigente);
 
-        }
+            foreach ($processi as $proc) {
+                //TODO check dirigente, poichè più di uno possono essere responsabili dello stesso processo, per cui eliminare duplicati
+                $processi_array = array('text' => $proc, 'tags' => ['Processo'], 'nodes' => array(), 'state' => array('expanded' => false));
+                array_push($processi_array['nodes'], $dirigente_array);
 
-        $servizi = $servizio->selectServizio($item[0]);
+                $servizi = $servizio->selectServizio($item[0]);
+                foreach ($servizi as $serv) {
+                    $array_po = $user->selectPO($item, $serv);
 
-        foreach ($servizi as $serv) {
+                    foreach ($array_po as $po) {
+                        $po_array = array('text' => $po, 'tags' => ['PO di:', $serv . ' (Servizio)']);
+                        $procedimenti = $procedimento->findTaskByUser($po);
+                        foreach ($procedimenti as $procedim) {
+                            $procedimenti_array = array('text' => $procedim, 'tags' => ['Procedimento'], 'nodes' => array(), 'state' => array('expanded' => false));
+                            array_push($procedimenti_array['nodes'], $po_array);
+                            array_push($processi_array['nodes'], $procedimenti_array);
+                        }
+                    }
 
-            $servizio_array = array('text' => $serv, 'tags' => ['Servizio'], 'nodes' => array(), 'state' => array('expanded' => false));
-            $array_po = $user->selectPO($item, $serv);
-
-            foreach ($array_po as $po) {
-                $po_array = array('text' => $po, 'tags' => ['PO']);
-                array_push($servizio_array['nodes'], $po_array);
-            }
-
-            $uffici = $ufficio->selectUfficio($item[0], $serv);
-            foreach ($uffici as $uff) {
-
-                $ufficio_array = array('text' => $uff, 'tags' => ['Ufficio'], 'nodes' => array(), 'state' => array('expanded' => false));
-                $dipendenti = $user->selectDipendente($item[0], $serv, $uff);
-
-                foreach ($dipendenti as $dipendente) {
-                    $dipendenti_array = array('text' => $dipendente, 'tags' => ['Dipendente']);
-
-                    array_push($ufficio_array['nodes'], $dipendenti_array);
                 }
-                array_push($servizio_array['nodes'], $ufficio_array);
 
+                array_push($second_tree_array, $processi_array);
             }
-            array_push($area_array['nodes'], $servizio_array);
-        }
 
-        array_push($tree_array, $area_array);
+
+        }
+        /*
+
+             $uffici = $ufficio->selectUfficio($item[0], $serv);
+             foreach ($uffici as $uff) {
+
+                 $ufficio_array = array('text' => $uff, 'tags' => ['Ufficio'], 'nodes' => array(), 'state' => array('expanded' => false));
+                 $dipendenti = $user->selectDipendente($item[0], $serv, $uff);
+
+                 foreach ($dipendenti as $dipendente) {
+                     $dipendenti_array = array('text' => $dipendente, 'tags' => ['Dipendente']);
+
+                     array_push($ufficio_array['nodes'], $dipendenti_array);
+                 }
+                 array_push($servizio_array['nodes'], $ufficio_array);
+
+             }*/
+        // array_push($area_array['nodes'], $servizio_array);
 
     }
 
 
-
-        ?>
+    ?>
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -169,13 +179,13 @@ function orgchartview()
     <script>
 
 
-        var organigramma_string = '<?php echo json_encode($tree_array);?>';
+        var processi_organigramma_string = '<?php echo json_encode($second_tree_array);?>';
 
-        const organigramma = JSON.parse(organigramma_string);
+        const processi_organigramma = JSON.parse(processi_organigramma_string);
 
 
         function getTree() {
-            return organigramma;
+            return processi_organigramma;
         }
 
         var $searchableTree = $('#treeview-searchable').treeview({
@@ -190,7 +200,6 @@ function orgchartview()
 
 
         });
-
 
 
         var search = function (e) {
@@ -294,5 +303,4 @@ function orgchartview()
 
 }
 
-add_shortcode("post_orgchartview", "orgchartview");
-
+add_shortcode("post_processiorgchartview", "processiorgchartview");

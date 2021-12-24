@@ -116,7 +116,7 @@ include_once 'shortcodes/userMetaData.php';
 include_once 'classes/SubtaskAttivita.php';
 include_once 'shortcodes/shortcodeOrgChartView.php';
 include_once 'classes/User.php';
-
+include_once 'shortcodes/Prova.php';
 
 add_action('edit_user_profile_update', 'save_extra_user_field');
 add_action('user_register', 'save_extra_user_field');
