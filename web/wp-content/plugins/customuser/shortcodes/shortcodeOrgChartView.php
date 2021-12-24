@@ -17,28 +17,17 @@ function orgchartview()
     $area = new Area();
     $array_area = $area->selectArea();
     $user = new User();
-    $processo = new Processo();
     $servizio = new Servizio();
-    $procedimento = new Procedimento();
     $ufficio = new Ufficio();
-    $fase = new Fase();
     $tree_array = array();
 
     foreach ($array_area as $item) {
-        $area_array = array('text' => $item[0],'tags'=>['Area'], 'nodes' => array(),'state'=>array('expanded'=>false));
 
+        $area_array = array('text' => $item[0], 'tags' => ['Area'], 'nodes' => array(), 'state' => array('expanded' => false));
         $dirigenti = $user->selectDirigente($item[0]);
 
         foreach ($dirigenti as $dirigente) {
-
-            $dirigente_array = array('text' => $dirigente, 'tags'=>['Dirigente'], 'nodes' => array());
-            $processi = $processo->findProjectByUser($dirigente);
-            array_push($dirigente_array['tags'],sizeof($processi).' Processi');
-            foreach ($processi as $proc) {
-                $processo_array = array('text' => $proc,'tags'=>['Processo'], 'nodes' => array());
-
-                array_push($dirigente_array['nodes'], $processo_array);
-            }
+            $dirigente_array = array('text' => $dirigente, 'tags' => ['Dirigente']);
             array_push($area_array['nodes'], $dirigente_array);
 
         }
@@ -46,54 +35,33 @@ function orgchartview()
         $servizi = $servizio->selectServizio($item[0]);
 
         foreach ($servizi as $serv) {
-            $servizio_array = array('text' => $serv,'tags'=>['Servizio'], 'nodes' => array());
+
+            $servizio_array = array('text' => $serv, 'tags' => ['Servizio'], 'nodes' => array(), 'state' => array('expanded' => false));
             $array_po = $user->selectPO($item, $serv);
 
             foreach ($array_po as $po) {
-                $po_array = array('text' => $po,'tags'=>['PO'], 'nodes' => array());
-                $procedimenti = $procedimento->findTaskByUser($po);
-
-                foreach ($procedimenti as $procedim) {
-                    $procedimento_array = array('text' => $procedim,'tags'=>['Procedimento'], 'nodes' => array());
-                    $dipendenti_procedimenti = $user->selectDipendenteProcedimento($procedim);
-
-                    foreach ($dipendenti_procedimenti as $dipendente_procedimento) {
-                        $procedimento_dipendente_array = array('text' => $dipendente_procedimento, 'nodes' => array());
-                        array_push($procedimento_array['nodes'], $procedimento_dipendente_array);
-                    }
-
-                    array_push($po_array['nodes'], $procedimento_array);
-                }
+                $po_array = array('text' => $po, 'tags' => ['PO']);
                 array_push($servizio_array['nodes'], $po_array);
             }
 
-
             $uffici = $ufficio->selectUfficio($item[0], $serv);
             foreach ($uffici as $uff) {
-                $ufficio_array = array('text' => $uff, 'nodes' => array());
+
+                $ufficio_array = array('text' => $uff, 'tags' => ['Ufficio'], 'nodes' => array(), 'state' => array('expanded' => false));
                 $dipendenti = $user->selectDipendente($item[0], $serv, $uff);
 
                 foreach ($dipendenti as $dipendente) {
-                    $dipendenti_array = array('text' => $dipendente, 'nodes' => array());
-                    $fasi_attivita = $fase->findFaseByUser($dipendente);
+                    $dipendenti_array = array('text' => $dipendente, 'tags' => ['Dipendente']);
 
-                    foreach ($fasi_attivita as $fase_attivita) {
-                        $fase_attivita_array = array('text' => $fase_attivita, 'nodes' => array());
-
-                        array_push($dipendenti_array['nodes'], $fase_attivita_array);
-                    }
                     array_push($ufficio_array['nodes'], $dipendenti_array);
                 }
                 array_push($servizio_array['nodes'], $ufficio_array);
 
             }
             array_push($area_array['nodes'], $servizio_array);
-
         }
 
-
         array_push($tree_array, $area_array);
-
 
     }
 
@@ -109,7 +77,9 @@ function orgchartview()
               integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
               crossorigin="anonymous">
 
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+              integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
+              crossorigin="anonymous">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-treeview/1.2.0/bootstrap-treeview.min.css"
               rel="stylesheet">
 
@@ -153,7 +123,31 @@ function orgchartview()
         </div>
         <div class="col-sm-12">
             <h2>Tree</h2>
-            <div id="treeview-searchable" class="treeview"><ul class="list-group"><li class="list-group-item node-treeview-searchable" data-nodeid="0" style="color:undefined;background-color:undefined;"><span class="icon expand-icon glyphicon glyphicon-plus"></span><span class="icon node-icon"></span>Parent 1</li><li class="list-group-item node-treeview-searchable" data-nodeid="5" style="color:undefined;background-color:undefined;"><span class="icon glyphicon"></span><span class="icon node-icon"></span>Parent 2</li><li class="list-group-item node-treeview-searchable" data-nodeid="6" style="color:undefined;background-color:undefined;"><span class="icon glyphicon"></span><span class="icon node-icon"></span>Parent 3</li><li class="list-group-item node-treeview-searchable" data-nodeid="7" style="color:undefined;background-color:undefined;"><span class="icon glyphicon"></span><span class="icon node-icon"></span>Parent 4</li><li class="list-group-item node-treeview-searchable" data-nodeid="8" style="color:undefined;background-color:undefined;"><span class="icon glyphicon"></span><span class="icon node-icon"></span>Parent 5</li></ul></div>
+            <div id="treeview-searchable" class="treeview">
+                <ul class="list-group">
+                    <li class="list-group-item node-treeview-searchable" data-nodeid="0"
+                        style="color:undefined;background-color:undefined;"><span
+                                class="icon expand-icon glyphicon glyphicon-plus"></span><span
+                                class="icon node-icon"></span>Parent 1
+                    </li>
+                    <li class="list-group-item node-treeview-searchable" data-nodeid="5"
+                        style="color:undefined;background-color:undefined;"><span class="icon glyphicon"></span><span
+                                class="icon node-icon"></span>Parent 2
+                    </li>
+                    <li class="list-group-item node-treeview-searchable" data-nodeid="6"
+                        style="color:undefined;background-color:undefined;"><span class="icon glyphicon"></span><span
+                                class="icon node-icon"></span>Parent 3
+                    </li>
+                    <li class="list-group-item node-treeview-searchable" data-nodeid="7"
+                        style="color:undefined;background-color:undefined;"><span class="icon glyphicon"></span><span
+                                class="icon node-icon"></span>Parent 4
+                    </li>
+                    <li class="list-group-item node-treeview-searchable" data-nodeid="8"
+                        style="color:undefined;background-color:undefined;"><span class="icon glyphicon"></span><span
+                                class="icon node-icon"></span>Parent 5
+                    </li>
+                </ul>
+            </div>
         </div>
         <div class="col-sm-6">
             <h2>Results</h2>
@@ -183,11 +177,11 @@ function orgchartview()
             data: getTree(),
             levels: 6,
             expandIcon: "fas fa-plus",
-            collapseIcon : "fas fa-minus",
+            collapseIcon: "fas fa-minus",
             state: {
                 expanded: true,
             },
-            showTags : true,
+            showTags: true,
 
 
         });
