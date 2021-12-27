@@ -493,7 +493,8 @@ class Procedimento
         $this->setIdProcedure($result['id']);
         $mysqli->close();
     }
-    public function findTaskByUser($username,$proc)
+
+    public function findTaskByUser($username, $proc)
     {
 
         $task_names = array();
@@ -502,26 +503,25 @@ class Procedimento
         $mysqli = $conn->connect();
         $sql = "SELECT task_id FROM MAPP_task_users_owner WHERE user_id IN (SELECT id FROM users WHERE username=?)";
         $stmt = $mysqli->prepare($sql);
-                $stmt->bind_param("s", $username);
-                $res = $stmt->execute();
-                $res = $stmt->get_result();
-                $result = $res->fetch_all();
-                if(!empty($result)){
-                    array_push($id_task,$result);
+        $stmt->bind_param("s", $username);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = $res->fetch_all();
+        if (!empty($result)) {
+            array_push($id_task, $result);
         }
-
 
 
         $sql = "SELECT title FROM tasks WHERE id=? AND project_id IN(SELECT id FROM projects WHERE name=?)";
         $stmt = $mysqli->prepare($sql);
         foreach ($id_task[0] as $item) {
             foreach ($item as $id) {
-                $stmt->bind_param("is", $id,$proc);
+                $stmt->bind_param("is", $id, $proc);
                 $res = $stmt->execute();
                 $res = $stmt->get_result();
                 $result = $res->fetch_all();
-                if(!empty($result)){
-                    array_push($task_names,$result[0]);
+                if (!empty($result)) {
+                    array_push($task_names, $result[0]);
                 }
             }
         }
@@ -704,16 +704,16 @@ class Procedimento
     {
         $conn = new Connection;
         $mysqli = $conn->connect();
-       /* $sql = "SELECT FROM MAPP_task_users_creator WHERE task_id=? AND user_id=?";
-        $stmt = $mysqli->prepare($sql);
-        foreach ($array_ids as $id) {
-            foreach ($userId as $item) {
-                $stmt->bind_param("ii", $id, $item);
-                $res = $stmt->execute();
-                $result = $stmt->get_result();
-                $row = $result->fetch_assoc();
-            }
-        }*/
+        /* $sql = "SELECT FROM MAPP_task_users_creator WHERE task_id=? AND user_id=?";
+         $stmt = $mysqli->prepare($sql);
+         foreach ($array_ids as $id) {
+             foreach ($userId as $item) {
+                 $stmt->bind_param("ii", $id, $item);
+                 $res = $stmt->execute();
+                 $result = $stmt->get_result();
+                 $row = $result->fetch_assoc();
+             }
+         }*/
 
 
         $sql = "INSERT INTO MAPP_task_users_creator (task_id,user_id) VALUES (?,?)";
@@ -726,6 +726,21 @@ class Procedimento
 
         }
         $mysqli->close();
+    }
+
+    public function findTaskByProcesso($processo)
+    {
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "SELECT title FROM tasks WHERE project_id IN (SELECT id FROM projects WHERE name=?)";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("s", $processo[0]);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = $res->fetch_all();
+
+        $mysqli->close();
+        return $result;
     }
 
     /**

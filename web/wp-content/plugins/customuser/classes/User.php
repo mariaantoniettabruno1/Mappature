@@ -140,6 +140,47 @@ class User
         }
         return $vettore;
     }
+    public function findDirigenteByProcesso($processo){
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "SELECT username FROM users WHERE id IN(SELECT user_id FROM MAPP_project_users_owner WHERE project_id IN (SELECT id FROM projects WHERE name=?))";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("s", $processo[0]);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $rows = $res->fetch_all();
+        $mysqli->close();
+        return $rows;
+
+    }
+    public function findPOByProcedimento($procedimento){
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "SELECT username FROM users WHERE id IN(SELECT user_id FROM MAPP_task_users_owner WHERE task_id IN (SELECT id FROM tasks WHERE title=?))";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("s", $procedimento[0]);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $rows = $res->fetch_all();
+
+        $mysqli->close();
+        return $rows;
+    }
+    public function findDipendentiAssegnatiAProcedimento($procedimento){
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "SELECT username FROM users WHERE id IN(SELECT user_id FROM MAPP_task_users WHERE task_id IN (SELECT id FROM tasks WHERE title=?))";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("s", $procedimento[0]);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $rows = $res->fetch_all();
+
+        $mysqli->close();
+        return $rows;
+
+    }
+
 
     public function selectPO($area, $servizi)
     {

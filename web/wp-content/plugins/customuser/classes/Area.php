@@ -59,5 +59,24 @@ class Area
         $mysqli->close();
         return $result;
     }
+
+    public function findAreaByDirigente($dirigenti)
+    {
+
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "SELECT value FROM user_has_metadata WHERE name='area' AND user_id IN (SELECT id FROM users WHERE username=?)";
+        foreach ($dirigenti as $dirigente) {
+
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("s", $dirigente);
+            $res = $stmt->execute();
+            $res = $stmt->get_result();
+            $result = $res->fetch_all();
+        }
+
+        $mysqli->close();
+        return $result[0];
+    }
 }
 

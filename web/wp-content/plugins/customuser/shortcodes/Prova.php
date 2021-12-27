@@ -24,86 +24,103 @@ function processiorgchartview()
     $procedimento = new Procedimento();
     $fase_attività = new Fase();
     $second_tree_array = array();
-    $procedimenti_array = array();
 
-    foreach ($array_area as $item) {
-        $dirigenti = $user->selectDirigente($item[0]);
 
+    $processi = $processo->selectProcesso();
+
+    foreach ($processi as $proc) {
+        $dirigenti = $user->findDirigenteByProcesso($proc);
+
+        $processi_array = array('text' => $proc, 'tags' => ['Processo'], 'nodes' => array(), 'state' => array('expanded' => false));
         foreach ($dirigenti as $dirigente) {
-            $dirigente_array = array('text' => $dirigente, 'tags' => ['Dirigente di:', $item[0] . ' (Area)']);
-            $processi = $processo->findProjectByUser($dirigente);
+            $area_dirigente = $area->findAreaByDirigente($dirigente);
+            $dirigente_array = array('text' => $dirigente, 'tags' => ['Dirigente di:', $area_dirigente[0] . ' (Area)']);
 
-            foreach ($processi as $proc) {
-                //TODO check dirigente, poichè più di uno possono essere responsabili dello stesso processo, per cui eliminare duplicati
-                $processi_array = array('text' => $proc, 'tags' => ['Processo'], 'nodes' => array(), 'state' => array('expanded' => false));
-                array_push($processi_array['nodes'], $dirigente_array);
+            array_push($processi_array['nodes'], $dirigente_array);
+        }
+        $procedimenti = $procedimento->findTaskByProcesso($proc);
 
-                $servizi = $servizio->selectServizio($item[0]);
-                foreach ($servizi as $serv) {
-                    $array_po = $user->selectPO($item, $serv);
+        foreach ($procedimenti as $procedim) {
+            $array_po = $user->findPOByProcedimento($procedim);
+            $array_dipendenti_assegnati = $user->findDipendentiAssegnatiAProcedimento($procedim);
+            print_r($array_dipendenti_assegnati);
+            $procedimenti_array = array('text' => $procedim, 'tags' => ['Procedimento'], 'nodes' => array(), 'state' => array('expanded' => false));
 
-                    foreach ($array_po as $po) {
-                        $po_array = array('text' => $po, 'tags' => ['PO di:', $serv . ' (Servizio)']);
-                        $procedimenti = $procedimento->findTaskByUser($po, $proc);
-                        foreach ($procedimenti as $procedim) {
-
-                            $procedimenti_array = array('text' => $procedim, 'tags' => ['Procedimento'], 'nodes' => array(), 'state' => array('expanded' => false));
-                            $array_dipendenti_assegnati = $user->selectDipendenteProcedimento($procedim);
-                            $dipendenti_assegnati_array = array('text' => $array_dipendenti_assegnati, 'tags' => ['Dipendente Assegnato al Procedimento di:', $procedim]);
-                            if (!empty($dipendenti_assegnati_array['text'])) {
-                                array_push($procedimenti_array['nodes'], $dipendenti_assegnati_array);
-                            }
-
-                            array_push($procedimenti_array['nodes'], $po_array);
-
-                            $uffici = $ufficio->selectUfficio($item[0], $serv);
-                            foreach ($uffici as $uff) {
-                                $array_dipendenti = $user->selectDipendente($item[0], $serv, $uff);
-                                foreach ($array_dipendenti as $dipendente) {
-                                    $dipendenti_array = array('text' => $dipendente, 'tags' => ['Dipendente di:', $uff . ' (Ufficio)']);
-                                    $subtask = $fase_attività->findFaseByUser($dipendente, $procedim[0]);
-
-                                    foreach ($subtask as $fase) {
-                                        $subtask_array = array('text' => $fase, 'tags' => ['Fase - Attività'], 'nodes' => array(), 'state' => array('expanded' => false));
-                                        array_push($subtask_array['nodes'], $dipendenti_array);
-                                        array_push($procedimenti_array['nodes'], $subtask_array);
-                                    }
-
-
-                                }
-
-                            }
-
-                            array_push($processi_array['nodes'], $procedimenti_array);
-                        }
-                    }
-
-                }
-
-                array_push($second_tree_array, $processi_array);
+            foreach ($array_dipendenti_assegnati as $dipendente_assegnato) {
+                $dipendenti_assegnati_array = array('text' => $dipendente_assegnato, 'tags' => ['Dipendente Assegnato del Procedimento:', $procedim]);
+                array_push($procedimenti_array['nodes'], $dipendenti_assegnati_array);
             }
 
+            foreach ($array_po as $po) {
+                $servizio_po = $servizio->findServizioByPO($po);
+                $po_array = array('text' => $po, 'tags' => ['PO di:', $servizio_po[0] . ' (Servizio)']);
+                array_push($procedimenti_array['nodes'], $po_array);
+            }
 
+            array_push($processi_array['nodes'], $procedimenti_array);
         }
-        /*
-
-             $uffici = $ufficio->selectUfficio($item[0], $serv);
-             foreach ($uffici as $uff) {
-
-                 $ufficio_array = array('text' => $uff, 'tags' => ['Ufficio'], 'nodes' => array(), 'state' => array('expanded' => false));
-                 $dipendenti = $user->selectDipendente($item[0], $serv, $uff);
-
-                 foreach ($dipendenti as $dipendente) {
-                     $dipendenti_array = array('text' => $dipendente, 'tags' => ['Dipendente']);
-
-                     array_push($ufficio_array['nodes'], $dipendenti_array);
-                 }
-                 array_push($servizio_array['nodes'], $ufficio_array);
-
-             }*/
-        // array_push($area_array['nodes'], $servizio_array);
-
+        array_push($second_tree_array, $processi_array);
     }
+
+
+    //$dirigenti = $user->selectDirigente($item[0]);
+
+    /* foreach ($dirigenti as $dirigente) {
+         $dirigente_array = array('text' => $dirigente, 'tags' => ['Dirigente di:', $item[0] . ' (Area)']);
+         $processi = $processo->findProjectByUser($dirigente);
+
+         foreach ($processi as $proc) {
+
+             $processi_array = array('text' => $proc, 'tags' => ['Processo'], 'nodes' => array(), 'state' => array('expanded' => false));
+             array_push($processi_array['nodes'], $dirigente_array);
+
+             $servizi = $servizio->selectServizio($item[0]);
+             foreach ($servizi as $serv) {
+                 $array_po = $user->selectPO($item, $serv);
+
+                 foreach ($array_po as $po) {
+                     $po_array = array('text' => $po, 'tags' => ['PO di:', $serv . ' (Servizio)']);
+                     $procedimenti = $procedimento->findTaskByUser($po, $proc);
+                     foreach ($procedimenti as $procedim) {
+
+                         $procedimenti_array = array('text' => $procedim, 'tags' => ['Procedimento'], 'nodes' => array(), 'state' => array('expanded' => false));
+                         $array_dipendenti_assegnati = $user->selectDipendenteProcedimento($procedim);
+                         $dipendenti_assegnati_array = array('text' => $array_dipendenti_assegnati, 'tags' => ['Dipendente Assegnato al Procedimento di:', $procedim]);
+                         if (!empty($dipendenti_assegnati_array['text'])) {
+                             array_push($procedimenti_array['nodes'], $dipendenti_assegnati_array);
+                         }
+
+                         array_push($procedimenti_array['nodes'], $po_array);
+
+                         $uffici = $ufficio->selectUfficio($item[0], $serv);
+                         foreach ($uffici as $uff) {
+                             $array_dipendenti = $user->selectDipendente($item[0], $serv, $uff);
+                             foreach ($array_dipendenti as $dipendente) {
+                                 $dipendenti_array = array('text' => $dipendente, 'tags' => ['Dipendente di:', $uff . ' (Ufficio)']);
+                                 $subtask = $fase_attività->findFaseByUser($dipendente, $procedim[0]);
+
+                                 foreach ($subtask as $fase) {
+                                     $subtask_array = array('text' => $fase, 'tags' => ['Fase - Attività'], 'nodes' => array(), 'state' => array('expanded' => false));
+                                     array_push($subtask_array['nodes'], $dipendenti_array);
+                                     array_push($procedimenti_array['nodes'], $subtask_array);
+                                 }
+
+
+                             }
+
+                         }
+
+                         array_push($processi_array['nodes'], $procedimenti_array);
+                     }
+                 }
+
+             }
+
+             array_push($second_tree_array, $processi_array);
+         }
+
+
+     }*/
 
 
     ?>
