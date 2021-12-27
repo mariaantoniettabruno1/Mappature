@@ -265,7 +265,6 @@ class Fase
     }
 
 
-
     public function findFaseOnWordpress($area, $servizio, $ufficio)
     {
         $conn = new ConnectionSarala();
@@ -275,8 +274,8 @@ class Fase
         $id_form_fase_postuma = 60;
         $id_field_fase_postuma = 1;
         $id_area_form_postuma = 4;
-        $id_servizio_form_postuma= 5;
-        $id_ufficio_form_postuma= 6;
+        $id_servizio_form_postuma = 5;
+        $id_ufficio_form_postuma = 6;
         $id_area_form = 12;
         $id_servizio_form = 13;
         $id_ufficio_form = 14;
@@ -292,20 +291,18 @@ class Fase
                                               entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND
                                               entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)";
         $stmt = $mysqli->prepare($sql);
-        if (gettype($servizio) == 'string' && gettype($ufficio) == 'string'){
+        if (gettype($servizio) == 'string' && gettype($ufficio) == 'string') {
             $temp_servizio = unserialize($servizio);
             $temp_ufficio = unserialize($ufficio);
-        }
-
-        elseif (gettype($servizio) == 'array' && gettype($ufficio) == 'array'){
+        } elseif (gettype($servizio) == 'array' && gettype($ufficio) == 'array') {
             $temp_servizio = $servizio;
             $temp_ufficio = $ufficio;
         }
 
         foreach ($temp_servizio as $item_servizio) {
-            foreach ($temp_ufficio as $item_ufficio){
-                $stmt->bind_param("iiisisisiiisisis",$id_form_creazione_fase,$id_field_creazione_fase,$id_area_form,$area,$id_servizio_form,$item_servizio,$id_ufficio_form,$item_ufficio,
-            $id_form_fase_postuma,$id_field_fase_postuma,$id_area_form_postuma,$area,$id_servizio_form_postuma,$item_servizio,$id_ufficio_form_postuma,$item_ufficio);
+            foreach ($temp_ufficio as $item_ufficio) {
+                $stmt->bind_param("iiisisisiiisisis", $id_form_creazione_fase, $id_field_creazione_fase, $id_area_form, $area, $id_servizio_form, $item_servizio, $id_ufficio_form, $item_ufficio,
+                    $id_form_fase_postuma, $id_field_fase_postuma, $id_area_form_postuma, $area, $id_servizio_form_postuma, $item_servizio, $id_ufficio_form_postuma, $item_ufficio);
                 $stmt->execute();
                 $result = $stmt->get_result();
                 $row = $result->fetch_all();
@@ -372,36 +369,37 @@ class Fase
 
         }
     }
-    public function findFaseByUser($username)
-    {
 
+    public function findFaseByUser($username, $procedimento)
+    {
         $subtask_names = array();
         $id_subtask = array();
         $conn = new Connection();
         $mysqli = $conn->connect();
         $sql = "SELECT subtask_id FROM MAPP_subtask_users WHERE user_id IN (SELECT id FROM users WHERE username=?)";
         $stmt = $mysqli->prepare($sql);
-                foreach ($username as $nickname){
-                    $stmt->bind_param("s", $nickname);
-                    $res = $stmt->execute();
-                    $res = $stmt->get_result();
-                    $result = $res->fetch_all();
-                    if(!empty($result))
-                        array_push($id_subtask,$result);
+        foreach ($username as $nickname) {
+            $stmt->bind_param("s", $nickname);
+            $res = $stmt->execute();
+            $res = $stmt->get_result();
+            $result = $res->fetch_all();
+
+            if (!empty($result))
+                array_push($id_subtask, $result);
 
         }
 
-        $sql = "SELECT title FROM subtasks WHERE id=?";
+        $sql = "SELECT title FROM subtasks WHERE id=? AND task_id IN (SELECT id FROM tasks WHERE title=?)";
         $stmt = $mysqli->prepare($sql);
         foreach ($id_subtask[0] as $item) {
             foreach ($item as $id) {
-                $stmt->bind_param("i", $id);
+                $stmt->bind_param("is", $id, $procedimento);
                 $res = $stmt->execute();
                 $res = $stmt->get_result();
                 $result = $res->fetch_all();
-                if(!empty($result))
-                    array_push($subtask_names,$result[0]);
-                print_r($id);
+                if (!empty($result))
+                    array_push($subtask_names, $result[0]);
+
             }
         }
 

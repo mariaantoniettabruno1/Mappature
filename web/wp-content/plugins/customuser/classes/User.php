@@ -165,7 +165,6 @@ class User
 
     public function selectDipendente($area, $servizio, $ufficio)
     {
-
         $servizio_user = "%$servizio%";
         $ufficio_user = "%$ufficio%";
         $conn = new ConnectionSarala();

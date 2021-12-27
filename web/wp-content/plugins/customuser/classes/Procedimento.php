@@ -493,7 +493,7 @@ class Procedimento
         $this->setIdProcedure($result['id']);
         $mysqli->close();
     }
-    public function findTaskByUser($username)
+    public function findTaskByUser($username,$proc)
     {
 
         $task_names = array();
@@ -508,15 +508,15 @@ class Procedimento
                 $result = $res->fetch_all();
                 if(!empty($result)){
                     array_push($id_task,$result);
-
         }
 
 
-        $sql = "SELECT title FROM tasks WHERE id=?";
+
+        $sql = "SELECT title FROM tasks WHERE id=? AND project_id IN(SELECT id FROM projects WHERE name=?)";
         $stmt = $mysqli->prepare($sql);
         foreach ($id_task[0] as $item) {
             foreach ($item as $id) {
-                $stmt->bind_param("i", $id);
+                $stmt->bind_param("is", $id,$proc);
                 $res = $stmt->execute();
                 $res = $stmt->get_result();
                 $result = $res->fetch_all();
@@ -526,8 +526,10 @@ class Procedimento
             }
         }
         $mysqli->close();
+
         return $task_names;
     }
+
 
     public function assegnaDipendenti()
     {

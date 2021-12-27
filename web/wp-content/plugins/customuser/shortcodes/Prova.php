@@ -30,7 +30,7 @@ function processiorgchartview()
         $dirigenti = $user->selectDirigente($item[0]);
 
         foreach ($dirigenti as $dirigente) {
-            $dirigente_array = array('text' => $dirigente,'tags' => ['Dirigente di:', $item[0] . ' (Area)']);
+            $dirigente_array = array('text' => $dirigente, 'tags' => ['Dirigente di:', $item[0] . ' (Area)']);
             $processi = $processo->findProjectByUser($dirigente);
 
             foreach ($processi as $proc) {
@@ -44,10 +44,31 @@ function processiorgchartview()
 
                     foreach ($array_po as $po) {
                         $po_array = array('text' => $po, 'tags' => ['PO di:', $serv . ' (Servizio)']);
-                        $procedimenti = $procedimento->findTaskByUser($po);
+                        $procedimenti = $procedimento->findTaskByUser($po, $proc);
                         foreach ($procedimenti as $procedim) {
+
                             $procedimenti_array = array('text' => $procedim, 'tags' => ['Procedimento'], 'nodes' => array(), 'state' => array('expanded' => false));
                             array_push($procedimenti_array['nodes'], $po_array);
+
+                            $uffici = $ufficio->selectUfficio($item[0], $serv);
+                            foreach ($uffici as $uff) {
+                                $array_dipendenti = $user->selectDipendente($item[0], $serv, $uff);
+                                foreach ($array_dipendenti as $dipendente) {
+                                    $dipendenti_array = array('text' => $dipendente, 'tags' => ['Dipendente di:', $uff . ' (Ufficio)']);
+                                    $subtask = $fase_attività->findFaseByUser($dipendente,$procedim[0]);
+
+                                    foreach ($subtask as $fase) {
+                                        $subtask_array = array('text' => $fase, 'tags' => ['Fase - Attività'], 'nodes' => array(), 'state' => array('expanded' => false));
+                                        array_push($subtask_array['nodes'], $dipendenti_array);
+                                        array_push($procedimenti_array['nodes'], $subtask_array);
+                                    }
+
+
+
+                                }
+
+                            }
+
                             array_push($processi_array['nodes'], $procedimenti_array);
                         }
                     }
