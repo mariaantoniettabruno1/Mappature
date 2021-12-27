@@ -406,7 +406,20 @@ class Fase
         $mysqli->close();
         return $subtask_names;
     }
+public function findSubtaskByProcedimento($procedimento){
+    $conn = new Connection();
+    $mysqli = $conn->connect();
+    $sql = "SELECT title FROM subtasks WHERE task_id IN (SELECT id FROM tasks WHERE title=?)";
+    $stmt = $mysqli->prepare($sql);
+    $stmt->bind_param("s", $procedimento[0]);
+    $res = $stmt->execute();
+    $res = $stmt->get_result();
+    $result = $res->fetch_all();
 
+    $mysqli->close();
+    return $result;
+
+}
     private function getDbTitle($title)
     {
         return $title . " - fase";

@@ -224,98 +224,20 @@ class User
         return $row;
     }
 
-    public function selectDipendenteProcedimento($procedimenti)
-    {
 
-        $task_id = array();
-        $conn = new ConnectionSarala();
-        $mysqli = $conn->connect();
-        $conn = new Connection();
-        $mysqli = $conn->connect();
-        $sql = "SELECT id FROM tasks WHERE title=?";
-        $stmt = $mysqli->prepare($sql);
-        foreach ($procedimenti as $procedimento) {
-            $stmt->bind_param("s", $procedimento);
-            $res = $stmt->execute();
-            $result = $stmt->get_result();
-            $result = $result->fetch_all();
-            if (!empty($result)) {
-                array_push($task_id, $result[0]);
-            }
-        }
-
-        $user_id = array();
-        $sql = "SELECT user_id FROM MAPP_task_users WHERE task_id=?";
-        $stmt = $mysqli->prepare($sql);
-        foreach ($task_id[0] as $id) {
-            $stmt->bind_param("i", $id);
-            $res = $stmt->execute();
-            $result = $stmt->get_result();
-            $result = $result->fetch_all();
-            if (!empty($result)) {
-                array_push($user_id, $result[0]);
-            }
-        }
-        $username = array();
-        $sql = "SELECT username FROM users WHERE id=?";
-        $stmt = $mysqli->prepare($sql);
-        foreach ($user_id[0] as $id) {
-            $stmt->bind_param("i", $id);
-            $res = $stmt->execute();
-            $result = $stmt->get_result();
-            $result = $result->fetch_all();
-            if (!empty($result)) {
-                array_push($username, $result[0]);
-            }
-        }
-
-        return $username;
-    }
     public function selectDipendenteFaseAttivita($fasi_attivita)
     {
 
-        $subtask_id = array();
-        $conn = new ConnectionSarala();
-        $mysqli = $conn->connect();
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "SELECT id FROM subtasks WHERE title=?";
+        $sql = "SELECT username FROM users WHERE id IN(SELECT user_id FROM MAPP_subtask_users WHERE subtask_id IN (SELECT id FROM subtasks WHERE title=?))";
         $stmt = $mysqli->prepare($sql);
-        foreach ($fasi_attivita as $fase_attivita) {
-            $stmt->bind_param("s", $fase_attivita);
-            $res = $stmt->execute();
-            $result = $stmt->get_result();
-            $result = $result->fetch_all();
-            if (!empty($result)) {
-                array_push($subtask_id, $result[0]);
-            }
-        }
+        $stmt->bind_param("s", $fasi_attivita[0]);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $rows = $res->fetch_all();
 
-        $user_id = array();
-        $sql = "SELECT user_id FROM MAPP_subtask_users WHERE subtask_id=?";
-        $stmt = $mysqli->prepare($sql);
-        foreach ($subtask_id[0] as $id) {
-            $stmt->bind_param("i", $id);
-            $res = $stmt->execute();
-            $result = $stmt->get_result();
-            $result = $result->fetch_all();
-            if (!empty($result)) {
-                array_push($user_id, $result[0]);
-            }
-        }
-        $username = array();
-        $sql = "SELECT username FROM users WHERE id=?";
-        $stmt = $mysqli->prepare($sql);
-        foreach ($user_id[0] as $id) {
-            $stmt->bind_param("i", $id);
-            $res = $stmt->execute();
-            $result = $stmt->get_result();
-            $result = $result->fetch_all();
-            if (!empty($result)) {
-                array_push($username, $result[0]);
-            }
-        }
-
-        return $username;
+        $mysqli->close();
+        return $rows;
     }
 }

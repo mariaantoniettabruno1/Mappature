@@ -107,4 +107,21 @@ class Ufficio
         $mysqli->close();
         return $uffici;
     }
+    public function findUfficioByDipendente($dipendenti){
+
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "SELECT value FROM user_has_metadata WHERE name='ufficio' AND user_id IN (SELECT id FROM users WHERE username=?)";
+        foreach ($dipendenti as $dipendente) {
+
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("s", $dipendente);
+            $res = $stmt->execute();
+            $res = $stmt->get_result();
+            $result = $res->fetch_all();
+        }
+
+        $mysqli->close();
+        return $result[0];
+    }
 }
