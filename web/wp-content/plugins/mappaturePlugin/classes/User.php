@@ -1,5 +1,5 @@
 <?php
-
+namespace MappaturePlugin;
 class User
 {
     private $username;

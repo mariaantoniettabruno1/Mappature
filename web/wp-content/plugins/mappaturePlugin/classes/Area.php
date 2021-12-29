@@ -1,6 +1,6 @@
 <?php
 
-include_once '../includes/Connection.php';
+namespace MappaturePlugin;
 
 class Area
 {
