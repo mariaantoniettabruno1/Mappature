@@ -1,10 +1,10 @@
 <?php
-include_once 'Connection.php';
-include_once 'ConnectionSarala.php';
+include_once plugin_dir_path(__FILE__) .'../includes/Connection.php';
+include_once  plugin_dir_path(__FILE__) .'../includes/onnectionSarala.php';
 
-include_once "OrgChartProcess.php";
-include_once "Form.php";
-include_once "IdProcessCreator.php";
+include_once  plugin_dir_path(__FILE__) ."OrgChartProcess.php";
+include_once  plugin_dir_path(__FILE__) ."Form.php";
+include_once  plugin_dir_path(__FILE__) ."IdProcessCreator.php";
 
 function create_processo()
 {

@@ -1,5 +1,7 @@
 <?php
 namespace MappaturePlugin;
+use mysqli;
+
 class Connection
 {
     private $url;
