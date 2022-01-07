@@ -51,9 +51,13 @@ function extra_user_fields($user)
                         $ruolo = '';
                     }
                     ?>
-                    <option value="Dirigente" <?php if ($ruolo == 'Dirigente') echo ' selected="selected"'; ?>> Dirigente</option>
+                    <option value="Dirigente" <?php if ($ruolo == 'Dirigente') echo ' selected="selected"'; ?>>
+                        Dirigente
+                    </option>
                     <option value="PO" <?php if ($ruolo == 'PO') echo ' selected="selected"'; ?>> PO</option>
-                    <option value="Dipendente"  <?php if ($ruolo == 'Dipendente') echo ' selected="selected"'; ?>> Dipendente</option>
+                    <option value="Dipendente" <?php if ($ruolo == 'Dipendente') echo ' selected="selected"'; ?>>
+                        Dipendente
+                    </option>
 
 
                 </select>
@@ -62,9 +66,24 @@ function extra_user_fields($user)
         <tr>
             <th>Attivo</th>
             <td>
-                <?php
-                $user_meta = get_user_meta($user->ID);
-                $attivo = $user_meta['attivo'][0]; ?>
+                <?php if ($user->ID !== NULL) {
+
+                    $user_meta = get_user_meta($user->ID);
+                    if (empty($user_meta['attivo']) || empty($user_meta['attivo'][0])) {
+                        $attivo = '';
+                        update_user_meta($user->ID, 'attivo', $attivo);
+
+                    } else {
+                        $attivo = $user_meta['attivo'][0];
+                    }
+
+
+                } else {
+                    $attivo = '';
+                }
+
+                ?>
+
                 <input type="radio" name="attivo" value="si" <?php if ($attivo == 'si') echo ' checked="checked"'; ?>>Si<br>
                 <input type="radio" name="attivo" value="no" <?php if ($attivo == 'no') echo ' checked="checked"'; ?>>No<br>
 
