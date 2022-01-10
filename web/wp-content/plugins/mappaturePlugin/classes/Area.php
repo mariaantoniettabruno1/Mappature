@@ -2,6 +2,11 @@
 
 namespace MappaturePlugin;
 
+/**
+ * Classe area contentente function di default come getter e setter e custom function
+ */
+
+
 class Area
 {
     private $meta_key = 'area';
@@ -23,6 +28,12 @@ class Area
         $this->area = $area;
     }
 
+    /**
+     * Function per l'insert dell'area nel db di WordPress, in particolare nella tabella dei metadati dell'utente
+     * input: user id
+     * output:
+     */
+
     public function setUserArea($userid)
     {
         $conn = new Connection();
@@ -33,6 +44,11 @@ class Area
         $res = $stmt->execute();
         $mysqli->close();
     }
+    /**
+     * Function per l'update dell'area nel db di WordPress, in particolare nella tabella dei metadati dell'utente
+     * input: user id
+     * output:
+     */
 
     public function editUserArea($userid)
     {
@@ -44,7 +60,12 @@ class Area
         $res = $stmt->execute();
         $mysqli->close();
     }
-
+    /**
+     * Function per il select dell'area dal custom form costruito tramite gforms
+     * per l'inserimento manuale di una nuova area
+     *     * input:
+     * output: array contentente tutte le aree inserite tramite il form
+     */
     public function selectArea()
     {
         $form_id = 17;
@@ -60,6 +81,11 @@ class Area
         return $result;
     }
 
+    /**
+     * Function per trovare l'area assegnata ad un dirigente comunale
+     * input: nome del dirigente
+     * output: array contentente tutte le aree assegnate al dirigente
+     */
     public function findAreaByDirigente($dirigenti)
     {
 

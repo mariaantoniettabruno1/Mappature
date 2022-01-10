@@ -2,6 +2,10 @@
 namespace MappaturePlugin;
 use mysqli;
 
+/**
+ classe per la connesione al db di Kanboard
+ */
+
 class Connection
 {
     private $url;

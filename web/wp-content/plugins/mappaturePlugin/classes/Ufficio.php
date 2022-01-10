@@ -1,5 +1,9 @@
 <?php
 namespace MappaturePlugin;
+/**
+ * Classe Ufficio contentente function di default come getter e setter e custom function
+ */
+
 
 class Ufficio
 {
@@ -26,6 +30,11 @@ class Ufficio
     {
         $this->ufficio = $ufficio;
     }
+    /**
+     * Function per l'insert dell'ufficio nel db di WordPress, in particolare nella tabella dei metadati dell'utente
+     * input: user id
+     * output:
+     */
 
     public function setUserUfficio($userid)
     {
@@ -37,6 +46,11 @@ class Ufficio
         $res = $stmt->execute();
         $mysqli->close();
     }
+    /**
+     * Function per l'update dell'ufficio nel db di WordPress, in particolare nella tabella dei metadati dell'utente
+     * input: user id
+     * output:
+     */
     public function editUserUfficio($userid){
         $conn = new Connection();
         $mysqli = $conn->connect();
@@ -46,47 +60,13 @@ class Ufficio
         $res = $stmt->execute();
         $mysqli->close();
     }
-//    public function getFormidUfficio()
-//    {
-//        return $this->formidUfficio;
-//    }
-//
-//
-//    public function setFormidUfficio(int $formidUfficio)
-//    {
-//        $this->formidUfficio = $formidUfficio;
-//    }
-//
-//
-//    public function getMetakeyUfficio()
-//    {
-//        return $this->metakeyUfficio;
-//    }
-//
-//
-//    public function setMetakeyUfficio(int $metakeyUfficio)
-//    {
-//        $this->metakeyUfficio = $metakeyUfficio;
-//    }
-//
-//    public function selectUfficio()
-//    {
-//        $conn = new ConnectionSarala();
-//        $mysqli = $conn->connect();
-//        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=? and meta_key=?";
-//        $stmt = $mysqli->prepare($sql);
-//        $stmt->bind_param("ii", $this->formidUfficio, $this->metakeyUfficio);
-//        $res = $stmt->execute();
-//        $res = $stmt->get_result();
-//        $result = array();
-//        foreach ($res as $lines) {
-//            array_push($result, $lines["meta_value"]);
-//        }
-//        $mysqli->close();
-//        return $result;
-//
-//    }
-    public function selectUfficio($area,$servizi)
+    /**
+     * Function per il select dell'ufficio dal custom form costruito tramite gforms
+     * per l'inserimento manuale di una nuovo ufficio, collegato ad un area e ad un servizio specifico
+      * input: string di area, string di servizio
+     * output: array contentente tutti gli uffici inseriti tramite il form
+     */
+    public function selectUfficio($area,$servizio)
     {
 
         $uffici = array();
@@ -96,7 +76,7 @@ class Ufficio
                                           AND entry_id IN (SELECT entry_id FROM wp_gf_entry_meta WHERE meta_key=7 AND meta_value=?)
                                         AND entry_id IN (SELECT entry_id FROM wp_gf_entry_meta WHERE meta_key=8 AND meta_value=?)";
         $stmt = $mysqli->prepare($sql);
-            $stmt->bind_param("ss", $area,$servizi);
+            $stmt->bind_param("ss", $area,$servizio);
             $res = $stmt->execute();
             $res = $stmt->get_result();
             $result = $res->fetch_all();
@@ -107,6 +87,11 @@ class Ufficio
         $mysqli->close();
         return $uffici;
     }
+    /**
+     * Function per trovare l'ufficio assegnato a dipendenti comunali
+     * input: array di dipendenti comunali a cui è stato assegnato un Ufficio
+     * output: array contentente tutti gli uffici assegnati ai dipendenti
+     */
     public function findUfficioByDipendente($dipendenti){
 
         $conn = new Connection();

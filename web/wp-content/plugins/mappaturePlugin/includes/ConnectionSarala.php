@@ -1,6 +1,11 @@
 <?php
+
 namespace MappaturePlugin;
 class ConnectionSarala
+
+    /**
+     * classe per la connesione al db di WordPress
+     */
 {
     private $url;
     private $username;

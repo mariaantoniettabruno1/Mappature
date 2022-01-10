@@ -1,5 +1,9 @@
 <?php
+
 namespace MappaturePlugin;
+/**
+ * Classe USer contentente function di default come getter e setter e custom function
+ */
 class User
 {
     private $username;
@@ -70,6 +74,11 @@ class User
 
     }
 
+    /**
+     * Function per aggiornare nome, email e password di un utente nella table 'users' del db di Kanboard
+     * input:
+     * output:
+     */
 
     public function updateUser()
     {
@@ -79,17 +88,18 @@ class User
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("sssi", $this->name, $this->email, $this->password, $this->idKanboard);
         $res = $stmt->execute();
-//
-//        $sql = "UPDATE user_has_metadata SET value=?  WHERE user_id=? AND name=?";
-//        $stmt = $mysqli->prepare($sql);
-//        $stmt->bind_param("sis", $this->value_servizio, $this->idKanboard, $this->servizio);
-//        $res = $stmt->execute();
-//        $sql = "UPDATE user_has_metadata SET  value=?  WHERE user_id=? AND name=?";
-//        $stmt = $mysqli->prepare($sql);
-//        $stmt->bind_param("sis", $this->value_ufficio, $this->idKanboard, $this->ufficio);
-//        $res = $stmt->execute();
+
         $mysqli->close();
     }
+
+    /**
+     * Function per creare un nuovo utente su kanboard, dopo averlo creato su wordpress, salvando i dati nel db di Kanboard
+     * in particolare nella table 'users'
+     * Successiva select per ottenere l'id dell'utente in Kanboard
+     * Set della variabile $idKanboard
+     * input:
+     * output:
+     */
 
     public function createUser()
     {
@@ -109,6 +119,12 @@ class User
         $mysqli->close();
     }
 
+    /**
+     * Function per cancellare un utente da Kanboard, dopo averlo cancellato su WordPress, attuando una delete sulla table 'users'
+     * input: id kanboard dell'utente
+     * output:
+     */
+
     public function deleteUser($id_kan)
     {
         $conn = new Connection();
@@ -120,6 +136,13 @@ class User
         $res = $stmt->execute();
         $mysqli->close();
     }
+
+    /**
+     * Function che seleziona i dirigenti assegnati ad una specifica area dal db di WordPress, in particolare dalla
+     * tabella di meta utente di WordPress.
+     * input: area collegata al dirigente
+     * output: array contenente tutti i nomi dei dirigenti assegnati ad una specifica area
+     */
 
     public function selectDirigente($area)
     {
@@ -140,7 +163,17 @@ class User
         }
         return $vettore;
     }
-    public function findDirigenteByProcesso($processo){
+
+    /**
+     * Function che seleziona i dirigenti assegnati ad uno specifico processo dal db di Kanboard, in particolare dalla tabella
+     * 'users' del db di Kanboard, prendendo l'id dell'user dalla tabella custom 'MAPP_project_users_owner' e il project_id
+     * dalla tabella projects
+     * input: nome del processo (project)
+     * output: array contenente tutti i nomi dei dirigenti di uno specifico processo
+     */
+
+    public function findDirigenteByProcesso($processo)
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
         $sql = "SELECT username FROM users WHERE id IN(SELECT user_id FROM MAPP_project_users_owner WHERE project_id IN (SELECT id FROM projects WHERE name=?))";
@@ -153,7 +186,16 @@ class User
         return $rows;
 
     }
-    public function findPOByProcedimento($procedimento){
+
+    /**
+     * Function che seleziona i PO assegnati ad uno specifico procedimento dal db di Kanboard, in particolare dalla tabella
+     * 'users' del db di Kanboard, prendendo l'id dell'user dalla tabella custom 'MAPP_task_users_owner' e il task_id
+     * dalla tabella tasks
+     * input: nome del procedimento (task)
+     * output: array contenente tutti i nomi dei PO di uno specifico procedimento
+     */
+    public function findPOByProcedimento($procedimento)
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
         $sql = "SELECT username FROM users WHERE id IN(SELECT user_id FROM MAPP_task_users_owner WHERE task_id IN (SELECT id FROM tasks WHERE title=?))";
@@ -166,7 +208,17 @@ class User
         $mysqli->close();
         return $rows;
     }
-    public function findDipendentiAssegnatiAProcedimento($procedimento){
+
+    /**
+     * Function che seleziona i Dipendenti assegnati ad uno specifico procedimento dal db di Kanboard, in particolare dalla tabella
+     * 'users' del db di Kanboard, prendendo l'id dell'user dalla tabella custom 'MAPP_task_users' e il task_id
+     * dalla tabella tasks
+     * input: nome del procedimento (task)
+     * output: array contenente tutti i nomi dei Dipendenti assegnati ad uno specifico procedimento
+     */
+
+    public function findDipendentiAssegnatiAProcedimento($procedimento)
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
         $sql = "SELECT username FROM users WHERE id IN(SELECT user_id FROM MAPP_task_users WHERE task_id IN (SELECT id FROM tasks WHERE title=?))";
@@ -181,8 +233,14 @@ class User
 
     }
 
+    /**
+     * Function che seleziona i PO assegnati ad uno specifico servizio collegato ad una specifica area dal db di WordPress,
+     * in particolare dalla table di usermeta di WordPRess
+     * input: nome dell'area e nome del servizio associati
+     * output: array contenente tutti i nomi dei PO assegnati ad uno specifico servizio collegato ad una specifica area
+     */
 
-    public function selectPO($area, $servizi)
+    public function selectPO($area, $servizio)
     {
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
@@ -192,7 +250,7 @@ class User
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_key= 'area' AND meta_value=?)
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_key='servizio' AND meta_value LIKE ?)";
         $stmt = $mysqli->prepare($sql);
-        $temp = "%$servizi%";
+        $temp = "%$servizio%";
         $stmt->bind_param("ss", $area[0], $temp);
         $res = $stmt->execute();
         $result = $stmt->get_result();
@@ -203,6 +261,13 @@ class User
         $mysqli->close();
         return $po_names;
     }
+
+    /**
+     * Function che seleziona i Dipendenti assegnati ad uno specifico ufficio collegato ad una specifica area e servizio dal db di WordPress,
+     * in particolare dalla table di usermeta di WordPRess
+     * input: nome dell'area, nome del servizio e nome dell'ufficio associati
+     * output: array contenente tutti i nomi dei PO assegnati ad uno specifico ufficio collegato ad una specifico servizio e area
+     */
 
     public function selectDipendente($area, $servizio, $ufficio)
     {
@@ -224,6 +289,13 @@ class User
         return $row;
     }
 
+    /**
+     * Function che seleziona i Dipendenti assegnati ad uno specifica fase/attività in particolare dalla tabella
+     * 'users' del db di Kanboard, prendendo l'id dell'user dalla tabella custom 'MAPP_subtask_users' e il subtask_id
+     * dalla tabella subtasks
+     * input: nome della fase/attività (subtask)
+     * output: array contenente tutti i nomi dei Dipendenti assegnati ad una specifica fase/attività
+     */
 
     public function selectDipendenteFaseAttivita($fasi_attivita)
     {
