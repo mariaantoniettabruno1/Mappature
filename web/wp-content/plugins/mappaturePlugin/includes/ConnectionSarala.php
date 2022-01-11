@@ -1,6 +1,8 @@
 <?php
 
 namespace MappaturePlugin;
+use mysqli;
+
 class ConnectionSarala
 
     /**
