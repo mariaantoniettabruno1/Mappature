@@ -137,14 +137,20 @@ class Fase
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
-        $this->setIdProcedure($result['id']);
+        if(!empty($result)){
+            $this->setIdProcedure($result['id']);
+        }
+
         $sql = "SELECT id FROM projects WHERE name=? ORDER BY id DESC LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $this->name_process);
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
-        $this->setIdProcess($result['id']);
+        if(!empty($result)){
+            $this->setIdProcess($result['id']);
+        }
+
 
         $a = " - fase";
         $this->title = $this->title . $a;

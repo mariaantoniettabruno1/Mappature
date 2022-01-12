@@ -28,6 +28,10 @@ require_once(plugin_dir_path(__FILE__) . 'classes/Attivita.php');
 require_once(plugin_dir_path(__FILE__) . 'shortcodes/ShortCodesProcesso.php');
 require_once(plugin_dir_path(__FILE__) . 'shortcodes/ShortCodesProcedimento.php');
 require_once(plugin_dir_path(__FILE__) . 'shortcodes/ShortCodesDipendenteProcedimento.php');
+require_once(plugin_dir_path(__FILE__) . 'shortcodes/ShortCodesFase.php');
+require_once(plugin_dir_path(__FILE__) . 'shortcodes/ShortCodesAttivita.php');
+require_once(plugin_dir_path(__FILE__) . 'mappatureOrgChart/OrgChartImpiegati.php');
+require_once(plugin_dir_path(__FILE__) . 'mappatureOrgChart/OrgChartProcessi.php');
 
 /**
  * Aggiungo librerie javascript a wordpress
@@ -164,6 +168,17 @@ function shortcodes_init()
     add_shortcode('post_deleteprocedimento', 'call_delete_procedimento');
     add_shortcode('post_assigndipendente', 'call_assign_dipendente');
     add_shortcode('post_editassigndipendente', 'call_edit_assign_dipendente');
+    add_shortcode('post_fase', 'call_create_fase');
+    add_shortcode('post_fasepostuma', 'call_create_fase_postuma');
+    add_shortcode('post_updatefase', 'call_update_fase');
+    add_shortcode('post_deletefase', 'call_delete_fase');
+    add_shortcode('post_create_attivita', 'call_create_attivita');
+    add_shortcode('post_createattivitapostuma', 'call_create_attivita_postuma');
+    add_shortcode('post_updateattivita', 'call_update_attivita');
+    add_shortcode('post_deleteattivita', 'call_delete_attivita');
+    add_shortcode("post_orgchartdipendenti", "call_orgchart_dipendenti");
+    add_shortcode("post_processiorgchartview", "call_processiorgchartview");
+
 }
 
 function call_add_user_metadata()
@@ -207,4 +222,37 @@ function call_assign_dipendente()
 function call_edit_assign_dipendente()
 {
     \MappaturePlugin\ShortCodesDipendenteProcedimento::edit_assign_dipendente();
+}
+function call_create_fase(){
+    \MappaturePlugin\ShortCodesFase::create_fase();
+}
+function call_create_fase_postuma(){
+    \MappaturePlugin\ShortCodesFase::create_fase_postuma();
+}
+function call_update_fase(){
+    \MappaturePlugin\ShortCodesFase::update_fase();
+}
+function call_delete_fase(){
+    \MappaturePlugin\ShortCodesFase::delete_fase();
+}
+function call_create_attivita(){
+    \MappaturePlugin\ShortCodesAttivita::create_attivita();
+}
+function call_create_attivita_postuma(){
+    \MappaturePlugin\ShortCodesAttivita::create_attivita_postuma();
+}
+
+function call_update_attivita(){
+    \MappaturePlugin\ShortCodesAttivita::update_attivita();
+}
+function call_delete_attivita(){
+    \MappaturePlugin\ShortCodesAttivita::delete_attivita();
+}
+
+function call_orgchart_dipendenti(){
+    \MappaturePlugin\OrgChartImpiegati::orgchart_dipendenti();
+}
+
+function call_processiorgchartview(){
+    \MappaturePlugin\OrgChartProcessi::processiorgchartview();
 }

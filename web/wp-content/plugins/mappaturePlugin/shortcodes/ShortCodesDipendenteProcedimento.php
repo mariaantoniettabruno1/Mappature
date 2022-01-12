@@ -14,7 +14,7 @@ class ShortCodesDipendenteProcedimento
         $procedimento = new Procedimento();
 
         $old_value = '';
-        if ($entry_gforms != null) {
+        if (!empty($entry_gforms)) {
             foreach ($entry_gforms[0] as $key => $value) {
                 $pattern = "[^1.]";
                 if (preg_match($pattern, $key) && $value) {
@@ -49,7 +49,7 @@ class ShortCodesDipendenteProcedimento
         $procedimento = new Procedimento();
 
         $old_value = '';
-        if ($entry_gforms != null) {
+        if (!empty($entry_gforms)) {
             foreach ($entry_gforms[0] as $key => $value) {
                 $pattern = "[^1.]";
                 if (preg_match($pattern, $key) && $value) {
