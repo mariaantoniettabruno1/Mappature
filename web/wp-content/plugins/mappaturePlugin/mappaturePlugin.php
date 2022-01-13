@@ -148,8 +148,18 @@ function on_profile_update($user_id)
 
     KBSync::updateUser($user_id);
 
-}
 
+}
+add_action('pmxi_saved_post', 'on_saved_user');
+function on_saved_user($post_id)
+{
+    KBSync::importUser($post_id);
+}
+add_action('delete_user', 'my_delete_user');
+function my_delete_user($user_id)
+{
+    KBSync::deleteUser($user_id);
+}
 /**
  * Action per l'inizializzazione di tutte le function collegate agli shortcode del plugin
  */
