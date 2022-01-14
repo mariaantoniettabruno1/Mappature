@@ -144,7 +144,10 @@ class Attivita
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
-        $this->setIdProcessAttivita($result['id']);
+        if(!empty($result)){
+            $this->setIdProcessAttivita($result['id']);
+        }
+
 
 
         $a = " - attività";

@@ -13,25 +13,28 @@ use MappaturePlugin\KBSync;
 
 
 require_once(plugin_dir_path(__FILE__) . 'kanboardSync/KanboardSync.php');
-require_once(plugin_dir_path(__FILE__) . 'classes/User.php');
 require_once(plugin_dir_path(__FILE__) . 'common.php');
 require_once(plugin_dir_path(__FILE__) . 'includes/Connection.php');
 require_once(plugin_dir_path(__FILE__) . 'includes/ConnectionSarala.php');
 require_once(plugin_dir_path(__FILE__) . 'classes/Area.php');
 require_once(plugin_dir_path(__FILE__) . 'classes/Servizio.php');
 require_once(plugin_dir_path(__FILE__) . 'classes/Ufficio.php');
-require_once(plugin_dir_path(__FILE__) . 'shortcodes/UserMetaDataOrgchart.php');
+require_once(plugin_dir_path(__FILE__) . 'classes/User.php');
 require_once(plugin_dir_path(__FILE__) . 'classes/Processo.php');
 require_once(plugin_dir_path(__FILE__) . 'classes/Procedimento.php');
 require_once(plugin_dir_path(__FILE__) . 'classes/Fase.php');
 require_once(plugin_dir_path(__FILE__) . 'classes/Attivita.php');
+require_once(plugin_dir_path(__FILE__) . 'classes/GetterIdUsers.php');
 require_once(plugin_dir_path(__FILE__) . 'shortcodes/ShortCodesProcesso.php');
 require_once(plugin_dir_path(__FILE__) . 'shortcodes/ShortCodesProcedimento.php');
 require_once(plugin_dir_path(__FILE__) . 'shortcodes/ShortCodesDipendenteProcedimento.php');
 require_once(plugin_dir_path(__FILE__) . 'shortcodes/ShortCodesFase.php');
+require_once(plugin_dir_path(__FILE__) . 'shortcodes/UserMetaDataOrgchart.php');
 require_once(plugin_dir_path(__FILE__) . 'shortcodes/ShortCodesAttivita.php');
 require_once(plugin_dir_path(__FILE__) . 'mappatureOrgChart/OrgChartImpiegati.php');
 require_once(plugin_dir_path(__FILE__) . 'mappatureOrgChart/OrgChartProcessi.php');
+
+
 
 /**
  * Aggiungo librerie javascript a wordpress
