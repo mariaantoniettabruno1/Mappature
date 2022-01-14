@@ -27,7 +27,7 @@ class ShortCodesAttivita
             $attivita->createAttivita();
         }
 
-
+        return '';
     }
 
     public static function create_attivita_postuma()
@@ -51,7 +51,7 @@ class ShortCodesAttivita
             $attivita->createAttivita();
         }
 
-
+        return ' ';
     }
 
 
@@ -72,7 +72,7 @@ class ShortCodesAttivita
             $result = GFAPI::update_entry($entry, $id_current_form);
         }
 
-
+        return ' ';
     }
 
     public static function delete_attivita()
@@ -85,7 +85,7 @@ class ShortCodesAttivita
             $atto->delete();
             $result = GFAPI::delete_entry($id_current_form);
         }
-
+        return ' ';
     }
 
 

@@ -30,15 +30,18 @@ class UserMetaDataOrgchart
         }
         return $array;
     }
-private static function update_processi_by_user(string $old_user_area,array $array_users,string $area){
 
-    $processi_wp = (new Processo)->findProjectsOnWordpress($old_user_area);
-    $array_ids = (new Processo)->findProjectsOnKanboard($processi_wp);
-    (new Processo)->deleteDismatchProject($array_ids, $array_users);
-    $nuovi_processi_wp = (new Processo)->findProjectsOnWordpress($area);
-    $array_ids = (new Processo)->findProjectsOnKanboard($nuovi_processi_wp);
-    (new Processo)->insertMatchProject($array_ids, $array_users);
-}
+    private static function update_processi_by_user(string $old_user_area, array $array_users, string $area)
+    {
+
+        $processi_wp = (new Processo)->findProjectsOnWordpress($old_user_area);
+        $array_ids = (new Processo)->findProjectsOnKanboard($processi_wp);
+        (new Processo)->deleteDismatchProject($array_ids, $array_users);
+        $nuovi_processi_wp = (new Processo)->findProjectsOnWordpress($area);
+        $array_ids = (new Processo)->findProjectsOnKanboard($nuovi_processi_wp);
+        (new Processo)->insertMatchProject($array_ids, $array_users);
+    }
+
     private static function update_procedimenti_by_dirigente(string $area, string $old_user_area, $old_user_servizio, array $array_servizio, array $array_users_dirigente)
     {
 
@@ -205,12 +208,12 @@ private static function update_processi_by_user(string $old_user_area,array $arr
         $temp_area = $area->getArea();
         if (!empty(array_filter($array_users_dirigente))) {
             //se ci sono dei processi collegati ai dirigenti, aggiorno i dati nel db
-            self::update_processi_by_user($old_user_area,$array_users_dirigente,$temp_area);
+            self::update_processi_by_user($old_user_area, $array_users_dirigente, $temp_area);
             self::update_procedimenti_by_dirigente($temp_area, $old_user_area, $old_user_servizio, $array_servizio, $array_users_dirigente);
 
         } elseif (!empty(array_filter($array_users_po))) { //aggiornamenti di procedimenti che hanno il PO collegato
             //se ci sono dei processi collegati ai po, aggiorno i dati nel db
-            self::update_processi_by_user($old_user_area,$array_users_po,$temp_area);
+            self::update_processi_by_user($old_user_area, $array_users_po, $temp_area);
             self::update_procedimenti_by_po($temp_area, $old_user_area, $array_users_po, $old_user_servizio, $array_servizio);
         } elseif (!empty((array_filter($array_users_dipendente)))) {//aggiornamento dei dipendenti che hanno fase e attività collegata
 

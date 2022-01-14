@@ -37,7 +37,7 @@ class ShortCodesProcedimento
             }
         }
 
-
+return '';
     }
 
     public static function create_procedimento_postuma()
@@ -64,7 +64,7 @@ class ShortCodesProcedimento
             $procedure->assignUsersCreator($procedure->getCreatorId());
         }
 
-
+return '';
     }
 
     public static function delete_procedimento()
@@ -78,7 +78,7 @@ class ShortCodesProcedimento
             $result = GFAPI::delete_entry($id_current_form);
         }
 
-
+return '';
     }
 
 

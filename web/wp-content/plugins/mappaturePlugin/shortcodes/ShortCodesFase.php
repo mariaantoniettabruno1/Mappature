@@ -25,7 +25,7 @@ class ShortCodesFase
             }
             $fase->createFase();
         }
-
+        return '';
 
     }
 
@@ -50,7 +50,7 @@ class ShortCodesFase
             $fase->createFase();
         }
 
-
+        return '';
     }
 
 
@@ -71,7 +71,7 @@ class ShortCodesFase
             $result = GFAPI::update_entry($entry, $id_current_form);
         }
 
-
+        return '';
     }
 
 
@@ -85,7 +85,7 @@ class ShortCodesFase
             $fase->delete();
             $result = GFAPI::delete_entry($id_current_form);
         }
-
+        return '';
     }
 
 

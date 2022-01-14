@@ -34,7 +34,7 @@ class ShortCodesProcesso
             $processo->findProject();
             $processo->assignUsers($id_owner);
         }
-
+        return '';
 
     }
 
@@ -49,7 +49,7 @@ class ShortCodesProcesso
             $result = GFAPI::delete_entry($id_current_form);
         }
 
-
+        return '';
     }
 
 }
