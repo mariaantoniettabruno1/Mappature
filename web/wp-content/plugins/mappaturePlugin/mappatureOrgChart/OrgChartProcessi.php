@@ -4,17 +4,15 @@ namespace MappaturePlugin;
 
 class OrgChartProcessi
 {
-   public static function processiorgchartview()
+    public static function orgchart_processi()
     {
         $area = new Area();
-        $array_area = $area->selectArea();
         $user = new User();
         $servizio = new Servizio();
         $ufficio = new Ufficio();
-        $tree_array = array();
         $processo = new Processo();
         $procedimento = new Procedimento();
-        $fase_attività = new Fase();
+        $fase_attivita = new Fase();
         $second_tree_array = array();
 
 
@@ -25,6 +23,9 @@ class OrgChartProcessi
 
             $processi_array = array('text' => $proc, 'tags' => ['Processo'], 'nodes' => array(), 'state' => array('expanded' => false));
             foreach ($dirigenti as $dirigente) {
+                echo "<pre>";
+                print_r($dirigente);
+                echo "</pre>";
                 $area_dirigente = $area->findAreaByDirigente($dirigente);
                 $dirigente_array = array('text' => $dirigente, 'tags' => ['Dirigente di:', $area_dirigente[0] . ' (Area)']);
 
@@ -48,18 +49,18 @@ class OrgChartProcessi
                     $po_array = array('text' => $po, 'tags' => ['PO di:', $servizio_po[0] . ' (Servizio)']);
                     array_push($procedimenti_array['nodes'], $po_array);
                 }
-                $fasi_attività = $fase_attività->findSubtaskByProcedimento($procedim);
-                foreach($fasi_attività as $subtask){
+                $fasi_attivita = $fase_attivita->findSubtaskByProcedimento($procedim);
+                foreach ($fasi_attivita as $subtask) {
 
                     $array_dipendenti = $user->selectDipendenteFaseAttivita($subtask);
-                    $fasi_attività_array = array('text' => $subtask[0], 'tags' => ['Fase - Attività'], 'nodes' => array(), 'state' => array('expanded' => false));
+                    $fasi_attivita_array = array('text' => $subtask[0], 'tags' => ['Fase - Attivita'], 'nodes' => array(), 'state' => array('expanded' => false));
 
                     foreach ($array_dipendenti as $dipendente) {
                         $ufficio_dipendente = $ufficio->findUfficioByDipendente($dipendente);
                         $dipendenti_array = array('text' => $dipendente, 'tags' => ['Dirigente di:', $ufficio_dipendente[0] . ' (Ufficio)']);
-                        array_push($fasi_attività_array['nodes'], $dipendenti_array);
+                        array_push($fasi_attivita_array['nodes'], $dipendenti_array);
                     }
-                    array_push($procedimenti_array['nodes'], $fasi_attività_array);
+                    array_push($procedimenti_array['nodes'], $fasi_attivita_array);
                 }
 
 
@@ -67,8 +68,6 @@ class OrgChartProcessi
             }
             array_push($second_tree_array, $processi_array);
         }
-
-
 
         ?>
         <!DOCTYPE html>
@@ -93,7 +92,6 @@ class OrgChartProcessi
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-treeview/1.2.0/bootstrap-treeview.min.js"></script>
 
 
-        </head>
         <div class="row">
             <hr>
             <h2>Searchable Tree</h2>
@@ -132,24 +130,28 @@ class OrgChartProcessi
                     <ul class="list-group">
                         <li class="list-group-item node-treeview-searchable" data-nodeid="0"
                             style="color:undefined;background-color:undefined;"><span
-                                class="icon expand-icon glyphicon glyphicon-plus"></span><span
-                                class="icon node-icon"></span>Parent 1
+                                    class="icon expand-icon glyphicon glyphicon-plus"></span><span
+                                    class="icon node-icon"></span>Parent 1
                         </li>
                         <li class="list-group-item node-treeview-searchable" data-nodeid="5"
-                            style="color:undefined;background-color:undefined;"><span class="icon glyphicon"></span><span
-                                class="icon node-icon"></span>Parent 2
+                            style="color:undefined;background-color:undefined;"><span
+                                    class="icon glyphicon"></span><span
+                                    class="icon node-icon"></span>Parent 2
                         </li>
                         <li class="list-group-item node-treeview-searchable" data-nodeid="6"
-                            style="color:undefined;background-color:undefined;"><span class="icon glyphicon"></span><span
-                                class="icon node-icon"></span>Parent 3
+                            style="color:undefined;background-color:undefined;"><span
+                                    class="icon glyphicon"></span><span
+                                    class="icon node-icon"></span>Parent 3
                         </li>
                         <li class="list-group-item node-treeview-searchable" data-nodeid="7"
-                            style="color:undefined;background-color:undefined;"><span class="icon glyphicon"></span><span
-                                class="icon node-icon"></span>Parent 4
+                            style="color:undefined;background-color:undefined;"><span
+                                    class="icon glyphicon"></span><span
+                                    class="icon node-icon"></span>Parent 4
                         </li>
                         <li class="list-group-item node-treeview-searchable" data-nodeid="8"
-                            style="color:undefined;background-color:undefined;"><span class="icon glyphicon"></span><span
-                                class="icon node-icon"></span>Parent 5
+                            style="color:undefined;background-color:undefined;"><span
+                                    class="icon glyphicon"></span><span
+                                    class="icon node-icon"></span>Parent 5
                         </li>
                     </ul>
                 </div>
@@ -168,14 +170,15 @@ class OrgChartProcessi
 
         <script>
 
-
-            var processi_organigramma_string = '<?php echo json_encode($second_tree_array);?>';
-
-            const processi_organigramma = JSON.parse(processi_organigramma_string);
+            console.log("Sono all'inizio");
+            var organigramma_processi_string = `<?php echo json_encode($second_tree_array);?>`;
+            console.log("Sono dopo la var");
+            const organigramma_processi = JSON.parse(organigramma_processi_string);
 
 
             function getTree() {
-                return processi_organigramma;
+
+                return organigramma_processi;
             }
 
             var $searchableTree = $('#treeview-searchable').treeview({
@@ -235,7 +238,7 @@ class OrgChartProcessi
             // find all nodes that are not related to search and should be disabled:
             // This excludes found nodes, their children and their parents.
             // Call this after collapsing all nodes and letting search() reveal.
-            //
+
             function collectUnrelated(nodes) {
                 var unrelated = [];
                 $.each(nodes, function (i, n) {
@@ -289,7 +292,5 @@ class OrgChartProcessi
         </html>
 
         <?php
-
-
     }
 }

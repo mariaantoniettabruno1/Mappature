@@ -1,14 +1,6 @@
 <?php
 
-/*
-Plugin Name: Custom User Plugin
-Plugin URI:
-Description:
-Version: 0.1
-Author: MG3
-Author URI:
 
-*/
 
 /*if (!function_exists('write_log')) {
 
@@ -116,7 +108,7 @@ include_once 'shortcodes/userMetaData.php';
 include_once 'classes/SubtaskAttivita.php';
 include_once 'shortcodes/shortcodeOrgChartView.php';
 include_once 'classes/User.php';
-include_once 'shortcodes/Prova.php';
+
 require_once 'common.php';
 
 add_action('edit_user_profile_update', 'save_extra_user_field');

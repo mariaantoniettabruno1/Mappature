@@ -150,7 +150,7 @@ class Attivita
 
 
 
-        $a = " - attività";
+        $a = " - attivita";
         $this->title_attivita = $this->title_attivita . $a;
 
         $sql = "INSERT INTO subtasks (title,task_id) VALUES(?,?)";

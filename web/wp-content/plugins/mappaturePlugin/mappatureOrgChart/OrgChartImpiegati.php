@@ -83,7 +83,7 @@ public static function orgchart_dipendenti()
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-treeview/1.2.0/bootstrap-treeview.min.js"></script>
 
 
-    </head>
+
     <div class="row">
         <hr>
         <h2>Searchable Tree</h2>
@@ -159,7 +159,7 @@ public static function orgchart_dipendenti()
     <script>
 
 
-        var organigramma_string = '<?php echo json_encode($tree_array);?>';
+        var organigramma_string = `<?php echo json_encode($tree_array);?>`;
 
         const organigramma = JSON.parse(organigramma_string);
 
@@ -226,7 +226,7 @@ public static function orgchart_dipendenti()
         // find all nodes that are not related to search and should be disabled:
         // This excludes found nodes, their children and their parents.
         // Call this after collapsing all nodes and letting search() reveal.
-        //
+
         function collectUnrelated(nodes) {
             var unrelated = [];
             $.each(nodes, function (i, n) {

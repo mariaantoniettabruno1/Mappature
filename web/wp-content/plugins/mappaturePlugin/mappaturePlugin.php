@@ -190,7 +190,7 @@ function shortcodes_init()
     add_shortcode('post_updateattivita', 'call_update_attivita');
     add_shortcode('post_deleteattivita', 'call_delete_attivita');
     add_shortcode("post_orgchartdipendenti", "call_orgchart_dipendenti");
-    add_shortcode("post_processiorgchartview", "call_processiorgchartview");
+    add_shortcode("post_orgchartprocessi", "call_orgchart_processi");
 
 }
 
@@ -266,6 +266,6 @@ function call_orgchart_dipendenti(){
     \MappaturePlugin\OrgChartImpiegati::orgchart_dipendenti();
 }
 
-function call_processiorgchartview(){
-    \MappaturePlugin\OrgChartProcessi::processiorgchartview();
+function call_orgchart_processi(){
+    \MappaturePlugin\OrgChartProcessi::orgchart_processi();
 }
