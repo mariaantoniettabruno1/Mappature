@@ -71,21 +71,8 @@ class UserMetaDataOrgchart
     {
 
         $fase_wp = (new Fase)->findFaseOnWordpress($old_user_area, implode(",", $old_user_servizio), implode(",", $old_user_ufficio));
-
         $attivita_wp = (new Attivita)->findAttivitaOnWordpress($old_user_area, implode(",", $old_user_servizio), implode(",", $old_user_ufficio));
-        if (!empty((array_filter($fase_wp))) && empty(array_filter($attivita_wp))) { //se ci sono delle fasi collegate ma non delle attività lavoro solo sulle fasi
-            $array_ids_fase = (new Fase)->findFaseOnKanboard($fase_wp);
-            (new Fase)->deleteDismatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
-            $nuova_fase_wp = (new Fase)->findFaseOnWordpress($area, $array_servizio, $array_ufficio);
-            $array_ids_fase = (new Fase)->findFaseOnKanboard($nuova_fase_wp);
-            (new Fase)->insertMatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
-        } elseif (empty((array_filter($fase_wp))) && !empty(array_filter($attivita_wp))) { //se ci sono delle attivita collegate ma non delle fasi lavoro solo sulle attività
-            $array_ids_attivita = (new Attivita)->findAttivitaOnKanboard($attivita_wp);
-            (new Attivita)->deleteDismatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
-            $attivita_wp = (new Attivita)->findAttivitaOnWordpress($area, $array_servizio, $array_ufficio);
-            $array_ids_attivita = (new Attivita)->findAttivitaOnKanboard($attivita_wp);
-            (new Attivita)->insertMatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
-        } elseif (!empty((array_filter($fase_wp))) && !empty(array_filter($attivita_wp))) { //altrimenti lavoro su entrambe
+
             $array_ids_fase = (new Fase)->findFaseOnKanboard($fase_wp);
             (new Fase)->deleteDismatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
             $nuova_fase_wp = (new Fase)->findFaseOnWordpress($area, $array_servizio, $array_ufficio);
@@ -96,7 +83,7 @@ class UserMetaDataOrgchart
             $attivita_wp = (new Attivita)->findAttivitaOnWordpress($area, $array_servizio, $array_ufficio);
             $array_ids_attivita = (new Attivita)->findAttivitaOnKanboard($attivita_wp);
             (new Attivita)->insertMatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
-        }
+
     }
 
     public static function add_user_metadata()

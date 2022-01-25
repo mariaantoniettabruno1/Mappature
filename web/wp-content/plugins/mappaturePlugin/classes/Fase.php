@@ -203,7 +203,6 @@ class Fase
     {
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
-
         $id_field_creazione_fase = 1;
         $id_form_creazione_fase = 23;
         $id_form_fase_postuma = 60;
@@ -230,19 +229,13 @@ class Fase
                                               entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND
                                               entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)";
         $stmt = $mysqli->prepare($sql);
+
         if (!empty($servizio) && !empty($ufficio) && $servizio != null && $ufficio != null && $servizio != '' && $ufficio != '') {
 
-           $servizio =  serialize($servizio);
-            if (json_last_error() === JSON_ERROR_NONE) {
+            if (gettype($servizio) == 'string' && (gettype($ufficio) == 'string')) {
+                $string_servizio = (explode('"', $servizio)[1]);
+                $string_ufficio = (explode('"', $ufficio)[1]);
 
-                $string_servizio = unserialize($servizio)[0];
-
-
-            }
-            $ufficio = serialize($ufficio);
-            if (json_last_error() === JSON_ERROR_NONE) {
-
-                $string_ufficio = unserialize((string)$ufficio)[0];
             } elseif (is_array($servizio) && is_array($ufficio)) {
 
                 $temp_servizio = $servizio;
@@ -250,10 +243,10 @@ class Fase
             }
         }
 
-        if (!empty($temp_servizio) && !empty($temp_ufficio)) {
-
+        if (!empty($temp_servizio) && !empty($temp_ufficio) && is_array($servizio) && is_array($ufficio)) {
             foreach ($temp_servizio as $item_servizio) {
                 foreach ($temp_ufficio as $item_ufficio) {
+
                     $stmt->bind_param("iiisisisiiisisis", $id_form_creazione_fase, $id_field_creazione_fase, $id_area_form, $area, $id_servizio_form, $item_servizio, $id_ufficio_form, $item_ufficio,
                         $id_form_fase_postuma, $id_field_fase_postuma, $id_area_form_postuma, $area, $id_servizio_form_postuma, $item_servizio, $id_ufficio_form_postuma, $item_ufficio);
                     $stmt->execute();
@@ -272,6 +265,7 @@ class Fase
             $stmt->execute();
             $result = $stmt->get_result();
             $row = $result->fetch_all();
+
             if ($row != null)
                 array_push($servizi, $row);
         }
@@ -283,6 +277,13 @@ class Fase
         else
             return $servizi[0];
 
+    }
+
+    function isJson($string)
+    {
+        if (is_array($string)) return 0;
+        $json = json_decode($string);
+        return $json && $string != $json;
     }
 
     public function findFaseOnKanboard($arrayNameSubtasks)
@@ -321,7 +322,7 @@ class Fase
             foreach ($userId as $user) {
                 $stmt->bind_param("ii", $id, $user);
                 $res = $stmt->execute();
-                print_r($res);
+
             }
         }
         $mysqli->close();
