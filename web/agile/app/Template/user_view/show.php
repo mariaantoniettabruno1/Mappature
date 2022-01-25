@@ -14,6 +14,7 @@
     <li><?= t('Area:') ?> <strong><?= $this->text->e($usermeta['area']) ?: t('None') ?></strong></li>
     <li><?= t('Servizio:') ?> <strong><?= $this->text->e($usermeta['servizio']) ?: t('None') ?></strong></li>
     <li><?= t('Ufficio:') ?> <strong><?= $this->text->e($usermeta['ufficio']) ?: t('None') ?></strong></li>
+    <li><?= t('Ruolo:') ?> <strong><?= $this->text->e($usermeta['ruolo']) ?: t('None') ?></strong></li>
     <li><?= t('Status:') ?> <strong><?= $user['is_active'] ? t('Active') : t('Inactive') ?></strong></li>
     <?= $this->hook->render('template:user:show:profile:info', array('user' => $user)) ?>
 </ul>
