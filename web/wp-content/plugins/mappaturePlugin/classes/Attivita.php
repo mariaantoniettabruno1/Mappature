@@ -210,6 +210,10 @@ class Attivita
         $id_servizio_form = 14;
         $id_ufficio_form = 15;
         $servizi = array();
+        $temp_ufficio = array();
+        $temp_servizio = array();
+        $string_servizio = '';
+        $string_ufficio = '';
 
         $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=? AND meta_key=? AND
                                               entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND 
@@ -221,29 +225,53 @@ class Attivita
                                               entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND
                                               entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)";
         $stmt = $mysqli->prepare($sql);
-        if (gettype($servizio) == 'string' && gettype($ufficio) == 'string') {
-            $temp_servizio = unserialize($servizio);
-            $temp_ufficio = unserialize($ufficio);
-        } elseif (gettype($servizio) == 'array' && gettype($ufficio) == 'array') {
-            $temp_servizio = $servizio;
-            $temp_ufficio = $ufficio;
-        }
+        if (!empty($servizio) && !empty($ufficio) && $servizio != null && $ufficio != null && $servizio != '' && $ufficio != '') {
 
-        foreach ($temp_servizio as $item_servizio) {
+            $servizio = serialize($servizio);
+            if (json_last_error() === JSON_ERROR_NONE) {
 
-            foreach ($temp_ufficio as $item_ufficio) {
+                $string_servizio = unserialize($servizio)[0];
 
-                $stmt->bind_param("iiisisisiiisisis", $id_form_creazione_attivita, $id_field_creazione_attivita, $id_area_form, $area, $id_servizio_form, $item_servizio, $id_ufficio_form, $item_ufficio,
-                    $id_form_attivita_postuma, $id_field_attivita_postuma, $id_area_form_postuma, $area, $id_servizio_form_postuma, $item_servizio, $id_ufficio_form_postuma, $item_ufficio);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $row = $result->fetch_all();
-                if ($row != null)
-                    array_push($servizi, $row);
 
             }
+           $ufficio = serialize($ufficio);
+            if (json_last_error() === JSON_ERROR_NONE) {
 
+                $string_ufficio = unserialize((string)$ufficio)[0];
+            } elseif (is_array($servizio) && is_array($ufficio)) {
+
+                $temp_servizio = $servizio;
+                $temp_ufficio = $ufficio;
+            }
         }
+
+        if(is_array($temp_servizio) && is_array($temp_ufficio)){
+
+            foreach ($temp_servizio as $item_servizio) {
+                foreach ($temp_ufficio as $item_ufficio) {
+                    $stmt->bind_param("iiisisisiiisisis", $id_form_creazione_fase, $id_field_creazione_fase, $id_area_form, $area, $id_servizio_form, $item_servizio, $id_ufficio_form, $item_ufficio,
+                        $id_form_fase_postuma, $id_field_fase_postuma, $id_area_form_postuma, $area, $id_servizio_form_postuma, $item_servizio, $id_ufficio_form_postuma, $item_ufficio);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $row = $result->fetch_all();
+                    if ($row != null)
+                        array_push($servizi, $row);
+
+                }
+
+            }
+        }
+        else{
+
+            $stmt->bind_param("iiisisisiiisisis", $id_form_creazione_fase, $id_field_creazione_fase, $id_area_form, $area, $id_servizio_form, $string_servizio, $id_ufficio_form, $string_ufficio,
+                $id_form_fase_postuma, $id_field_fase_postuma, $id_area_form_postuma, $area, $id_servizio_form_postuma, $string_servizio, $id_ufficio_form_postuma, $string_ufficio);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_all();
+            if ($row != null)
+                array_push($servizi, $row);
+        }
+
 
         $mysqli->close();
         if (empty($servizi))
@@ -262,7 +290,7 @@ class Attivita
         $stmt = $mysqli->prepare($sql);
         for ($i = 0; $i < sizeof($arrayNameSubtasks); $i++) {
             foreach ($arrayNameSubtasks[$i] as $nameSubtask) {
-                $nameSubtask = "%$nameSubtask%";
+                $nameSubtask = $nameSubtask . " - attivita";
                 $stmt->bind_param("s", $nameSubtask);
                 $res = $stmt->execute();
                 $result = $stmt->get_result();

@@ -137,7 +137,7 @@ class Fase
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
-        if(!empty($result)){
+        if (!empty($result)) {
             $this->setIdProcedure($result['id']);
         }
 
@@ -147,7 +147,7 @@ class Fase
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
-        if(!empty($result)){
+        if (!empty($result)) {
             $this->setIdProcess($result['id']);
         }
 
@@ -203,6 +203,7 @@ class Fase
     {
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
+
         $id_field_creazione_fase = 1;
         $id_form_creazione_fase = 23;
         $id_form_fase_postuma = 60;
@@ -214,6 +215,10 @@ class Fase
         $id_servizio_form = 13;
         $id_ufficio_form = 14;
         $servizi = array();
+        $temp_ufficio = array();
+        $temp_servizio = array();
+        $string_servizio = '';
+        $string_ufficio = '';
 
         $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=? AND meta_key=? AND
                                               entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND 
@@ -225,31 +230,51 @@ class Fase
                                               entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND
                                               entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)";
         $stmt = $mysqli->prepare($sql);
-        if(!empty($servizio) && !empty($ufficio) && $servizio!=null && $ufficio!=null && $servizio!='' && $ufficio!=''){
-            if (gettype($servizio) == 'string' && gettype($ufficio) == 'string') {
-                $temp_servizio = unserialize($servizio);
-                $temp_ufficio = unserialize($ufficio);
-            } elseif (gettype($servizio) == 'array' && gettype($ufficio) == 'array') {
+        if (!empty($servizio) && !empty($ufficio) && $servizio != null && $ufficio != null && $servizio != '' && $ufficio != '') {
+
+           $servizio =  serialize($servizio);
+            if (json_last_error() === JSON_ERROR_NONE) {
+
+                $string_servizio = unserialize($servizio)[0];
+
+
+            }
+            $ufficio = serialize($ufficio);
+            if (json_last_error() === JSON_ERROR_NONE) {
+
+                $string_ufficio = unserialize((string)$ufficio)[0];
+            } elseif (is_array($servizio) && is_array($ufficio)) {
+
                 $temp_servizio = $servizio;
                 $temp_ufficio = $ufficio;
             }
         }
 
-       if(!empty($temp_servizio)&&!empty($temp_ufficio)){
-           foreach ($temp_servizio as $item_servizio) {
-               foreach ($temp_ufficio as $item_ufficio) {
-                   $stmt->bind_param("iiisisisiiisisis", $id_form_creazione_fase, $id_field_creazione_fase, $id_area_form, $area, $id_servizio_form, $item_servizio, $id_ufficio_form, $item_ufficio,
-                       $id_form_fase_postuma, $id_field_fase_postuma, $id_area_form_postuma, $area, $id_servizio_form_postuma, $item_servizio, $id_ufficio_form_postuma, $item_ufficio);
-                   $stmt->execute();
-                   $result = $stmt->get_result();
-                   $row = $result->fetch_all();
-                   if ($row != null)
-                       array_push($servizi, $row);
+        if (!empty($temp_servizio) && !empty($temp_ufficio)) {
 
-               }
+            foreach ($temp_servizio as $item_servizio) {
+                foreach ($temp_ufficio as $item_ufficio) {
+                    $stmt->bind_param("iiisisisiiisisis", $id_form_creazione_fase, $id_field_creazione_fase, $id_area_form, $area, $id_servizio_form, $item_servizio, $id_ufficio_form, $item_ufficio,
+                        $id_form_fase_postuma, $id_field_fase_postuma, $id_area_form_postuma, $area, $id_servizio_form_postuma, $item_servizio, $id_ufficio_form_postuma, $item_ufficio);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $row = $result->fetch_all();
+                    if ($row != null)
+                        array_push($servizi, $row);
 
-           }
-       }
+                }
+
+            }
+        } else {
+
+            $stmt->bind_param("iiisisisiiisisis", $id_form_creazione_fase, $id_field_creazione_fase, $id_area_form, $area, $id_servizio_form, $string_servizio, $id_ufficio_form, $string_ufficio,
+                $id_form_fase_postuma, $id_field_fase_postuma, $id_area_form_postuma, $area, $id_servizio_form_postuma, $string_servizio, $id_ufficio_form_postuma, $string_ufficio);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_all();
+            if ($row != null)
+                array_push($servizi, $row);
+        }
 
 
         $mysqli->close();
@@ -268,17 +293,21 @@ class Fase
         $sql = "SELECT  id FROM subtasks WHERE title LIKE ? ";
         $stmt = $mysqli->prepare($sql);
         for ($i = 0; $i < sizeof($arrayNameSubtasks); $i++) {
+
             foreach ($arrayNameSubtasks[$i] as $nameSubtask) {
-                $nameSubtask = "%$nameSubtask%";
+                //$nameSubtask = "%$nameSubtask%";
+                $nameSubtask = $nameSubtask . " - fase";
                 $stmt->bind_param("s", $nameSubtask);
                 $res = $stmt->execute();
                 $result = $stmt->get_result();
                 $row = $result->fetch_all();
+
                 if ($row != null) array_push($array_ids, $row[0][0]);
             }
         }
 
         $mysqli->close();
+
         return $array_ids;
     }
 
@@ -286,12 +315,13 @@ class Fase
     {
         $conn = new Connection;
         $mysqli = $conn->connect();
-        $sql = "DELETE  FROM MAPP_subtask_users WHERE subtask_id=? AND user_id=?";
+        $sql = "DELETE FROM MAPP_subtask_users WHERE subtask_id=? AND user_id=?";
         $stmt = $mysqli->prepare($sql);
         foreach ($array_ids as $id) {
             foreach ($userId as $user) {
                 $stmt->bind_param("ii", $id, $user);
                 $res = $stmt->execute();
+                print_r($res);
             }
         }
         $mysqli->close();
@@ -310,6 +340,7 @@ class Fase
             }
 
         }
+        $mysqli->close();
     }
 
     public function findFaseByUser($username, $procedimento)

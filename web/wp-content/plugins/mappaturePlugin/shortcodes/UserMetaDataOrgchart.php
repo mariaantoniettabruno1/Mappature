@@ -69,7 +69,9 @@ class UserMetaDataOrgchart
 
     private static function update_fase_attivita_by_dipendenti(string $old_user_area, $old_user_servizio, $old_user_ufficio, array $array_users_dipendente, string $area, array $array_servizio, array $array_ufficio)
     {
+
         $fase_wp = (new Fase)->findFaseOnWordpress($old_user_area, implode(",", $old_user_servizio), implode(",", $old_user_ufficio));
+
         $attivita_wp = (new Attivita)->findAttivitaOnWordpress($old_user_area, implode(",", $old_user_servizio), implode(",", $old_user_ufficio));
         if (!empty((array_filter($fase_wp))) && empty(array_filter($attivita_wp))) { //se ci sono delle fasi collegate ma non delle attività lavoro solo sulle fasi
             $array_ids_fase = (new Fase)->findFaseOnKanboard($fase_wp);
@@ -179,8 +181,22 @@ class UserMetaDataOrgchart
 
                 $pattern_servizio = "[^4.]";
                 $array_servizio = self::get_old_metavalue($entry_gforms, $pattern_servizio);
+                if(empty($array_servizio)){
+                    array_push($array_servizio,$user_meta['servizio'][0]);
+                    echo "<pre>";
+                    print_r("Sono dentro l'if se servizio precedente è vuoto");
+                    print_r($array_servizio);
+                    echo "</pre>";
+                }
                 $pattern_ufficio = "[^6.]";
                 $array_ufficio = self::get_old_metavalue($entry_gforms, $pattern_ufficio);
+                if(empty($array_ufficio)){
+                    array_push($array_ufficio,$user_meta['ufficio'][0]);
+                    echo "<pre>";
+                    print_r("Sono dentro l'if se ufficio precedente è vuoto");
+                    print_r($array_ufficio);
+                    echo "</pre>";
+                }
 
 
                 //aggiornamento meta utente wp per servizio

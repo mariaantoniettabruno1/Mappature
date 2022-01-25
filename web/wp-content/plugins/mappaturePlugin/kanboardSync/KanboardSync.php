@@ -43,6 +43,7 @@ class KBSync
         $servizio->setUserServizio($idKanboard);
         $ufficio->setUfficio($user_meta[0]['ufficio'][0]);
         $ufficio->setUserUfficio($idKanboard);
+        $user->setUserRole($idKanboard,$user_meta[0]['Ruolo'][0]);
     }
 
     public static function importUser($post_id){
@@ -78,6 +79,7 @@ class KBSync
         $servizio->setUserServizio($idKanboard);
         $ufficio->setUfficio($user_meta[0]['ufficio'][0]);
         $ufficio->setUserUfficio($idKanboard);
+        $user->setUserRole($idKanboard,$user_meta[0]['Ruolo'][0]);
     }
 
     public static function deleteUser($user_id){

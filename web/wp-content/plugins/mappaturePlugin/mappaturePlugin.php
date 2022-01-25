@@ -148,7 +148,6 @@ add_action('profile_update', 'on_profile_update');
 
 function on_profile_update($user_id)
 {
-
     KBSync::updateUser($user_id);
 
 

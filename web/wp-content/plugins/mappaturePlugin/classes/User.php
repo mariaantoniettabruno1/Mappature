@@ -137,6 +137,28 @@ class User
         $mysqli->close();
     }
 
+    public function setUserRole($userid,$ruolo)
+    {
+        $meta_key = 'ruolo';
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "INSERT INTO user_has_metadata (user_id,name,value) VALUES(?,?,?)";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("iss", $userid, $meta_key, $ruolo);
+        $res = $stmt->execute();
+        $mysqli->close();
+    }
+    public function editUserRole($userid,$ruolo){
+        $meta_key = 'ruolo';
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql = "UPDATE user_has_metadata SET  value=? WHERE user_id=? AND name=?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("sis", $ruolo, $userid, $meta_key);
+        $res = $stmt->execute();
+        $mysqli->close();
+    }
+
     /**
      * Function che seleziona i dirigenti assegnati ad una specifica area dal db di WordPress, in particolare dalla
      * tabella di meta utente di WordPress.
