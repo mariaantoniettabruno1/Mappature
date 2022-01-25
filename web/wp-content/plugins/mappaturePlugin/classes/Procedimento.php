@@ -433,7 +433,10 @@ class Procedimento
         $id_field_procedimento_csv = "%22.%";
         $id_area_form = 18;
         $id_servizio_form = 19;
-        $servizi = array();
+        $res_task = array();
+        $string_servizio = '';
+        $temp_servizio = array();
+
 
         $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=? AND meta_key=? AND
                                               entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND 
@@ -443,22 +446,42 @@ class Procedimento
                                                   entry_id IN (SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND 
                                               entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)";
         $stmt = $mysqli->prepare($sql);
-        if (gettype($servizio) == 'string')
-            $temp = unserialize($servizio);
-        elseif (gettype($servizio) == 'array')
-            $temp = $servizio;
-        foreach ($temp as $item) {
-            $stmt->bind_param("iiisisisisis", $id_form_creazione_procedimento, $id_field_creazione_procedimento, $id_area_form, $area, $id_servizio_form, $item,
-                $id_form_procedimento_csv, $id_field_procedimento_csv, $id_area_form, $area, $id_servizio_form, $item);
+        if (!empty($servizio) && $servizio != null && $servizio != '') {
+
+            if (gettype($servizio) == 'string') {
+                $string_servizio = (explode('"', $servizio)[1]);
+
+            } elseif (is_array($servizio)) {
+
+                $temp_servizio = $servizio;
+            }
+        }
+
+        if (is_array($temp_servizio) && !empty($temp_servizio)) {
+            foreach ($temp_servizio as $item) {
+                $stmt->bind_param("iiisisisisis", $id_form_creazione_procedimento, $id_field_creazione_procedimento, $id_area_form, $area, $id_servizio_form, $item,
+                    $id_form_procedimento_csv, $id_field_procedimento_csv, $id_area_form, $area, $id_servizio_form, $item);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $row = $result->fetch_all();
+                if ($row != null)
+                    array_push($res_task, $row);
+            }
+        } else {
+            $stmt->bind_param("iiisisisisis", $id_form_creazione_procedimento, $id_field_creazione_procedimento, $id_area_form, $area, $id_servizio_form, $string_servizio,
+                $id_form_procedimento_csv, $id_field_procedimento_csv, $id_area_form, $area, $id_servizio_form, $string_servizio);
             $stmt->execute();
             $result = $stmt->get_result();
             $row = $result->fetch_all();
             if ($row != null)
-                array_push($servizi, $row);
+                array_push($res_task, $row);
         }
 
         $mysqli->close();
-        return $servizi[0];
+        if (empty($res_task))
+            return $res_task = array();
+        else
+            return $res_task[0];
 
     }
 
@@ -537,22 +560,12 @@ class Procedimento
     {
         $conn = new Connection;
         $mysqli = $conn->connect();
-        /* $sql = "SELECT FROM MAPP_task_users_creator WHERE task_id=? AND user_id=?";
-         $stmt = $mysqli->prepare($sql);
-         foreach ($array_ids as $id) {
-             foreach ($userId as $item) {
-                 $stmt->bind_param("ii", $id, $item);
-                 $res = $stmt->execute();
-                 $result = $stmt->get_result();
-                 $row = $result->fetch_assoc();
-             }
-         }*/
-
 
         $sql = "INSERT INTO MAPP_task_users_creator (task_id,user_id) VALUES (?,?)";
         $stmt = $mysqli->prepare($sql);
         foreach ($array_ids as $id) {
             foreach ($userId as $user) {
+
                 $stmt->bind_param("ii", $id, $user);
                 $res = $stmt->execute();
             }

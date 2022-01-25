@@ -44,6 +44,7 @@ class KBSync
         $ufficio->setUfficio($user_meta[0]['ufficio'][0]);
         $ufficio->setUserUfficio($idKanboard);
         $user->setUserRole($idKanboard,$user_meta[0]['Ruolo'][0]);
+        $user->editUserRole($idKanboard,$user_meta[0]['Ruolo'][0]);
     }
 
     public static function importUser($post_id){
