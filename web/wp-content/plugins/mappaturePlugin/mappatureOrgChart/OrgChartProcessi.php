@@ -23,9 +23,6 @@ class OrgChartProcessi
 
             $processi_array = array('text' => $proc, 'tags' => ['Processo'], 'nodes' => array(), 'state' => array('expanded' => false));
             foreach ($dirigenti as $dirigente) {
-                echo "<pre>";
-                print_r($dirigente);
-                echo "</pre>";
                 $area_dirigente = $area->findAreaByDirigente($dirigente);
                 $dirigente_array = array('text' => $dirigente, 'tags' => ['Dirigente di:', $area_dirigente[0] . ' (Area)']);
 
@@ -166,13 +163,15 @@ class OrgChartProcessi
             #treeview-searchable .node-disabled {
                 display: none;
             }
+            div {
+                display-table: block;
+            }
         </style>
 
         <script>
 
-            console.log("Sono all'inizio");
             var organigramma_processi_string = `<?php echo json_encode($second_tree_array);?>`;
-            console.log("Sono dopo la var");
+
             const organigramma_processi = JSON.parse(organigramma_processi_string);
 
 

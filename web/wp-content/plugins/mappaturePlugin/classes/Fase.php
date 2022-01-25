@@ -225,7 +225,7 @@ class Fase
                                               entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND
                                               entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)";
         $stmt = $mysqli->prepare($sql);
-        if(!empty($servizio) && !empty($ufficio) && $servizio!=null && $ufficio!=null){
+        if(!empty($servizio) && !empty($ufficio) && $servizio!=null && $ufficio!=null && $servizio!='' && $ufficio!=''){
             if (gettype($servizio) == 'string' && gettype($ufficio) == 'string') {
                 $temp_servizio = unserialize($servizio);
                 $temp_ufficio = unserialize($ufficio);
