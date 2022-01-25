@@ -41,7 +41,7 @@
                 <ul>
                     <?php foreach ($subtask['users'] as $user):?>
                     <li>
-                        <?= $user['username'] ?>
+                        <?= $user['name'] ?>
                     </li>
                     <?php endforeach;?>
                 </ul>
