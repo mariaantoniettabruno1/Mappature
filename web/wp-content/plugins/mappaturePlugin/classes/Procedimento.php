@@ -449,7 +449,11 @@ class Procedimento
         if (!empty($servizio) && $servizio != null && $servizio != '') {
 
             if (gettype($servizio) == 'string') {
-                $string_servizio = (explode('"', $servizio)[1]);
+                if (strpos($servizio, '"') == true)
+                    $string_servizio = (explode('"', $servizio)[1]);
+                else
+                    $string_servizio = $servizio;
+
 
             } elseif (is_array($servizio)) {
 

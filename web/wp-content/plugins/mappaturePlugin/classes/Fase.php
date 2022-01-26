@@ -233,8 +233,15 @@ class Fase
         if (!empty($servizio) && !empty($ufficio) && $servizio != null && $ufficio != null && $servizio != '' && $ufficio != '') {
 
             if (gettype($servizio) == 'string' && (gettype($ufficio) == 'string')) {
-                $string_servizio = (explode('"', $servizio)[1]);
-                $string_ufficio = (explode('"', $ufficio)[1]);
+                if (strpos($servizio, '"') == true && (strpos($ufficio, '"') == true)){
+                    $string_servizio = (explode('"', $servizio)[1]);
+                    $string_ufficio = (explode('"', $ufficio)[1]);
+                }
+                else{
+                    $string_servizio = $servizio;
+                    $string_ufficio = $ufficio;
+                }
+
 
             } elseif (is_array($servizio) && is_array($ufficio)) {
 

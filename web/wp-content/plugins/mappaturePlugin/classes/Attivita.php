@@ -144,10 +144,9 @@ class Attivita
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
-        if(!empty($result)){
+        if (!empty($result)) {
             $this->setIdProcessAttivita($result['id']);
         }
-
 
 
         $a = " - attivita";
@@ -228,9 +227,13 @@ class Attivita
         if (!empty($servizio) && !empty($ufficio) && $servizio != null && $ufficio != null && $servizio != '' && $ufficio != '') {
 
             if (gettype($servizio) == 'string' && (gettype($ufficio) == 'string')) {
-                $string_servizio = (explode('"', $servizio)[1]);
-                $string_ufficio = (explode('"', $ufficio)[1]);
-
+                if (strpos($servizio, '"') == true && (strpos($ufficio, '"') == true)) {
+                    $string_servizio = (explode('"', $servizio)[1]);
+                    $string_ufficio = (explode('"', $ufficio)[1]);
+                } else {
+                    $string_servizio = $servizio;
+                    $string_ufficio = $ufficio;
+                }
             } elseif (is_array($servizio) && is_array($ufficio)) {
 
                 $temp_servizio = $servizio;
@@ -238,7 +241,7 @@ class Attivita
             }
         }
 
-        if(!empty($temp_servizio) && !empty($temp_ufficio) && is_array($servizio) && is_array($ufficio)){
+        if (!empty($temp_servizio) && !empty($temp_ufficio) && is_array($servizio) && is_array($ufficio)) {
 
             foreach ($temp_servizio as $item_servizio) {
                 foreach ($temp_ufficio as $item_ufficio) {
@@ -253,8 +256,7 @@ class Attivita
                 }
 
             }
-        }
-        else{
+        } else {
 
             $stmt->bind_param("iiisisisiiisisis", $id_form_creazione_attivita, $id_field_creazione_attivita, $id_area_form, $area, $id_servizio_form, $string_servizio, $id_ufficio_form, $string_ufficio,
                 $id_form_attivita_postuma, $id_field_attivita_postuma, $id_area_form_postuma, $area, $id_servizio_form_postuma, $string_servizio, $id_ufficio_form_postuma, $string_ufficio);
