@@ -279,12 +279,6 @@ class Fase
 
     }
 
-    function isJson($string)
-    {
-        if (is_array($string)) return 0;
-        $json = json_decode($string);
-        return $json && $string != $json;
-    }
 
     public function findFaseOnKanboard($arrayNameSubtasks)
     {

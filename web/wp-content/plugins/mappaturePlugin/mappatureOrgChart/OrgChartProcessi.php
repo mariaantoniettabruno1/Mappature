@@ -35,10 +35,12 @@ class OrgChartProcessi
                 $array_dipendenti_assegnati = $user->findDipendentiAssegnatiAProcedimento($procedim);
 
                 $procedimenti_array = array('text' => $procedim, 'tags' => ['Procedimento'], 'nodes' => array(), 'state' => array('expanded' => false));
-
                 foreach ($array_dipendenti_assegnati as $dipendente_assegnato) {
                     $dipendenti_assegnati_array = array('text' => $dipendente_assegnato, 'tags' => ['Dipendente Assegnato del Procedimento:', $procedim]);
-                    array_push($procedimenti_array['nodes'], $dipendenti_assegnati_array);
+
+                        array_push($procedimenti_array['nodes'], $dipendenti_assegnati_array);
+
+
                 }
 
                 foreach ($array_po as $po) {
@@ -50,14 +52,20 @@ class OrgChartProcessi
                 foreach ($fasi_attivita as $subtask) {
 
                     $array_dipendenti = $user->selectDipendenteFaseAttivita($subtask);
+
                     $fasi_attivita_array = array('text' => $subtask[0], 'tags' => ['Fase - Attivita'], 'nodes' => array(), 'state' => array('expanded' => false));
 
-                    foreach ($array_dipendenti as $dipendente) {
-                        $ufficio_dipendente = $ufficio->findUfficioByDipendente($dipendente);
-                        $dipendenti_array = array('text' => $dipendente, 'tags' => ['Dirigente di:', $ufficio_dipendente[0] . ' (Ufficio)']);
-                        array_push($fasi_attivita_array['nodes'], $dipendenti_array);
-                    }
-                    array_push($procedimenti_array['nodes'], $fasi_attivita_array);
+                        foreach ($array_dipendenti as $dipendente) {
+                            $ufficio_dipendente = $ufficio->findUfficioByDipendente($dipendente);
+
+                                $dipendenti_array = array('text' => $dipendente, 'tags' => ['Dirigente di:', $ufficio_dipendente[0] . ' (Ufficio)']);
+                                array_push($fasi_attivita_array['nodes'], $dipendenti_array);
+
+                        }
+
+                        array_push($procedimenti_array['nodes'], $fasi_attivita_array);
+
+
                 }
 
 
