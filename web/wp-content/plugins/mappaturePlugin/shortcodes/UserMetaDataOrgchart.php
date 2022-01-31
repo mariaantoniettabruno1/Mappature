@@ -83,6 +83,20 @@ class UserMetaDataOrgchart
             (new Attivita)->insertMatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
 
     }
+    private static function update_procedimenti_by_dipendenti(string $old_user_area, $old_user_servizio, $old_user_ufficio, array $array_users_dipendente, string $area, array $array_servizio, array $array_ufficio)
+    {
+        //se ci sono dei procedimenti associati ai dipendenti selezionati, aggiorno i dati
+        $procedimenti_wp = (new Procedimento)->findTaskOnWordpressForDipendenti($old_user_area, implode(",", $old_user_servizio), implode(",", $old_user_ufficio));
+
+        $array_ids_procedimento = (new Procedimento)->findTasksOnKanboard($procedimenti_wp);
+
+        (new Procedimento)->deleteDismatchTasksUsers($array_ids_procedimento, $array_users_dipendente);
+        $nuovi_procedimenti_wp = (new Procedimento)->findTaskOnWordpressForDipendenti($area, $array_servizio,$array_ufficio);
+
+        $array_ids_procedimento = (new Procedimento)->findTasksOnKanboard($nuovi_procedimenti_wp);
+
+        (new Procedimento)->insertMatchTasksUsers($array_ids_procedimento, $array_users_dipendente);
+    }
 
     public static function add_user_metadata()
     {
@@ -206,17 +220,20 @@ class UserMetaDataOrgchart
             self::update_processi_by_user($old_user_area, $array_users_dirigente, $temp_area);
             self::update_procedimenti_by_dirigente($temp_area, $old_user_area, $old_user_servizio, $array_servizio, $array_users_dirigente);
             self::update_fase_attivita_by_dipendenti($old_user_area, $old_user_servizio, $old_user_ufficio, $array_users_dirigente, $temp_area, $array_servizio, $array_ufficio);
+            self::update_procedimenti_by_dipendenti($old_user_area, $old_user_servizio, $old_user_ufficio, $array_users_dirigente, $temp_area, $array_servizio, $array_ufficio);
 
         } elseif (!empty(array_filter($array_users_po))) { //aggiornamenti di procedimenti che hanno il PO collegato
             //se ci sono dei processi collegati ai po, aggiorno i dati nel db
             self::update_processi_by_user($old_user_area, $array_users_dirigente, $temp_area);
             self::update_procedimenti_by_po($temp_area, $old_user_area, $array_users_po, $old_user_servizio, $array_servizio);
             self::update_fase_attivita_by_dipendenti($old_user_area, $old_user_servizio, $old_user_ufficio, $array_users_po, $temp_area, $array_servizio, $array_ufficio);
+            self::update_procedimenti_by_dipendenti($old_user_area, $old_user_servizio, $old_user_ufficio, $array_users_po, $temp_area, $array_servizio, $array_ufficio);
 
         } elseif (!empty((array_filter($array_users_dipendente)))) {//aggiornamento dei dipendenti che hanno fase e attività collegata
             self::update_processi_by_user($old_user_area, $array_users_dipendente, $temp_area);
             self::update_procedimenti_by_po($temp_area, $old_user_area, $array_users_dipendente, $old_user_servizio, $array_servizio);
             self::update_fase_attivita_by_dipendenti($old_user_area, $old_user_servizio, $old_user_ufficio, $array_users_dipendente, $temp_area, $array_servizio, $array_ufficio);
+            self::update_procedimenti_by_dipendenti($old_user_area, $old_user_servizio, $old_user_ufficio, $array_users_dipendente, $temp_area, $array_servizio, $array_ufficio);
         }
 
         return '';

@@ -327,42 +327,6 @@ class Procedimento
         $mysqli->close();
     }
 
-    public function findTaskByUser($username, $proc)
-    {
-
-        $task_names = array();
-        $id_task = array();
-        $conn = new Connection();
-        $mysqli = $conn->connect();
-        $sql = "SELECT task_id FROM MAPP_task_users_owner WHERE user_id IN (SELECT id FROM users WHERE username=?)";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("s", $username);
-        $res = $stmt->execute();
-        $res = $stmt->get_result();
-        $result = $res->fetch_all();
-        if (!empty($result)) {
-            array_push($id_task, $result);
-        }
-
-
-        $sql = "SELECT title FROM tasks WHERE id=? AND project_id IN(SELECT id FROM projects WHERE name=?)";
-        $stmt = $mysqli->prepare($sql);
-        foreach ($id_task[0] as $item) {
-            foreach ($item as $id) {
-                $stmt->bind_param("is", $id, $proc);
-                $res = $stmt->execute();
-                $res = $stmt->get_result();
-                $result = $res->fetch_all();
-                if (!empty($result)) {
-                    array_push($task_names, $result[0]);
-                }
-            }
-        }
-        $mysqli->close();
-
-        return $task_names;
-    }
-
 
     public function assegnaDipendenti()
     {
@@ -489,16 +453,101 @@ class Procedimento
 
     }
 
+    public function findTaskOnWordpressForDipendenti($area, $servizio, $ufficio)
+    {
+        print_r("Sono nel metodo per trovare le task assegnate ai dipendenti");
+        $conn = new ConnectionSarala();
+        $mysqli = $conn->connect();
+        $id_field_creazione_procedimento = 2;
+        $id_form_creazione_procedimento = 2;
+        $id_form_procedimento_csv = 50;
+        $id_field_procedimento_csv = "%22.%";
+        $id_area_form = 18;
+        $id_servizio_form = 19;
+        $id_ufficio_form = 20;
+        $res_task = array();
+        $string_servizio = '';
+        $temp_servizio = array();
+
+
+        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=? AND meta_key=? AND
+                                              entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND 
+                                              entry_id IN (SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=? ) AND 
+                                              entry_id IN (SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=? )
+                                           OR 
+                                              form_id=? AND meta_key LIKE ? AND
+                                                  entry_id IN (SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND 
+                                              entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?) AND 
+                                              entry_id IN ( SELECT  entry_id FROM wp_gf_entry_meta WHERE meta_key=? AND meta_value=?)";
+        $stmt = $mysqli->prepare($sql);
+        if (!empty($servizio) && !empty($ufficio) && $servizio != null && $ufficio != null && $servizio != '' && $ufficio != '') {
+
+            if (gettype($servizio) == 'string' && (gettype($ufficio) == 'string')) {
+                if (strpos($servizio, '"') == true && (strpos($ufficio, '"') == true)){
+                    $string_servizio = (explode('"', $servizio)[1]);
+                    $string_ufficio = (explode('"', $ufficio)[1]);
+                }
+                else{
+                    $string_servizio = $servizio;
+                    $string_ufficio = $ufficio;
+                }
+
+
+            } elseif (is_array($servizio) && is_array($ufficio)) {
+
+                $temp_servizio = $servizio;
+                $temp_ufficio = $ufficio;
+            }
+        }
+
+        if (!empty($temp_servizio) && !empty($temp_ufficio) && is_array($servizio) && is_array($ufficio)) {
+            foreach ($temp_servizio as $item_servizio) {
+                foreach ($temp_ufficio as $item_ufficio) {
+
+                    $stmt->bind_param("iiisisisisisisis", $id_form_creazione_procedimento, $id_field_creazione_procedimento, $id_area_form, $area, $id_servizio_form, $item_servizio,$id_ufficio_form, $item_ufficio,
+                        $id_form_procedimento_csv, $id_field_procedimento_csv, $id_area_form, $area, $id_servizio_form, $item_servizio,$id_ufficio_form, $item_ufficio);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $row = $result->fetch_all();
+                    if ($row != null)
+                        array_push($res_task, $row);
+
+                }
+
+            }
+        } else {
+
+            $stmt->bind_param("iiisisisisisisis", $id_form_creazione_procedimento, $id_field_creazione_procedimento, $id_area_form, $area, $id_servizio_form, $string_servizio,$id_ufficio_form, $string_ufficio,
+                $id_form_procedimento_csv, $id_field_procedimento_csv, $id_area_form, $area, $id_servizio_form, $string_servizio,$id_ufficio_form, $string_ufficio);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_all();
+
+            if ($row != null)
+                array_push($res_task, $row);
+        }
+
+
+        $mysqli->close();
+        if (empty($res_task))
+            return $res_task = array();
+        else
+            return $res_task[0];
+
+    }
+
     public function findTasksOnKanboard($arrayNameTasks)
     {
+
         $conn = new Connection;
         $mysqli = $conn->connect();
         $array_ids = array();
-        $sql = "SELECT ALL id FROM tasks WHERE title=? ";
+        $sql = "SELECT id FROM tasks WHERE title=? ";
         $stmt = $mysqli->prepare($sql);
 
         for ($i = 0; $i < sizeof($arrayNameTasks); $i++) {
             foreach ($arrayNameTasks[$i] as $nameTask) {
+                print_r($nameTask);
                 $stmt->bind_param("s", $nameTask);
                 $res = $stmt->execute();
                 $result = $stmt->get_result();
@@ -508,6 +557,7 @@ class Procedimento
         }
 
         $mysqli->close();
+        print_r($array_ids);
         return $array_ids;
     }
 
@@ -566,6 +616,41 @@ class Procedimento
         $mysqli = $conn->connect();
 
         $sql = "INSERT INTO MAPP_task_users_creator (task_id,user_id) VALUES (?,?)";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($array_ids as $id) {
+            foreach ($userId as $user) {
+
+                $stmt->bind_param("ii", $id, $user);
+                $res = $stmt->execute();
+            }
+
+        }
+        $mysqli->close();
+    }
+
+    public function deleteDismatchTasksUsers($array_ids, $userId)
+    {
+        print_r("Sono nel metodo di delete in cui cancello l'user id dalla table che era associato alla task");
+        $conn = new Connection;
+        $mysqli = $conn->connect();
+        $sql = "DELETE  FROM MAPP_task_users WHERE task_id=? AND user_id=?";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($array_ids as $id) {
+            foreach ($userId as $user) {
+                $stmt->bind_param("ii", $id, $user);
+                $res = $stmt->execute();
+            }
+        }
+        $mysqli->close();
+    }
+
+    public function insertMatchTasksUsers($array_ids, $userId)
+    {
+        print_r("Sono nel metodo di INSERT in cui cancello l'user id dalla table che era associato alla task");
+        $conn = new Connection;
+        $mysqli = $conn->connect();
+
+        $sql = "INSERT INTO MAPP_task_users (task_id,user_id) VALUES (?,?)";
         $stmt = $mysqli->prepare($sql);
         foreach ($array_ids as $id) {
             foreach ($userId as $user) {
