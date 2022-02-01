@@ -378,8 +378,10 @@ class Procedimento
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "DELETE FROM MAPP_task_users WHERE task_id='$this->id_procedure'";
-        mysqli_query($mysqli, $sql);
+        $sql = "DELETE FROM MAPP_task_users WHERE task_id=?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("i", $this->id_procedure);
+        $res = $stmt->execute();
         $sql = "INSERT INTO MAPP_task_users  (user_id,task_id) VALUES (?,?)";
         $stmt = $mysqli->prepare($sql);
         foreach ($this->users as $userId) {
