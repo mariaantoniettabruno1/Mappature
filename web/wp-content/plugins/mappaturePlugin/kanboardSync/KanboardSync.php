@@ -15,6 +15,7 @@ class KBSync
         $user_data = array(get_userdata($user_id));
         $user_meta = array(get_user_meta($user_id));
 
+
         if (isset($user_data[0]->data) && isset($user_meta[0])) {
             $user = new User();
             $user->setEmail($user_data[0]->data->user_email);
@@ -45,6 +46,16 @@ class KBSync
         $ufficio->setUserUfficio($idKanboard);
         $user->setUserRole($idKanboard,$user_meta[0]['Ruolo'][0]);
         $user->editUserRole($idKanboard,$user_meta[0]['Ruolo'][0]);
+
+       /* if($user_meta[0]['Ruolo'][0] == 'PO'){
+            (new UpdateThingsByRuolo)->delete_dipendente_from_customtable($idKanboard);
+            $array_procedimenti = (new Procedimento)->findTaskOnWordpress($area->getArea(),$servizio->getServizio());
+            $array_ids = (new Procedimento)->findTasksOnKanboard($array_procedimenti);
+            (new UpdateThingsByRuolo)->insert_po_in_customtable($idKanboard,$array_ids);
+            (new UpdateThingsByRuolo)->find_dirigente($array_ids);
+
+            throw new Exception();
+        }*/
     }
 
     public static function importUser($post_id){

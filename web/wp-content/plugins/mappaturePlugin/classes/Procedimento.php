@@ -378,7 +378,9 @@ class Procedimento
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "UPDATE MAPP_task_users SET user_id=? WHERE task_id=?";
+        $sql = "DELETE FROM MAPP_task_users WHERE task_id='$this->id_procedure'";
+        mysqli_query($mysqli, $sql);
+        $sql = "INSERT INTO MAPP_task_users  (user_id,task_id) VALUES (?,?)";
         $stmt = $mysqli->prepare($sql);
         foreach ($this->users as $userId) {
             $stmt->bind_param("ii", $userId, $this->id_procedure);
@@ -455,7 +457,7 @@ class Procedimento
 
     public function findTaskOnWordpressForDipendenti($area, $servizio, $ufficio)
     {
-        print_r("Sono nel metodo per trovare le task assegnate ai dipendenti");
+
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
         $id_field_creazione_procedimento = 2;
@@ -483,11 +485,10 @@ class Procedimento
         if (!empty($servizio) && !empty($ufficio) && $servizio != null && $ufficio != null && $servizio != '' && $ufficio != '') {
 
             if (gettype($servizio) == 'string' && (gettype($ufficio) == 'string')) {
-                if (strpos($servizio, '"') == true && (strpos($ufficio, '"') == true)){
+                if (strpos($servizio, '"') == true && (strpos($ufficio, '"') == true)) {
                     $string_servizio = (explode('"', $servizio)[1]);
                     $string_ufficio = (explode('"', $ufficio)[1]);
-                }
-                else{
+                } else {
                     $string_servizio = $servizio;
                     $string_ufficio = $ufficio;
                 }
@@ -504,8 +505,8 @@ class Procedimento
             foreach ($temp_servizio as $item_servizio) {
                 foreach ($temp_ufficio as $item_ufficio) {
 
-                    $stmt->bind_param("iiisisisisisisis", $id_form_creazione_procedimento, $id_field_creazione_procedimento, $id_area_form, $area, $id_servizio_form, $item_servizio,$id_ufficio_form, $item_ufficio,
-                        $id_form_procedimento_csv, $id_field_procedimento_csv, $id_area_form, $area, $id_servizio_form, $item_servizio,$id_ufficio_form, $item_ufficio);
+                    $stmt->bind_param("iiisisisisisisis", $id_form_creazione_procedimento, $id_field_creazione_procedimento, $id_area_form, $area, $id_servizio_form, $item_servizio, $id_ufficio_form, $item_ufficio,
+                        $id_form_procedimento_csv, $id_field_procedimento_csv, $id_area_form, $area, $id_servizio_form, $item_servizio, $id_ufficio_form, $item_ufficio);
                     $stmt->execute();
                     $result = $stmt->get_result();
                     $row = $result->fetch_all();
@@ -517,8 +518,8 @@ class Procedimento
             }
         } else {
 
-            $stmt->bind_param("iiisisisisisisis", $id_form_creazione_procedimento, $id_field_creazione_procedimento, $id_area_form, $area, $id_servizio_form, $string_servizio,$id_ufficio_form, $string_ufficio,
-                $id_form_procedimento_csv, $id_field_procedimento_csv, $id_area_form, $area, $id_servizio_form, $string_servizio,$id_ufficio_form, $string_ufficio);
+            $stmt->bind_param("iiisisisisisisis", $id_form_creazione_procedimento, $id_field_creazione_procedimento, $id_area_form, $area, $id_servizio_form, $string_servizio, $id_ufficio_form, $string_ufficio,
+                $id_form_procedimento_csv, $id_field_procedimento_csv, $id_area_form, $area, $id_servizio_form, $string_servizio, $id_ufficio_form, $string_ufficio);
             $stmt->execute();
             $result = $stmt->get_result();
             $row = $result->fetch_all();
@@ -547,7 +548,6 @@ class Procedimento
 
         for ($i = 0; $i < sizeof($arrayNameTasks); $i++) {
             foreach ($arrayNameTasks[$i] as $nameTask) {
-                print_r($nameTask);
                 $stmt->bind_param("s", $nameTask);
                 $res = $stmt->execute();
                 $result = $stmt->get_result();
@@ -557,7 +557,7 @@ class Procedimento
         }
 
         $mysqli->close();
-        print_r($array_ids);
+
         return $array_ids;
     }
 
@@ -630,7 +630,7 @@ class Procedimento
 
     public function deleteDismatchTasksUsers($array_ids, $userId)
     {
-        print_r("Sono nel metodo di delete in cui cancello l'user id dalla table che era associato alla task");
+
         $conn = new Connection;
         $mysqli = $conn->connect();
         $sql = "DELETE  FROM MAPP_task_users WHERE task_id=? AND user_id=?";
@@ -646,7 +646,7 @@ class Procedimento
 
     public function insertMatchTasksUsers($array_ids, $userId)
     {
-        print_r("Sono nel metodo di INSERT in cui cancello l'user id dalla table che era associato alla task");
+
         $conn = new Connection;
         $mysqli = $conn->connect();
 

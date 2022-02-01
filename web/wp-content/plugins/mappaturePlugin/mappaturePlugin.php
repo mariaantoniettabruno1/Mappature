@@ -25,6 +25,7 @@ require_once(plugin_dir_path(__FILE__) . 'classes/Procedimento.php');
 require_once(plugin_dir_path(__FILE__) . 'classes/Fase.php');
 require_once(plugin_dir_path(__FILE__) . 'classes/Attivita.php');
 require_once(plugin_dir_path(__FILE__) . 'classes/GetterIdUsers.php');
+require_once(plugin_dir_path(__FILE__) . 'classes/UpdateThingsByRuolo.php');
 require_once(plugin_dir_path(__FILE__) . 'shortcodes/ShortCodesProcesso.php');
 require_once(plugin_dir_path(__FILE__) . 'shortcodes/ShortCodesProcedimento.php');
 require_once(plugin_dir_path(__FILE__) . 'shortcodes/ShortCodesDipendenteProcedimento.php');
