@@ -131,7 +131,7 @@ function save_extra_user_field($user_id)
     if (!current_user_can('edit_user', $user_id)) {
         return false;
     }
-    update_user_meta($user_id, 'ruolo', $_POST["ruolo"]);
+    update_user_meta($user_id, 'Ruolo', $_POST["Ruolo"]);
     if (isset($_POST['attivo'])) {
         update_user_meta($user_id, 'attivo', $_POST["attivo"]);
     }

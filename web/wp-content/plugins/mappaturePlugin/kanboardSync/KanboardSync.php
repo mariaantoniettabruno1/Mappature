@@ -47,14 +47,31 @@ class KBSync
         $user->setUserRole($idKanboard,$user_meta[0]['Ruolo'][0]);
         $user->editUserRole($idKanboard,$user_meta[0]['Ruolo'][0]);
 
-       /* if($user_meta[0]['Ruolo'][0] == 'PO'){
+        //TODO capire come salvare il precedente ruolo in una temp_variable, altrimenti non posso fare dei controlli funzionali
+        /*if($user_meta[0]['Ruolo'][0] == 'PO'){
             (new UpdateThingsByRuolo)->delete_dipendente_from_customtable($idKanboard);
             $array_procedimenti = (new Procedimento)->findTaskOnWordpress($area->getArea(),$servizio->getServizio());
             $array_ids = (new Procedimento)->findTasksOnKanboard($array_procedimenti);
             (new UpdateThingsByRuolo)->insert_po_in_customtable($idKanboard,$array_ids);
-            (new UpdateThingsByRuolo)->find_dirigente($array_ids);
+            (new UpdateThingsByRuolo)->find_dirigente_for_procedimenti($array_ids);
+            $array_processi = (new Processo)->findProjectsOnWordpress($area->getArea());
+            $array_ids_processi = (new Processo)->findProjectsOnKanboard($array_processi);
+            (new UpdateThingsByRuolo)->find_dirigente_for_processi($array_ids_processi);
 
-            throw new Exception();
+
+        }
+        elseif ($user_meta[0]['Ruolo'][0] == 'Dirigente'){
+            (new UpdateThingsByRuolo)->delete_po_from_customtable($idKanboard);
+            $array_processi = (new Processo)->findProjectsOnWordpress($area->getArea());
+            $array_ids_processi = (new Processo)->findProjectsOnKanboard($array_processi);
+            (new UpdateThingsByRuolo)->insert_dirigente($array_ids_processi,$idKanboard);
+        }
+        elseif($user_meta[0]['Ruolo'][0] == 'Dipendente'){
+            //con fase vengono incluse anche le attività, dato che sono la stessa cosa i metodi sono presenti solo nella classe fase
+            (new UpdateThingsByRuolo)->delete_po_dipendente_from_customtable($idKanboard);
+            $array_fase = (new Fase)->findFaseOnWordpress($area->getArea(),$servizio->getServizio(),$ufficio->getUfficio());
+            $array_ids_fase = (new Fase)->findFaseOnKanboard($array_fase);
+            (new UpdateThingsByRuolo)->link_dipendente_to_fase($array_ids_fase,$idKanboard);
         }*/
     }
 
