@@ -30,28 +30,6 @@ class ShortCodesFase
     }
 
 
-    public static function create_fase_postuma()
-    {
-        $entry_gforms = GFAPI::get_entries(60);
-        $fase = new Fase();
-        if (!empty($entry_gforms)) {
-            $entry_gforms = GFAPI::get_entries(60)[0];
-            $fase->setTitle($entry_gforms[1]);
-            $fase->setNameProcedure($entry_gforms[3]);
-            $fase->setNameProcess($entry_gforms[2]);
-            $fase->setIdForm($entry_gforms['form_id']);
-            $fase->setId($entry_gforms['id']);
-            foreach ($entry_gforms as $key => $value) {
-                $pattern = "[^7.]";
-                if (preg_match($pattern, $key) && $value) {
-                    $fase->addUser($value);
-                }
-            }
-            $fase->createFase();
-        }
-
-        return '';
-    }
 
 
     public static function update_fase()
