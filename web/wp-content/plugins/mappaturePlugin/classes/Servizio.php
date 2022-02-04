@@ -75,8 +75,8 @@ class Servizio
         $servizi = array();
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
-        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=21 AND meta_key=1 
-                                          AND entry_id IN (SELECT entry_id FROM wp_gf_entry_meta WHERE meta_key=3 AND meta_value=?)";
+        $sql = "SELECT meta_value FROM wp_gf_entry_meta WHERE form_id=66 AND meta_key=2
+                                          AND entry_id IN (SELECT entry_id FROM wp_gf_entry_meta WHERE meta_key=1 AND meta_value=?)";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $area);
         $res = $stmt->execute();

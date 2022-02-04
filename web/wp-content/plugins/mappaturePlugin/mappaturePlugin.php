@@ -131,7 +131,7 @@ function save_extra_user_field($user_id)
     if (!current_user_can('edit_user', $user_id)) {
         return false;
     }
-    update_user_meta($user_id, 'Ruolo', $_POST["Ruolo"]);
+    update_user_meta($user_id, 'ruolo', $_POST["ruolo"]);
     if (isset($_POST['attivo'])) {
         update_user_meta($user_id, 'attivo', $_POST["attivo"]);
     }
@@ -182,11 +182,9 @@ function shortcodes_init()
     add_shortcode('post_assigndipendente', 'call_assign_dipendente');
     add_shortcode('post_editassigndipendente', 'call_edit_assign_dipendente');
     add_shortcode('post_fase', 'call_create_fase');
-    add_shortcode('post_fasepostuma', 'call_create_fase_postuma');
     add_shortcode('post_updatefase', 'call_update_fase');
     add_shortcode('post_deletefase', 'call_delete_fase');
     add_shortcode('post_create_attivita', 'call_create_attivita');
-    add_shortcode('post_createattivitapostuma', 'call_create_attivita_postuma');
     add_shortcode('post_updateattivita', 'call_update_attivita');
     add_shortcode('post_deleteattivita', 'call_delete_attivita');
     add_shortcode("post_orgchartdipendenti", "call_orgchart_dipendenti");
@@ -239,9 +237,7 @@ function call_edit_assign_dipendente()
 function call_create_fase(){
     \MappaturePlugin\ShortCodesFase::create_fase();
 }
-function call_create_fase_postuma(){
-    \MappaturePlugin\ShortCodesFase::create_fase_postuma();
-}
+
 function call_update_fase(){
     \MappaturePlugin\ShortCodesFase::update_fase();
 }
@@ -251,9 +247,7 @@ function call_delete_fase(){
 function call_create_attivita(){
     \MappaturePlugin\ShortCodesAttivita::create_attivita();
 }
-function call_create_attivita_postuma(){
-    \MappaturePlugin\ShortCodesAttivita::create_attivita_postuma();
-}
+
 
 function call_update_attivita(){
     \MappaturePlugin\ShortCodesAttivita::update_attivita();

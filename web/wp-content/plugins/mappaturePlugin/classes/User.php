@@ -170,7 +170,7 @@ class User
     {
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
-        $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key ='nickname'
+        $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key ='nickname' 
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value='Dirigente')
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_key='area' AND meta_value=?)";
         $stmt = $mysqli->prepare($sql);
