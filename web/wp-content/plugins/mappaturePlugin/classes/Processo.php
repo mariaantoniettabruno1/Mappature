@@ -388,7 +388,9 @@ class Processo
         $mysqli->close();
         $this->inserisciDataProcessoSarala();
     }
+public function editProcesso(){
 
+}
 
     public function cancellaProcesso()
     {
