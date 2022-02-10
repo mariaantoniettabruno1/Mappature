@@ -186,9 +186,11 @@ function shortcodes_init()
     add_shortcode('post_fase', 'call_create_fase');
     add_shortcode('post_editfase', 'call_edit_fase');
     add_shortcode('post_deletefase', 'call_delete_fase');
+    add_shortcode('post_associafase', 'call_associa_fase');
     add_shortcode('post_create_attivita', 'call_create_attivita');
     add_shortcode('post_editattivita', 'call_edit_attivita');
     add_shortcode('post_deleteattivita', 'call_delete_attivita');
+    add_shortcode('post_associaattivita', 'call_associa_attivita');
     add_shortcode("post_orgchartdipendenti", "call_orgchart_dipendenti");
     add_shortcode("post_orgchartprocessi", "call_orgchart_processi");
     
@@ -255,6 +257,9 @@ function call_edit_fase(){
 function call_delete_fase(){
     \MappaturePlugin\ShortCodesFase::delete_fase();
 }
+function call_associa_fase(){
+    \MappaturePlugin\ShortCodesFase::associa_fase();
+}
 function call_create_attivita(){
     \MappaturePlugin\ShortCodesAttivita::create_attivita();
 }
@@ -265,6 +270,9 @@ function call_edit_attivita(){
 }
 function call_delete_attivita(){
     \MappaturePlugin\ShortCodesAttivita::delete_attivita();
+}
+function call_associa_attivita(){
+    \MappaturePlugin\ShortCodesAttivita::associa_attivita();
 }
 
 function call_orgchart_dipendenti(){

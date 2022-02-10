@@ -37,10 +37,31 @@ class ShortCodesFase
         if (!empty($entry_gforms)) {
             $old_title = $entry_gforms[0][14];
             $new_title = $entry_gforms[0][17];
-            $old_title = $old_title. '- fase';
-            $new_title = $new_title. '- fase';
-            $fase->update($old_title,$new_title);
+            $old_title = $old_title . '- fase';
+            $new_title = $new_title . '- fase';
+            $fase->update($old_title, $new_title);
         }
+
+        return '';
+    }
+
+    public
+    static function associa_fase()
+    {
+        $entry_gforms = GFAPI::get_entries(67);
+
+        $idKanboard_array = array();
+        if (!empty($entry_gforms)) {
+            foreach ($entry_gforms as $key => $value) {
+                $pattern = "[^7.]";
+                if (preg_match($pattern, $key) && $value) {
+                    array_push($idKanboard_array, $value);
+                }
+            }
+        }
+        $fase_title = $entry_gforms[0][2];
+        $fase = new Fase();
+        $fase->associa_fase($fase_title,$idKanboard_array);
 
         return '';
     }

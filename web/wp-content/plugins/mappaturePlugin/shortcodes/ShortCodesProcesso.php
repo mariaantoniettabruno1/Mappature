@@ -42,6 +42,7 @@ class ShortCodesProcesso
     {
         $lastEntry = GFAPI::get_entries(34);
         $processo = new Processo();
+
         if(!empty($lastEntry)){
             $old_title = $lastEntry[0][11];
             $new_title = $lastEntry[0][8];

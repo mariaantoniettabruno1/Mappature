@@ -171,7 +171,7 @@ class Fase
 
     }
 
-    public function update($old_title,$new_title)
+    public function update($old_title, $new_title)
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
@@ -195,6 +195,29 @@ class Fase
         $mysqli->close();
     }
 
+    public function associa_fase($title_fase, $array_users)
+    {
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $title_fase = $title_fase." - fase";
+        print_r($title_fase);
+        $sql = "SELECT id FROM subtasks WHERE title LIKE ? ";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("s",  $title_fase);
+        if(  $res = $stmt->get_result()){
+            $result = $res->fetch_assoc();
+        }
+
+        $sql = "INSERT INTO MAPP_subtask_users (subtask_id,user_id) VALUES(?,?)";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($this->users as $userId) {
+            $stmt->bind_param("ii", $result['id'], $array_users);
+            $res = $stmt->execute();
+        }
+
+
+        $mysqli->close();
+    }
 
     public function findFaseOnWordpress($area, $servizio, $ufficio)
     {
@@ -230,11 +253,10 @@ class Fase
         if (!empty($servizio) && !empty($ufficio) && $servizio != null && $ufficio != null && $servizio != '' && $ufficio != '') {
 
             if (gettype($servizio) == 'string' && (gettype($ufficio) == 'string')) {
-                if (strpos($servizio, '"') == true && (strpos($ufficio, '"') == true)){
+                if (strpos($servizio, '"') == true && (strpos($ufficio, '"') == true)) {
                     $string_servizio = (explode('"', $servizio)[1]);
                     $string_ufficio = (explode('"', $ufficio)[1]);
-                }
-                else{
+                } else {
                     $string_servizio = $servizio;
                     $string_ufficio = $ufficio;
                 }
