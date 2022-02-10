@@ -27,7 +27,6 @@ class Processo
     private $users;
 
 
-
     /**
      * @return mixed
      */
@@ -388,9 +387,18 @@ class Processo
         $mysqli->close();
         $this->inserisciDataProcessoSarala();
     }
-public function editProcesso(){
 
-}
+    public function editProcesso($old_title, $new_title)
+    {
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql= "UPDATE projects SET name=? WHERE name=?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("ss", $new_title, $old_title);
+        $res = $stmt->execute();
+        $mysqli->close();
+
+    }
 
     public function cancellaProcesso()
     {

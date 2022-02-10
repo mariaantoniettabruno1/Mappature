@@ -37,7 +37,7 @@ class ShortCodesProcedimento
             }
         }
 
-return '';
+        return '';
     }
 
     public static function create_procedimento_postuma()
@@ -64,7 +64,7 @@ return '';
             $procedure->assignUsersCreator($procedure->getCreatorId());
         }
 
-return '';
+        return '';
     }
 
     public static function delete_procedimento()
@@ -78,8 +78,22 @@ return '';
             $result = GFAPI::delete_entry($id_current_form);
         }
 
-return '';
+        return '';
     }
 
+    public static function edit_procedimento()
+    {
+        $entry_gforms = GFAPI::get_entries(37);
+        if (!empty($entry_gforms)) {
+            $procedimento = new Procedimento();
+            $old_title = $entry_gforms[0][12];
+            $new_title = $entry_gforms[0][13];
+           $procedimento->editProcedure($old_title,$new_title);
+        }
+
+        return '';
+
+
+    }
 
 }

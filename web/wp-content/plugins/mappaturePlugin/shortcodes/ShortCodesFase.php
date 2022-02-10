@@ -30,30 +30,24 @@ class ShortCodesFase
     }
 
 
-
-
-    public static function update_fase()
+    public static function edit_fase()
     {
         $entry_gforms = GFAPI::get_entries(43);
         $fase = new Fase();
         if (!empty($entry_gforms)) {
-            $id_current_form = $entry_gforms[0]['id'];
-            $results_fase = GForm::getForm($id_current_form);
-            $fase->setTitle($results_fase[1]);
-
-            $entry = array('1' => $results_fase[1], '2' => $results_fase[2], '3' => $results_fase[3], '4' => $results_fase[4], '5' => $results_fase[5], '6' => $results_fase[6]);
-            $entry_gforms = GFAPI::get_entries(23);
-            $id_current_form = $entry_gforms[0]['id'];
-            $fase->setOldTitle($entry_gforms[0][1]);
-            $fase->update();
-            $result = GFAPI::update_entry($entry, $id_current_form);
+            $old_title = $entry_gforms[0][14];
+            $new_title = $entry_gforms[0][17];
+            $old_title = $old_title. '- fase';
+            $new_title = $new_title. '- fase';
+            $fase->update($old_title,$new_title);
         }
 
         return '';
     }
 
 
-    public static function delete_fase()
+    public
+    static function delete_fase()
     {
         $entry_gforms = GFAPI::get_entries(23);
         if (!empty($entry_gforms)) {

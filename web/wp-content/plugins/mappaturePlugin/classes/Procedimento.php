@@ -301,6 +301,17 @@ class Procedimento
 
     }
 
+    public function editProcedure($old_title, $new_title)
+    {
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $sql= "UPDATE tasks SET title=? WHERE title=?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("ss", $new_title, $old_title);
+        $res = $stmt->execute();
+        $mysqli->close();
+
+    }
 
     public function deleteProcedure()
     {

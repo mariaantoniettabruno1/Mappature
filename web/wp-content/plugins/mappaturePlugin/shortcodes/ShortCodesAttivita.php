@@ -33,24 +33,19 @@ class ShortCodesAttivita
 
 
 
-    public static function update_attivita()
+    public static function edit_attivita()
     {
         $entry_gforms = GFAPI::get_entries(41);
-        $atto = new Attivita();
+        $attivita = new Attivita();
         if (!empty($entry_gforms)) {
-            $id_current_form = $entry_gforms[0]['id'];
-            $results_atto = GForm::getForm($id_current_form);
-            $atto->setTitleAttivita($results_atto[1]);
-
-            $entry = array('1' => $results_atto[1], '2' => $results_atto[2], '3' => $results_atto[3], '4' => $results_atto[4], '5' => $results_atto[5], '6' => $results_atto[6]);
-            $entry_gforms = GFAPI::get_entries(24);
-            $id_current_form = $entry_gforms[0]['id'];
-            $atto->setOldTitleAttivita($entry_gforms[0][1]);
-            $atto->update();
-            $result = GFAPI::update_entry($entry, $id_current_form);
+            $old_title = $entry_gforms[0][16];
+            $new_title = $entry_gforms[0][17];
+            $old_title = $old_title. '- attivita';
+            $new_title = $new_title. '- attivita';
+            $attivita->update_attivita($old_title,$new_title);
         }
 
-        return ' ';
+        return '';
     }
 
     public static function delete_attivita()

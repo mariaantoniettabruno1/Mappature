@@ -42,31 +42,13 @@ class ShortCodesProcesso
     {
         $lastEntry = GFAPI::get_entries(34);
         $processo = new Processo();
-        if (!empty($lastEntry)) {
-            $lastEntry = GFAPI::get_entries(34)[0];
-            echo "<pre>";
-            print_r($lastEntry);
-            echo "</pre>";
-            /*$processo->setNomeProcesso($value);
-            $processo->setIdForm($lastEntry['form_id']);
-            $processo->setAreaProcesso($lastEntry[2]);
-            $processo->setServizioProcesso($lastEntry[3]);
-            $processo->setUfficioProcesso($lastEntry[4]);
-            $id_owner = GetterIdUsers::getProcessOwnerId($processo->getAreaProcesso());
-            if ($id_owner == NULL || $id_owner == '') {
-                $id_owner = GetterIdUsers::getProcedureOwnerId($processo->getAreaProcesso(), $processo->getServizioProcesso(), $processo->getUfficioProcesso());
-            }
-            $processo->setIdUser($id_owner);
-            $processo->setRuoloUser('project-manager');
-            $processo->creaProcesso();
+        if(!empty($lastEntry)){
+            $old_title = $lastEntry[0][11];
+            $new_title = $lastEntry[0][8];
+            $processo->editProcesso($old_title,$new_title);
         }
-    }
-    $processo->findProject();
-    $processo->assignUsers($id_owner);
-}*/
-            return '';
 
-        }
+        return '';
     }
 
         public

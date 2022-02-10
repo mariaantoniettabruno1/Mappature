@@ -175,20 +175,23 @@ function shortcodes_init()
     add_shortcode('post_addusermetadata', 'call_add_user_metadata');
     add_shortcode('post_editusermetadata', 'call_edit_user_metadata');
     add_shortcode('post_processo', 'call_create_processo');
+    add_shortcode('post_editprocesso', 'call_edit_processo');
     add_shortcode('post_deleteprocesso', 'call_delete_processo');
     add_shortcode('post_procedimento', 'call_create_procedimento');
     add_shortcode('post_procedimentopostuma', 'call_create_procedimento_postuma');
+    add_shortcode('post_editprocedimento', 'call_edit_procedimento');
     add_shortcode('post_deleteprocedimento', 'call_delete_procedimento');
     add_shortcode('post_assigndipendente', 'call_assign_dipendente');
     add_shortcode('post_editassigndipendente', 'call_edit_assign_dipendente');
     add_shortcode('post_fase', 'call_create_fase');
-    add_shortcode('post_updatefase', 'call_update_fase');
+    add_shortcode('post_editfase', 'call_edit_fase');
     add_shortcode('post_deletefase', 'call_delete_fase');
     add_shortcode('post_create_attivita', 'call_create_attivita');
-    add_shortcode('post_updateattivita', 'call_update_attivita');
+    add_shortcode('post_editattivita', 'call_edit_attivita');
     add_shortcode('post_deleteattivita', 'call_delete_attivita');
     add_shortcode("post_orgchartdipendenti", "call_orgchart_dipendenti");
     add_shortcode("post_orgchartprocessi", "call_orgchart_processi");
+    
 
 }
 
@@ -206,6 +209,10 @@ function call_create_processo()
 {
     \MappaturePlugin\ShortCodesProcesso::create_processo();
 }
+function call_edit_processo()
+{
+    \MappaturePlugin\ShortCodesProcesso::edit_processo();
+}
 
 function call_delete_processo()
 {
@@ -220,6 +227,10 @@ function call_create_procedimento()
 function call_create_procedimento_postuma()
 {
     \MappaturePlugin\ShortCodesProcedimento::create_procedimento_postuma();
+}
+function call_edit_procedimento()
+{
+    \MappaturePlugin\ShortCodesProcedimento::edit_procedimento();
 }
 
 function call_delete_procedimento()
@@ -238,8 +249,8 @@ function call_create_fase(){
     \MappaturePlugin\ShortCodesFase::create_fase();
 }
 
-function call_update_fase(){
-    \MappaturePlugin\ShortCodesFase::update_fase();
+function call_edit_fase(){
+    \MappaturePlugin\ShortCodesFase::edit_fase();
 }
 function call_delete_fase(){
     \MappaturePlugin\ShortCodesFase::delete_fase();
@@ -249,8 +260,8 @@ function call_create_attivita(){
 }
 
 
-function call_update_attivita(){
-    \MappaturePlugin\ShortCodesAttivita::update_attivita();
+function call_edit_attivita(){
+    \MappaturePlugin\ShortCodesAttivita::edit_attivita();
 }
 function call_delete_attivita(){
     \MappaturePlugin\ShortCodesAttivita::delete_attivita();

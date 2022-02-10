@@ -171,17 +171,14 @@ class Fase
 
     }
 
-    public function update()
+    public function update($old_title,$new_title)
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
 
-        $dbTitle = $this->getDbTitle($this->title);
-        $dbOldTitle = $this->getDbTitle($this->old_title);
-
-        $sql = "UPDATE subtasks SET title=? WHERE title=? ORDER BY id DESC LIMIT 1";
+        $sql = "UPDATE subtasks SET title=? WHERE title=?";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("ss", $dbTitle, $dbOldTitle);
+        $stmt->bind_param("ss", $new_title, $old_title);
         $res = $stmt->execute();
         $mysqli->close();
     }
