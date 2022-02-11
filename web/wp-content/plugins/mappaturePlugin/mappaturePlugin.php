@@ -34,6 +34,7 @@ require_once(plugin_dir_path(__FILE__) . 'shortcodes/UserMetaDataOrgchart.php');
 require_once(plugin_dir_path(__FILE__) . 'shortcodes/ShortCodesAttivita.php');
 require_once(plugin_dir_path(__FILE__) . 'mappatureOrgChart/OrgChartImpiegati.php');
 require_once(plugin_dir_path(__FILE__) . 'mappatureOrgChart/OrgChartProcessi.php');
+require_once(plugin_dir_path(__FILE__) . 'tables/Table.php');
 
 
 
@@ -193,6 +194,7 @@ function shortcodes_init()
     add_shortcode('post_associaattivita', 'call_associa_attivita');
     add_shortcode("post_orgchartdipendenti", "call_orgchart_dipendenti");
     add_shortcode("post_orgchartprocessi", "call_orgchart_processi");
+    add_shortcode("post_table", "call_visualize_table");
     
 
 }
@@ -281,4 +283,8 @@ function call_orgchart_dipendenti(){
 
 function call_orgchart_processi(){
     \MappaturePlugin\OrgChartProcessi::orgchart_processi();
+}
+
+function call_visualize_table(){
+    \MappaturePlugin\Table::visualize_table();
 }
