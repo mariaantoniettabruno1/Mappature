@@ -200,18 +200,21 @@ class Fase
         $conn = new Connection();
         $mysqli = $conn->connect();
         $title_fase = $title_fase." - fase";
-        print_r($title_fase);
+
         $sql = "SELECT id FROM subtasks WHERE title LIKE ? ";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s",  $title_fase);
-        if(  $res = $stmt->get_result()){
-            $result = $res->fetch_assoc();
-        }
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = $res->fetch_assoc();
+
+
 
         $sql = "INSERT INTO MAPP_subtask_users (subtask_id,user_id) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);
-        foreach ($this->users as $userId) {
-            $stmt->bind_param("ii", $result['id'], $array_users);
+        foreach ($array_users as $userId) {
+            print_r($userId);
+            $stmt->bind_param("ii", $result['id'], $userId);
             $res = $stmt->execute();
         }
 

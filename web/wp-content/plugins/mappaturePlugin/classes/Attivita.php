@@ -178,6 +178,32 @@ class Attivita
         $res = $stmt->execute();
         $mysqli->close();
     }
+    public function associa_attivita($title_attivita, $array_users)
+    {
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $title_attivita = $title_attivita." - attivita";
+
+        $sql = "SELECT id FROM subtasks WHERE title LIKE ? ";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("s",  $title_attivita);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = $res->fetch_assoc();
+
+
+
+        $sql = "INSERT INTO MAPP_subtask_users (subtask_id,user_id) VALUES(?,?)";
+        $stmt = $mysqli->prepare($sql);
+        foreach ($array_users as $userId) {
+
+            $stmt->bind_param("ii", $result['id'], $userId);
+            $res = $stmt->execute();
+        }
+
+
+        $mysqli->close();
+    }
 
     public function delete()
     {

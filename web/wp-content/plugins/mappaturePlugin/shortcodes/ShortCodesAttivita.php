@@ -47,7 +47,25 @@ class ShortCodesAttivita
 
         return '';
     }
+    static function associa_attivita()
+    {
+        $entry_gforms = GFAPI::get_entries(68);
 
+        $idKanboard_array = array();
+        if (!empty($entry_gforms)) {
+            foreach ($entry_gforms[0] as $key => $value) {
+                $pattern = "[^7.]";
+                if (preg_match($pattern, $key) && $value) {
+                    array_push($idKanboard_array, $value);
+                }
+            }
+        }
+        $attivita_title = $entry_gforms[0][2];
+        $attivita = new Attivita();
+        $attivita->associa_attivita($attivita_title,$idKanboard_array);
+
+        return '';
+    }
     public static function delete_attivita()
     {
         $entry_gforms = GFAPI::get_entries(24);

@@ -52,7 +52,7 @@ class ShortCodesFase
 
         $idKanboard_array = array();
         if (!empty($entry_gforms)) {
-            foreach ($entry_gforms as $key => $value) {
+            foreach ($entry_gforms[0] as $key => $value) {
                 $pattern = "[^7.]";
                 if (preg_match($pattern, $key) && $value) {
                     array_push($idKanboard_array, $value);
