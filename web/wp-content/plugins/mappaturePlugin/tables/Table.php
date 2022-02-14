@@ -20,67 +20,83 @@ class Table
         </head>
         <body>
 
+        <div>
+            <th>Seleziona Processo</th>
+            <br class="container" id="dropdownlist">
+            <td>
+                <?php
+                $processo = new Processo();
+                $results_processi = $processo->selectProcesso();
+                echo "<form method='POST' action=''>";
+                echo "<select id='processo' name='select_processo'   onchange='this.form.submit()'>";
+                foreach ($results_processi as $result) {
+                    echo "<option selected='selected' value='$result[0]'> $result[0]</option>";
+                    echo "<br>";
+                }
+                echo "</select>";
+                echo "</form>";
 
-            <h2>TABELLA PROCESSI</h2>
-                <tr>
-                    <th>Seleziona Processo</th>
-                    <td>
-                        <select name='ruolo' id='ruolo'>
-                            <option value="Dirigente" >
-                                Dirigente
-                            </option>
-                            <option value="PO"> PO</option>
-                            <option value="Dipendente" >
-                                Dipendente
-                            </option>
+                ?>
+            </td>
+            <?php
+            if(isset($_POST["select_processo"])){
+                $selected_processo = $_POST["select_processo"];
+                $processo = new Processo();
+                $table = $processo->getDataOfProcesso($selected_processo);
+                echo "<pre>";
+                print_r($table);
+                echo "</pre>";
 
-                        </select>
-                    </td>
-                </tr>
-            <table class="center">
-                <thead>
-                <tr>
-                    <th>Processo</th>
-                    <th>Dirigente</th>
-                    <th>Procedimento</th>
-                    <th>PO</th>
-                    <th>Dipendenti Associati a Procedimento</th>
-                    <th>Fase/Attivita</th>
-                    <th>Dipendenti</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>John</td>
-                    <td>Doe</td>
-                    <td>john@example.com</td>
-                    <td>john@example.com</td>
-                    <td>john@example.com</td>
-                    <td>john@example.com</td>
-                    <td>john@example.com</td>
-                </tr>
-                <tr>
-                    <td>Mary</td>
-                    <td>Moe</td>
-                    <td>mary@example.com</td>
-                    <td>john@example.com</td>
-                    <td>john@example.com</td>
-                    <td>john@example.com</td>
-                    <td>john@example.com</td>
-                </tr>
-                <tr>
-                    <td>July</td>
-                    <td>Dooley</td>
-                    <td>july@example.com</td>
-                    <td>john@example.com</td>
-                    <td>john@example.com</td>
-                    <td>john@example.com</td>
-                    <td>john@example.com</td>
+            }
+            ?>
+        </div>
+        <h2>TABELLA PROCESSI</h2>
 
-                </tr>
+        <table class="center">
+            <thead>
+            <tr>
+                <th>Processo</th>
+                <th>Dirigente</th>
+                <th>Procedimento</th>
+                <th>PO</th>
+                <th>Dipendenti Associati a Procedimento</th>
+                <th>Fase/Attivita</th>
+                <th>Dipendenti</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>John</td>
+                <td>Doe</td>
+                <td>john@example.com</td>
+                <td>john@example.com</td>
+                <td>john@example.com</td>
+                <td>john@example.com</td>
+                <td>john@example.com</td>
+            </tr>
+            <tr>
+                <td>Mary</td>
+                <td>Moe</td>
+                <td>mary@example.com</td>
+                <td>john@example.com</td>
+                <td>john@example.com</td>
+                <td>john@example.com</td>
+                <td>john@example.com</td>
+            </tr>
+            <tr>
+                <td>July</td>
+                <td>Dooley</td>
+                <td>july@example.com</td>
+                <td>john@example.com</td>
+                <td>john@example.com</td>
+                <td>john@example.com</td>
+                <td>john@example.com</td>
 
-                </tbody>
-            </table>
+            </tr>
+
+
+            </tbody>
+        </table>
         </div>
 
         </body>
@@ -88,9 +104,10 @@ class Table
         <?php
 
 
-
     }
-    public function select_processo(){
+
+    public function select_processo()
+    {
         $conn = new Connection();
         $mysqli = $conn->connect();
 
