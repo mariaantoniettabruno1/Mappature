@@ -35,6 +35,7 @@ require_once(plugin_dir_path(__FILE__) . 'shortcodes/ShortCodesAttivita.php');
 require_once(plugin_dir_path(__FILE__) . 'mappatureOrgChart/OrgChartImpiegati.php');
 require_once(plugin_dir_path(__FILE__) . 'mappatureOrgChart/OrgChartProcessi.php');
 require_once(plugin_dir_path(__FILE__) . 'tables/Table.php');
+require_once(plugin_dir_path(__FILE__) . 'tables/TableProcessi.php');
 
 
 

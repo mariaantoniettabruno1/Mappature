@@ -38,17 +38,7 @@ class Table
 
                 ?>
             </td>
-            <?php
-            if(isset($_POST["select_processo"])){
-                $selected_processo = $_POST["select_processo"];
-                $processo = new Processo();
-                $table = $processo->getDataOfProcesso($selected_processo);
-                echo "<pre>";
-                print_r($table);
-                echo "</pre>";
 
-            }
-            ?>
         </div>
         <h2>TABELLA PROCESSI</h2>
 
@@ -65,36 +55,45 @@ class Table
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>John</td>
-                <td>Doe</td>
-                <td>john@example.com</td>
-                <td>john@example.com</td>
-                <td>john@example.com</td>
-                <td>john@example.com</td>
-                <td>john@example.com</td>
-            </tr>
-            <tr>
-                <td>Mary</td>
-                <td>Moe</td>
-                <td>mary@example.com</td>
-                <td>john@example.com</td>
-                <td>john@example.com</td>
-                <td>john@example.com</td>
-                <td>john@example.com</td>
-            </tr>
-            <tr>
-                <td>July</td>
-                <td>Dooley</td>
-                <td>july@example.com</td>
-                <td>john@example.com</td>
-                <td>john@example.com</td>
-                <td>john@example.com</td>
-                <td>john@example.com</td>
+            <?php
+            if (isset($_POST["select_processo"])) {
+                $selected_processo = $_POST["select_processo"];
+                $table_processi = new TableProcessi();
+                $table = $table_processi->getDataOfProcesso($selected_processo);
+                $array = array($table);
 
-            </tr>
+                foreach ($array as $item) {
+                    if (!empty($item['Dipendenti'])) {
+                        foreach ($item['Dipendenti'] as $value) {
+                            echo '<tr>';
+                            echo '<td>' . $item['Processo'] . '</td>';
+                            echo '<td>' . implode("", $item['Dirigente']) . '</td>';
+                            echo '<td>' . implode("", $item['Procedimento']) . '</td>';
+                            echo '<td>' . implode("", $item['PO']) . '</td>';
+                            echo '<td>' . implode("", $item['Dipendenti associati']) . '</td>';
+                            echo '<td>' . $value[0] . '</td>';
+                            unset($value[0]);
+                            echo '<td>' . implode(" ", $value) . '</td>';
+                            echo '</tr>';
+
+                        }
+                    }
+                    else{
+                        echo '<tr>';
+                        echo '<td>' . $item['Processo'] . '</td>';
+                        echo '<td>' . implode("", $item['Dirigente']) . '</td>';
+                        echo '<td>' . implode("", $item['Procedimento']) . '</td>';
+                        echo '<td>' . implode("", $item['PO']) . '</td>';
+                        echo '<td>' . implode("", $item['Dipendenti associati']) . '</td>';
+                        echo '<td>' . implode("", $item['Fase/Attivita']). '</td>';
+                        echo '<td>' . '</td>';
+                        echo '</tr>';
+                    }
 
 
+                }
+            }
+            ?>
             </tbody>
         </table>
         </div>
@@ -106,18 +105,4 @@ class Table
 
     }
 
-    public function select_processo()
-    {
-        $conn = new Connection();
-        $mysqli = $conn->connect();
-
-        $sql = "SELECT name FROM projects";
-        $result = mysqli_query($mysqli, $sql);
-        $array_projects = array();
-        $rows = $result->fetch_all();
-        foreach ($rows as $row) {
-            array_push($array_projects, $row[0]);
-        }
-        return $array_projects;
-    }
 }
