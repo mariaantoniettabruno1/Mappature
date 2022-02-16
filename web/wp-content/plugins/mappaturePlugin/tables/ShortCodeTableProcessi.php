@@ -21,30 +21,27 @@ class ShortCodeTableProcessi
         <body>
 
         <div>
-            <th>Seleziona Processo</th>
-            <br class="container" id="dropdownlist">
-            <td>
+            <form method='POST' action=''>
+                <h4>Seleziona Processo</h4>
+
                 <?php
                 $processo = new Processo();
                 $results_processi = $processo->selectProcesso();
-                echo "<form method='POST' action=''>";
                 echo "<select id='processo' name='select_processo'   onchange='this.form.submit()'>";
                 foreach ($results_processi as $result) {
                     if ($_POST['select_processo'] === $result[0]) {
                         echo "<option selected value='$result[0]'> $result[0]</option>";
-                    }
-                    else{
+                    } else {
                         echo "<option  value='$result[0]'> $result[0]</option>";
                     }
 
                 }
 
                 echo "</select>";
-                echo "</form>";
+
 
                 ?>
-            </td>
-
+            </form>
         </div>
         <h2>TABELLA PROCESSI</h2>
 
