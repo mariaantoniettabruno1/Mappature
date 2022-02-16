@@ -79,10 +79,10 @@ class Paginator
     private $items = array();
 
     /**
-     * PicoDb Table instance
+     * PicoDb ShortCodeTableProcessi instance
      *
      * @access private
-     * @var \Picodb\Table
+     * @var \Picodb\ShortCodeTableProcessi
      */
     private $query = null;
 

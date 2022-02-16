@@ -60,7 +60,7 @@ class Table extends AbstractFrameDecorator
     protected $_max_width;
 
     /**
-     * Table header rows.  Each table header is duplicated when a table
+     * ShortCodeTableProcessi header rows.  Each table header is duplicated when a table
      * spans pages.
      *
      * @var array
@@ -68,7 +68,7 @@ class Table extends AbstractFrameDecorator
     protected $_headers;
 
     /**
-     * Table footer rows.  Each table footer is duplicated when a table
+     * ShortCodeTableProcessi footer rows.  Each table footer is duplicated when a table
      * spans pages.
      *
      * @var array

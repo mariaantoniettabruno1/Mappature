@@ -1512,7 +1512,7 @@ msgid "Trash"
 msgstr ""
 
 #: entry_list.php:885
-msgid "Select Entry Table Columns"
+msgid "Select Entry ShortCodeTableProcessi Columns"
 msgstr ""
 
 #: entry_list.php:885
@@ -9572,11 +9572,11 @@ msgid "Database Version"
 msgstr ""
 
 #: includes/system-status/class-gf-system-report.php:1034
-msgid "Table does not exist"
+msgid "ShortCodeTableProcessi does not exist"
 msgstr ""
 
 #: includes/system-status/class-gf-system-report.php:1041
-msgid "Table has not been upgraded successfully."
+msgid "ShortCodeTableProcessi has not been upgraded successfully."
 msgstr ""
 
 #: includes/system-status/class-gf-system-report.php:1057

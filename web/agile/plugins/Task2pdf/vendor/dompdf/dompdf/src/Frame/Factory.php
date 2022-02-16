@@ -117,14 +117,14 @@ class Factory
 
             case "table":
                 $positioner = "Block";
-                $decorator = "Table";
-                $reflower = "Table";
+                $decorator = "ShortCodeTableProcessi";
+                $reflower = "ShortCodeTableProcessi";
                 break;
 
             case "inline-table":
                 $positioner = "Inline";
-                $decorator = "Table";
-                $reflower = "Table";
+                $decorator = "ShortCodeTableProcessi";
+                $reflower = "ShortCodeTableProcessi";
                 break;
 
             case "table-row-group":

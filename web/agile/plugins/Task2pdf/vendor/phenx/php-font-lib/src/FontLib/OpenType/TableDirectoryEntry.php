@@ -9,7 +9,7 @@
 namespace FontLib\OpenType;
 
 /**
- * Open Type Table directory entry, the same as a TrueType one.
+ * Open Type ShortCodeTableProcessi directory entry, the same as a TrueType one.
  *
  * @package php-font-lib
  */

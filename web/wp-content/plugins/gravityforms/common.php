@@ -6502,7 +6502,7 @@ Content-Type: text/html;
 	 * @since  2.2
 	 * @access public
 	 *
-	 * @param string $table_name Table to check for.
+	 * @param string $table_name ShortCodeTableProcessi to check for.
 	 *
 	 * @uses wpdb::get_var()
 	 *

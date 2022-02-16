@@ -1551,7 +1551,7 @@ HAVING count(*) > 1;" );
 	 * @access public
 	 * @global wpdb  $wpdb       WordPress database abstraction object.
 	 *
-	 * @param string $table_name Table name.
+	 * @param string $table_name ShortCodeTableProcessi name.
 	 * @param string $col_name   Column name.
 	 * @param string $col_type   Column type.
 	 * @param bool   $is_null    Optional. Check is null.

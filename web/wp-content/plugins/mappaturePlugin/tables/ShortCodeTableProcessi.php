@@ -1,9 +1,9 @@
 <?php
 
 namespace MappaturePlugin;
-class Table
+class ShortCodeTableProcessi
 {
-    public static function visualize_table()
+    public static function visualize_table_processi()
     {
         ?>
 
@@ -30,9 +30,15 @@ class Table
                 echo "<form method='POST' action=''>";
                 echo "<select id='processo' name='select_processo'   onchange='this.form.submit()'>";
                 foreach ($results_processi as $result) {
-                    echo "<option selected='selected' value='$result[0]'> $result[0]</option>";
-                    echo "<br>";
+                    if ($_POST['select_processo'] === $result[0]) {
+                        echo "<option selected value='$result[0]'> $result[0]</option>";
+                    }
+                    else{
+                        echo "<option  value='$result[0]'> $result[0]</option>";
+                    }
+
                 }
+
                 echo "</select>";
                 echo "</form>";
 
@@ -77,15 +83,14 @@ class Table
                             echo '</tr>';
 
                         }
-                    }
-                    else{
+                    } else {
                         echo '<tr>';
                         echo '<td>' . $item['Processo'] . '</td>';
                         echo '<td>' . implode("", $item['Dirigente']) . '</td>';
                         echo '<td>' . implode("", $item['Procedimento']) . '</td>';
                         echo '<td>' . implode("", $item['PO']) . '</td>';
                         echo '<td>' . implode("", $item['Dipendenti associati']) . '</td>';
-                        echo '<td>' . implode("", $item['Fase/Attivita']). '</td>';
+                        echo '<td>' . implode("", $item['Fase/Attivita']) . '</td>';
                         echo '<td>' . '</td>';
                         echo '</tr>';
                     }

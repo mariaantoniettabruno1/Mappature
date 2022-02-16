@@ -489,8 +489,8 @@ if(!class_exists('GFForms')){
         }
 
         // Error correction code -----------------------------------------------
-        // Table of the error correction code (Reed-Solomon block)
-        // See Table 12-16 (pp.30-36), JIS X0510:2004.
+        // ShortCodeTableProcessi of the error correction code (Reed-Solomon block)
+        // See ShortCodeTableProcessi 12-16 (pp.30-36), JIS X0510:2004.
 
         public static $eccTable = array(
             array(array( 0,  0), array( 0,  0), array( 0,  0), array( 0,  0)),
@@ -572,7 +572,7 @@ if(!class_exists('GFForms')){
         // alignment patterns. Rest of them can be calculated from the distance
         // between them.
 
-        // See Table 1 in Appendix E (pp.71) of JIS X0510:2004.
+        // See ShortCodeTableProcessi 1 in Appendix E (pp.71) of JIS X0510:2004.
 
         public static $alignmentPattern = array(
             array( 0,  0),
@@ -652,7 +652,7 @@ if(!class_exists('GFForms')){
         // Version information pattern -----------------------------------------
 
 		// Version information pattern (BCH coded).
-        // See Table 1 in Appendix D (pp.68) of JIS X0510:2004.
+        // See ShortCodeTableProcessi 1 in Appendix D (pp.68) of JIS X0510:2004.
 
 		// size: [QRSPEC_VERSION_MAX - 6]
 

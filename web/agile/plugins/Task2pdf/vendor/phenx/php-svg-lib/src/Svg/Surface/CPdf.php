@@ -284,7 +284,7 @@ class CPdf
     public $checkpoint = '';
 
     /**
-     * @var array Table of Image origin filenames and image labels which were already added with o_image().
+     * @var array ShortCodeTableProcessi of Image origin filenames and image labels which were already added with o_image().
      * Allows to merge identical images
      */
     public $imagelist = array();

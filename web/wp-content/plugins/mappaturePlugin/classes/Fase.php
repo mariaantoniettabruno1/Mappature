@@ -165,9 +165,9 @@ class Fase
             $stmt->bind_param("ii", $subtask_id, $userId);
             $res = $stmt->execute();
         }
-
-        $this->insertDataFaseSarala();
         $mysqli->close();
+        $this->insertDataFaseSarala();
+
 
     }
 

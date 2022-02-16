@@ -1031,15 +1031,15 @@ class GF_System_Report {
 			if ( ! GFCommon::table_exists( $table_name ) ) {
 				$has_failed_tables         = true;
 				$value                     = false;
-				$validation_message        = __( 'Table does not exist', 'gravityforms' );
-				$validation_message_export = 'Table does not exist';
+				$validation_message        = __( 'ShortCodeTableProcessi does not exist', 'gravityforms' );
+				$validation_message_export = 'ShortCodeTableProcessi does not exist';
 
 			} elseif ( ! gf_upgrade()->check_table_schema( $table_name ) ) {
 
 				$has_failed_tables         = true;
 				$value                     = false;
-				$validation_message        = __( 'Table has not been upgraded successfully.', 'gravityforms' );
-				$validation_message_export = 'Table has not been upgraded successfully.';
+				$validation_message        = __( 'ShortCodeTableProcessi has not been upgraded successfully.', 'gravityforms' );
+				$validation_message_export = 'ShortCodeTableProcessi has not been upgraded successfully.';
 			}
 
 			// Add table to return array.

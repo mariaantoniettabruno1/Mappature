@@ -11,7 +11,7 @@ use Dompdf\Dompdf;
 use Dompdf\Frame;
 
 /**
- * Table row group decorator
+ * ShortCodeTableProcessi row group decorator
  *
  * Overrides split() method for tbody, thead & tfoot elements
  *

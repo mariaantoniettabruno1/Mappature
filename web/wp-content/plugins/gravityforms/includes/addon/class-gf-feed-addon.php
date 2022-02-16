@@ -1039,7 +1039,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	}
 
 	/**
-	 * Get the Table does not exist error message.
+	 * Get the ShortCodeTableProcessi does not exist error message.
 	 *
 	 * @since 2.4.23
 	 *
@@ -1058,7 +1058,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	}
 
 	/**
-	 * Output a Table does not exist error message.
+	 * Output a ShortCodeTableProcessi does not exist error message.
 	 *
 	 * @since 2.4.23
 	 *

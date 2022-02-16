@@ -407,7 +407,7 @@ class Page extends AbstractFrameDecorator
 
                 return true;
 
-            // Table-rows
+            // ShortCodeTableProcessi-rows
             } else {
                 if ($display === "table-row") {
                     // Simply check if the parent table's page_break_inside property is

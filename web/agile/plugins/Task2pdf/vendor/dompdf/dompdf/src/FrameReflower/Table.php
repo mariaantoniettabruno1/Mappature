@@ -33,7 +33,7 @@ class Table extends AbstractFrameReflower
     protected $_state;
 
     /**
-     * Table constructor.
+     * ShortCodeTableProcessi constructor.
      * @param TableFrameDecorator $frame
      */
     function __construct(TableFrameDecorator $frame)
@@ -401,7 +401,7 @@ class Table extends AbstractFrameReflower
 
         $frame->position();
 
-        // Table layout algorithm:
+        // ShortCodeTableProcessi layout algorithm:
         // http://www.w3.org/TR/CSS21/tables.html#auto-table-layout
 
         if (is_null($this->_state)) {

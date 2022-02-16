@@ -34,8 +34,10 @@ require_once(plugin_dir_path(__FILE__) . 'shortcodes/UserMetaDataOrgchart.php');
 require_once(plugin_dir_path(__FILE__) . 'shortcodes/ShortCodesAttivita.php');
 require_once(plugin_dir_path(__FILE__) . 'mappatureOrgChart/OrgChartImpiegati.php');
 require_once(plugin_dir_path(__FILE__) . 'mappatureOrgChart/OrgChartProcessi.php');
-require_once(plugin_dir_path(__FILE__) . 'tables/Table.php');
+require_once(plugin_dir_path(__FILE__) . 'tables/ShortCodeTableProcessi.php');
 require_once(plugin_dir_path(__FILE__) . 'tables/TableProcessi.php');
+require_once(plugin_dir_path(__FILE__) . 'tables/ShortCodeTableArea.php');
+require_once(plugin_dir_path(__FILE__) . 'tables/TableAreaServizioUfficio.php');
 
 
 
@@ -195,7 +197,8 @@ function shortcodes_init()
     add_shortcode('post_associaattivita', 'call_associa_attivita');
     add_shortcode("post_orgchartdipendenti", "call_orgchart_dipendenti");
     add_shortcode("post_orgchartprocessi", "call_orgchart_processi");
-    add_shortcode("post_table", "call_visualize_table");
+    add_shortcode("post_table_processi", "call_visualize_table_processi");
+    add_shortcode("post_table_area", "call_visualize_table_area");
     
 
 }
@@ -267,7 +270,6 @@ function call_create_attivita(){
     \MappaturePlugin\ShortCodesAttivita::create_attivita();
 }
 
-
 function call_edit_attivita(){
     \MappaturePlugin\ShortCodesAttivita::edit_attivita();
 }
@@ -286,6 +288,9 @@ function call_orgchart_processi(){
     \MappaturePlugin\OrgChartProcessi::orgchart_processi();
 }
 
-function call_visualize_table(){
-    \MappaturePlugin\Table::visualize_table();
+function call_visualize_table_processi(){
+    \MappaturePlugin\ShortCodeTableProcessi::visualize_table_processi();
+}
+function call_visualize_table_area(){
+    \MappaturePlugin\ShortCodeTableArea::visualize_table_area();
 }

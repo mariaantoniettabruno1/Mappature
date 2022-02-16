@@ -16,7 +16,7 @@ use Kanboard\Core\ObjectStorage\ObjectStorageException;
 class CustomizerFileModel extends Base
 {
     /**
-     * Table name
+     * ShortCodeTableProcessi name
      *
      * @var string
      */

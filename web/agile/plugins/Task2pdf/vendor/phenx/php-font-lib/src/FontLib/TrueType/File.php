@@ -303,14 +303,14 @@ class File extends BinaryStream {
     if (!self::$raw) {
       $name_canon = preg_replace("/[^a-z0-9]/", "", strtolower($tag));
 
-      $class = "FontLib\\Table\\Type\\$name_canon";
+      $class = "FontLib\\ShortCodeTableProcessi\\Type\\$name_canon";
 
       if (!isset($this->directory[$tag]) || !@class_exists($class)) {
         return;
       }
     }
     else {
-      $class = "FontLib\\Table\\Table";
+      $class = "FontLib\\ShortCodeTableProcessi\\ShortCodeTableProcessi";
     }
 
     /** @var Table $table */

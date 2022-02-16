@@ -507,7 +507,7 @@ return array(
     'Expand/collapse tasks' => 'Perluas/lipat tugas',
     'Close dialog box' => 'Tutup kotak dialog',
     'Submit a form' => 'Submit formulir',
-    'Board view' => 'Table halaman',
+    'Board view' => 'ShortCodeTableProcessi halaman',
     'Keyboard shortcuts' => 'pintas keyboard',
     'Open board switcher' => 'Buka table switcher',
     'Application' => 'Aplikasi',

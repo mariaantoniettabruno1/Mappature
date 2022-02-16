@@ -39,7 +39,7 @@ class Table extends BinaryStream {
 
   protected function _encode() {
     if (empty($this->data)) {
-      Font::d("  >> Table is empty");
+      Font::d("  >> ShortCodeTableProcessi is empty");
 
       return 0;
     }

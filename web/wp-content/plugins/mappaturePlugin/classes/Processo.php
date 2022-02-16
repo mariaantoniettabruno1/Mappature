@@ -445,9 +445,10 @@ class Processo
         $conn = new Connection();
         $mysqli = $conn->connect();
         $sql = "SELECT name FROM projects";
-        $result = $conn->query($sql);
-        $row = $result->fetch_assoc();
-        $mysqli->close();
+        $result = mysqli_query($mysqli, $sql);
+        $row = $result->fetch_all();
+        mysqli_close($mysqli);
+
     }
 
 

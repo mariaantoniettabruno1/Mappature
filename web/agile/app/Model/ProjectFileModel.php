@@ -11,7 +11,7 @@ namespace Kanboard\Model;
 class ProjectFileModel extends FileModel
 {
     /**
-     * Table name
+     * ShortCodeTableProcessi name
      *
      * @var string
      */
