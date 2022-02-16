@@ -5,6 +5,7 @@ namespace MappaturePlugin;
 class TableProcessi
 {
     public function getDataOfProcesso($name_processo)
+
     {
         $array = array();
         $name_tasks = array();
@@ -22,8 +23,6 @@ class TableProcessi
         $stmt->bind_param("s", $name_processo);
         $res = $stmt->execute();
         $res = $stmt->get_result();
-
-        if (  $res->fetch_assoc()!=NULL && !empty($res->fetch_assoc()['id'])) {
 
             $id_processo = $res->fetch_assoc()['id'];
 
@@ -103,7 +102,6 @@ class TableProcessi
             }
 
 
-
             $sql = "SELECT title FROM subtasks WHERE task_id IN (SELECT id FROM tasks WHERE title=?)";
             $stmt = $mysqli->prepare($sql);
             if (!empty($name_tasks)) {
@@ -120,9 +118,6 @@ class TableProcessi
 
                 }
             }
-
-
-
 
 
             $sql = "SELECT name FROM users WHERE id IN (SELECT user_id FROM MAPP_subtask_users WHERE subtask_id IN (SELECT id FROM subtasks WHERE title=?)) ";
@@ -151,7 +146,7 @@ class TableProcessi
             }
 
 
-        }
+
 
 
         $table = array("Processo" => $name_processo,

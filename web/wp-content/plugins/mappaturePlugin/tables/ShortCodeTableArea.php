@@ -97,11 +97,14 @@ class ShortCodeTableArea
                 $processi = new TableAreaServizioUfficio();
 
                 $array_processi = $processi->getProcesso($selected_area, $selected_servizio, $selected_ufficio);
+                $array_processi_kanboard = $processi->checkProcessoOnKanboard($array_processi);
 
                 $data = new TableProcessi();
-                foreach ($array_processi as $proc) {
-                    $array_data = $data->getDataOfProcesso($proc[0]);
+
+                foreach ($array_processi_kanboard as $proc) {
+                    $array_data = $data->getDataOfProcesso($proc);
                     $array = array($array_data);
+
 
                     foreach ($array as $item) {
                         if (!empty($item['Dipendenti'])) {
@@ -142,10 +145,11 @@ class ShortCodeTableArea
                 $processi = new TableAreaServizioUfficio();
 
                 $array_processi = $processi->getProcesso($selected_area, $selected_servizio, $selected_ufficio);
+                $array_processi_kanboard = $processi->checkProcessoOnKanboard($array_processi);
 
                 $data = new TableProcessi();
-                foreach ($array_processi as $proc) {
-                    $array_data = $data->getDataOfProcesso($proc[0]);
+                foreach ($array_processi_kanboard as $proc) {
+                    $array_data = $data->getDataOfProcesso($proc);
                     $array = array($array_data);
 
                     foreach ($array as $item) {
