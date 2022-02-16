@@ -8,6 +8,7 @@
         <li><?= t('Project owner: ') ?><strong><?= $this->text->e($project['owner_name'] ?: $project['owner_username']) ?></strong></li>
     <?php endif ?>
 
+
     <?php if ($project['is_private']): ?>
         <li><i class="fa fa-lock"></i> <?= t('This project is private') ?></li>
     <?php endif ?>

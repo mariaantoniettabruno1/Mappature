@@ -6,4 +6,5 @@
     <?= $this->render('project_overview/attachments', array('project' => $project, 'images' => $images, 'files' => $files)) ?>
     <?= $this->render('project_overview/information', array('project' => $project, 'users' => $users, 'roles' => $roles)) ?>
     <?= $this->render('project_overview/activity', array('project' => $project, 'events' => $events)) ?>
+
 </section>

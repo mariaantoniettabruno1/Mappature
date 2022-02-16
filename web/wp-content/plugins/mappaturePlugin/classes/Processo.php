@@ -451,44 +451,6 @@ class Processo
 
     }
 
-
-
-    public function findProjectByUser($username)
-    {
-
-        $project_names = array();
-        $id_projects = array();
-        $conn = new Connection();
-        $mysqli = $conn->connect();
-        $sql = "SELECT project_id FROM MAPP_project_users_owner WHERE user_id IN (SELECT id FROM users WHERE username=?)";
-        $stmt = $mysqli->prepare($sql);
-        $id_projects = array();
-        $stmt->bind_param("s", $username);
-        $res = $stmt->execute();
-        $res = $stmt->get_result();
-        $rows = $res->fetch_all();
-        foreach ($rows as $row) {
-            array_push($id_projects, $row[0]);
-        }
-
-        $project_names = array();
-        $sql = "SELECT name FROM projects WHERE id=?";
-        $stmt = $mysqli->prepare($sql);
-        foreach ($id_projects as $item) {
-            $stmt->bind_param("i", $item);
-            $res = $stmt->execute();
-            $res = $stmt->get_result();
-            $result = $res->fetch_all();
-
-            foreach ($result as $row) {
-                array_push($project_names, $row[0]);
-            }
-        }
-        $mysqli->close();
-
-        return $project_names;
-    }
-
     public function findProjectsOnWordpress($area)
     {
         $conn = new ConnectionSarala();
@@ -519,7 +481,7 @@ class Processo
         $conn = new Connection;
         $mysqli = $conn->connect();
         $array_ids = array();
-        $sql = "SELECT  id FROM projects WHERE name=?";
+        $sql = "SELECT id FROM projects WHERE name=?";
         $stmt = $mysqli->prepare($sql);
         foreach ($arrayNameProjects as $nameProject) {
             foreach ($nameProject as $item) {
@@ -599,5 +561,32 @@ class Processo
         $mysqli->close();
     }
 
+    public function insertProcessoMetaData($project_name, $area, $servizio, $ufficio)
+    {
+        $conn = new Connection();
+        $mysqli = $conn->connect();
+        $key_area = 'area';
+        $key_servizio = 'servizio';
+        $key_ufficio = 'ufficio';
+        $sql = "SELECT id FROM projects WHERE name=?";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("s", $project_name);
+        $res = $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
 
+        $sql = "INSERT INTO project_has_metadata (project_id,name,value) VALUES(?,?,?)";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("iss", $row['id'], $key_area, $area);
+        $res = $stmt->execute();
+        $sql = "INSERT INTO project_has_metadata (project_id,name,value) VALUES(?,?,?)";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("iss", $row['id'], $key_servizio, $servizio);
+        $res = $stmt->execute();
+        $sql = "INSERT INTO project_has_metadata (project_id,name,value) VALUES(?,?,?)";
+        $stmt = $mysqli->prepare($sql);
+        $stmt->bind_param("iss", $row['id'], $key_ufficio, $ufficio);
+        $res = $stmt->execute();
+        $mysqli->close();
+    }
 }

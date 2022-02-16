@@ -79,6 +79,10 @@ class ProjectModel extends Base
             ->findOne();
         $details['owner_name'] = $this->getOwnersId($project_id);
         $details['owner_username'] = $this->getOwnersId($project_id);
+        $details['area'] = $this->getOwnerMeta($project_id)[0]['value'];
+        $details['servizio'] = $this->getOwnerMeta($project_id)[1]['value'];
+        $details['ufficio'] = $this->getOwnerMeta($project_id)[2]['value'];
+
         return $details;
     }
 
@@ -570,12 +574,22 @@ class ProjectModel extends Base
                 ->eq('id', $project_id)
                 ->save(array('is_public' => 0, 'token' => ''));
     }
-    protected function getOwnersId($projectId){
+
+    protected function getOwnersId($projectId)
+    {
         return $this->db
             ->table('MAPP_project_users_owner')
             ->eq('MAPP_project_users_owner.project_id', $projectId)
             ->join('users', 'id', 'user_id')
             ->findAll();
 
+    }
+
+    protected function getOwnerMeta($projectId)
+    {
+        return $this->db
+            ->table('project_has_metadata')
+            ->eq('project_has_metadata.project_id', $projectId)
+            ->findAll();
     }
 }

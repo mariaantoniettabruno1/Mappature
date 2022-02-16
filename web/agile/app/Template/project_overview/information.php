@@ -4,10 +4,11 @@
         <div class="panel">
             <ul>
                 <?php if ($project['owner_id'] > 0): ?>
-                    <li><?= t('Project owner: ') ?><strong><?= $this->text->e($project['owner_name'] ?: $project['owner_username']) ?></strong></li>
+                    <li><?= t('Project owner: ') ?>
+                        <strong><?= $this->text->e($project['owner_name'] ?: $project['owner_username']) ?></strong>
+                    </li>
                 <?php endif ?>
-
-                <?php if (! empty($users)): ?>
+                <?php if (!empty($users)): ?>
                     <?php foreach ($roles as $role => $role_name): ?>
                         <?php if (isset($users[$role])): ?>
                             <li>
@@ -17,13 +18,21 @@
                         <?php endif ?>
                     <?php endforeach ?>
                 <?php endif ?>
-
+                <li><?= t('Area: ') ?>
+                    <strong><?= $this->text->e($project['area'] ?: $project['area']) ?></strong>
+                </li>
+                <li><?= t('Servizio: ') ?>
+                    <strong><?= $this->text->e($project['servizio'] ?: $project['servizio']) ?></strong>
+                </li>
+                <li><?= t('Ufficio: ') ?>
+                    <strong><?= $this->text->e($project['ufficio'] ?: $project['ufficio']) ?></strong>
+                </li>
                 <?php if ($project['start_date']): ?>
-                    <li><?= t('Start date: ').$this->dt->date($project['start_date']) ?></li>
+                    <li><?= t('Start date: ') . $this->dt->date($project['start_date']) ?></li>
                 <?php endif ?>
 
                 <?php if ($project['end_date']): ?>
-                    <li><?= t('End date: ').$this->dt->date($project['end_date']) ?></li>
+                    <li><?= t('End date: ') . $this->dt->date($project['end_date']) ?></li>
                 <?php endif ?>
 
                 <?php if ($project['is_public']): ?>

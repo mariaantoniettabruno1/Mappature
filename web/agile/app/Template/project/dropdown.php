@@ -2,6 +2,7 @@
     <a href="#" class="dropdown-menu dropdown-menu-link-icon"><strong>#<?= $project['id'] ?> <i class="fa fa-caret-down"></i></strong></a>
     <ul>
         <li>
+
             <?= $this->url->icon('th', t('Board'), 'BoardViewController', 'show', array('project_id' => $project['id'])) ?>
         </li>
         <li>
