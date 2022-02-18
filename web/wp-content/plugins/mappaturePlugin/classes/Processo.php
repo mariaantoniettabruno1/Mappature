@@ -91,9 +91,6 @@ class Processo
         $this->ruolo_user = $ruolo_user;
     }
 
-    /**
-     * @return mixed
-     */
     public function getIdForm()
     {
         return $this->id_form;
@@ -402,28 +399,72 @@ class Processo
 
     public function cancellaProcesso()
     {
+        $old_title = $this->nome_processo;
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "SELECT id FROM projects WHERE name=? ORDER BY id DESC LIMIT 1";
+        $sql = "SELECT id FROM projects WHERE name=?";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $this->nome_processo);
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $process = $res->fetch_assoc();
-        $this->setIdProcesso($process['id']);
-        $sql = "DELETE FROM projects WHERE id=? ORDER BY id DESC LIMIT 1";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("i", $this->id_processo);
-        $res = $stmt->execute();
-        $mysqli->close();
-        $conn = new ConnectionSarala();
-        $mysqli = $conn->connect();
-        $sql = "DELETE  FROM MAPP_processi WHERE id_processo=?";
-        $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("i", $this->id_processo);
-        $res = $stmt->execute();
+
+        if ($process != NULL && $process['id'] != NULL) {
+            $this->setIdProcesso($process['id']);
+            $sql = "DELETE FROM projects WHERE id=?";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("i", $this->id_processo);
+            $res = $stmt->execute();
+            $mysqli->close();
+            $conn = new ConnectionSarala();
+            $mysqli = $conn->connect();
+            $sql = "DELETE  FROM MAPP_processi WHERE id_processo=?";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("i", $this->id_processo);
+            $res = $stmt->execute();
+        }
         $mysqli->close();
 
+        $conn = new ConnectionSarala();
+        $mysqli = $conn->connect();
+
+        while ($this->nome_processo != NULL) {
+            $sql = "SELECT m2.meta_value FROM wp_gf_entry_meta AS m1
+JOIN wp_gf_entry_meta AS m2 ON m1.entry_id = m2.entry_id
+WHERE (m1.meta_value=?) AND m2.meta_key=11";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("s", $this->nome_processo);
+            $res = $stmt->execute();
+            $res = $stmt->get_result();
+            $old_title = $res->fetch_assoc();
+
+            $sql = "SELECT entry_id FROM wp_gf_entry_meta WHERE meta_value=? AND form_id=34 ";
+            if ($old_title != NULL && $old_title['meta_value'] != NULL) {
+                $stmt = $mysqli->prepare($sql);
+                $stmt->bind_param("s", $this->nome_processo);
+                $res = $stmt->execute();
+                $res = $stmt->get_result();
+                $id_entry = $res->fetch_assoc();
+
+                $sql = "DELETE FROM wp_gf_entry_meta WHERE entry_id=?";
+                $stmt = $mysqli->prepare($sql);
+                $stmt->bind_param("i", $id_entry['entry_id']);
+                $res = $stmt->execute();
+                $this->nome_processo = $old_title['meta_value'];
+
+            }
+            else{
+                $sql = "DELETE FROM wp_gf_entry_meta WHERE form_id=1 AND meta_value=?";
+
+                $stmt = $mysqli->prepare($sql);
+                $stmt->bind_param("s", $this->nome_processo);
+                $res = $stmt->execute();
+                $this->nome_processo = NULL;
+                }
+        }
+
+
+        $mysqli->close();
     }
 
     public function selectProcesso()

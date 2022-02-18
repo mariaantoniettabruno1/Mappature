@@ -40,7 +40,6 @@ require_once(plugin_dir_path(__FILE__) . 'tables/ShortCodeTableArea.php');
 require_once(plugin_dir_path(__FILE__) . 'tables/TableAreaServizioUfficio.php');
 
 
-
 /**
  * Aggiungo librerie javascript a wordpress
  */
@@ -157,16 +156,19 @@ function on_profile_update($user_id)
 
 
 }
+
 add_action('pmxi_saved_post', 'on_saved_user');
 function on_saved_user($post_id)
 {
     KBSync::importUser($post_id);
 }
+
 add_action('delete_user', 'my_delete_user');
 function my_delete_user($user_id)
 {
     KBSync::deleteUser($user_id);
 }
+
 /**
  * Action per l'inizializzazione di tutte le function collegate agli shortcode del plugin
  */
@@ -179,6 +181,7 @@ function shortcodes_init()
     add_shortcode('post_addusermetadata', 'call_add_user_metadata');
     add_shortcode('post_editusermetadata', 'call_edit_user_metadata');
     add_shortcode('post_processo', 'call_create_processo');
+    add_shortcode('post_processo_postuma', 'call_create_processo_postuma');
     add_shortcode('post_editprocesso', 'call_edit_processo');
     add_shortcode('post_deleteprocesso', 'call_delete_processo');
     add_shortcode('post_procedimento', 'call_create_procedimento');
@@ -199,7 +202,7 @@ function shortcodes_init()
     add_shortcode("post_orgchartprocessi", "call_orgchart_processi");
     add_shortcode("post_table_processi", "call_visualize_table_processi");
     add_shortcode("post_table_area", "call_visualize_table_area");
-    
+
 
 }
 
@@ -217,6 +220,13 @@ function call_create_processo()
 {
     \MappaturePlugin\ShortCodesProcesso::create_processo();
 }
+
+function call_create_processo_postuma()
+{
+    \MappaturePlugin\ShortCodesProcesso::create_processo_postuma();
+}
+
+
 function call_edit_processo()
 {
     \MappaturePlugin\ShortCodesProcesso::edit_processo();
@@ -236,6 +246,7 @@ function call_create_procedimento_postuma()
 {
     \MappaturePlugin\ShortCodesProcedimento::create_procedimento_postuma();
 }
+
 function call_edit_procedimento()
 {
     \MappaturePlugin\ShortCodesProcedimento::edit_procedimento();
@@ -245,52 +256,73 @@ function call_delete_procedimento()
 {
     \MappaturePlugin\ShortCodesProcedimento::delete_procedimento();
 }
+
 function call_assign_dipendente()
 {
     \MappaturePlugin\ShortCodesDipendenteProcedimento::assign_dipendente();
 }
+
 function call_edit_assign_dipendente()
 {
     \MappaturePlugin\ShortCodesDipendenteProcedimento::edit_assign_dipendente();
 }
-function call_create_fase(){
+
+function call_create_fase()
+{
     \MappaturePlugin\ShortCodesFase::create_fase();
 }
 
-function call_edit_fase(){
+function call_edit_fase()
+{
     \MappaturePlugin\ShortCodesFase::edit_fase();
 }
-function call_delete_fase(){
+
+function call_delete_fase()
+{
     \MappaturePlugin\ShortCodesFase::delete_fase();
 }
-function call_associa_fase(){
+
+function call_associa_fase()
+{
     \MappaturePlugin\ShortCodesFase::associa_fase();
 }
-function call_create_attivita(){
+
+function call_create_attivita()
+{
     \MappaturePlugin\ShortCodesAttivita::create_attivita();
 }
 
-function call_edit_attivita(){
+function call_edit_attivita()
+{
     \MappaturePlugin\ShortCodesAttivita::edit_attivita();
 }
-function call_delete_attivita(){
+
+function call_delete_attivita()
+{
     \MappaturePlugin\ShortCodesAttivita::delete_attivita();
 }
-function call_associa_attivita(){
+
+function call_associa_attivita()
+{
     \MappaturePlugin\ShortCodesAttivita::associa_attivita();
 }
 
-function call_orgchart_dipendenti(){
+function call_orgchart_dipendenti()
+{
     \MappaturePlugin\OrgChartImpiegati::orgchart_dipendenti();
 }
 
-function call_orgchart_processi(){
+function call_orgchart_processi()
+{
     \MappaturePlugin\OrgChartProcessi::orgchart_processi();
 }
 
-function call_visualize_table_processi(){
+function call_visualize_table_processi()
+{
     \MappaturePlugin\ShortCodeTableProcessi::visualize_table_processi();
 }
-function call_visualize_table_area(){
+
+function call_visualize_table_area()
+{
     \MappaturePlugin\ShortCodeTableArea::visualize_table_area();
 }
