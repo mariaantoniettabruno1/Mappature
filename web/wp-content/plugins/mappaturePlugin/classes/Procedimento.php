@@ -315,12 +315,71 @@ class Procedimento
 
     public function deleteProcedure()
     {
+        $old_title = $this->title;
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "DELETE  FROM tasks WHERE title=? ORDER BY id DESC LIMIT 1";
+        $sql = "SELECT id FROM tasks WHERE title=?";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $this->title);
         $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $procedure = $res->fetch_assoc();
+
+        if ($procedure != NULL && $procedure['id'] != NULL) {
+            $this->setIdProcedure($procedure['id']);
+            $sql = "DELETE FROM tasks WHERE id=?";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("i", $this->id_procedure);
+            $res = $stmt->execute();
+            $mysqli->close();
+            $conn = new ConnectionSarala();
+            $mysqli = $conn->connect();
+            $sql = "DELETE  FROM MAPP_procedimenti WHERE id_procedimento=?";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("i", $this->id_procedure);
+            $res = $stmt->execute();
+        }
+        $mysqli->close();
+
+        $conn = new ConnectionSarala();
+        $mysqli = $conn->connect();
+
+        while ($this->title != NULL) {
+            $sql = "SELECT m2.meta_value FROM wp_gf_entry_meta AS m1
+JOIN wp_gf_entry_meta AS m2 ON m1.entry_id = m2.entry_id
+WHERE (m1.meta_value=?) AND m2.meta_key=12";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("s", $this->title);
+            $res = $stmt->execute();
+            $res = $stmt->get_result();
+            $old_title = $res->fetch_assoc();
+
+            $sql = "SELECT entry_id FROM wp_gf_entry_meta WHERE meta_value=? AND form_id=37 ";
+            if ($old_title != NULL && $old_title['meta_value'] != NULL) {
+                $stmt = $mysqli->prepare($sql);
+                $stmt->bind_param("s", $this->title);
+                $res = $stmt->execute();
+                $res = $stmt->get_result();
+                $id_entry = $res->fetch_assoc();
+
+                $sql = "DELETE FROM wp_gf_entry_meta WHERE entry_id=?";
+                $stmt = $mysqli->prepare($sql);
+                $stmt->bind_param("i", $id_entry['entry_id']);
+                $res = $stmt->execute();
+                $this->title = $old_title['meta_value'];
+
+            }
+            else{
+                $sql = "DELETE FROM wp_gf_entry_meta WHERE (form_id=2 OR form_id=50) AND meta_value=? ";
+
+                $stmt = $mysqli->prepare($sql);
+                $stmt->bind_param("s", $this->title);
+                $res = $stmt->execute();
+                $this->title = NULL;
+            }
+        }
+
+
         $mysqli->close();
     }
 

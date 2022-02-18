@@ -454,7 +454,7 @@ WHERE (m1.meta_value=?) AND m2.meta_key=11";
 
             }
             else{
-                $sql = "DELETE FROM wp_gf_entry_meta WHERE form_id=1 AND meta_value=?";
+                $sql = "DELETE FROM wp_gf_entry_meta WHERE (form_id=1 OR form_id=65) AND meta_value=? ";
 
                 $stmt = $mysqli->prepare($sql);
                 $stmt->bind_param("s", $this->nome_processo);
