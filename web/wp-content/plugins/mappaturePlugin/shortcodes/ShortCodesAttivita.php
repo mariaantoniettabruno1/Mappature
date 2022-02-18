@@ -40,8 +40,8 @@ class ShortCodesAttivita
         if (!empty($entry_gforms)) {
             $old_title = $entry_gforms[0][16];
             $new_title = $entry_gforms[0][17];
-            $old_title = $old_title. '- attivita';
-            $new_title = $new_title. '- attivita';
+            $old_title = $old_title. ' - attivita';
+            $new_title = $new_title. ' - attivita';
             $attivita->update_attivita($old_title,$new_title);
         }
 
@@ -68,13 +68,13 @@ class ShortCodesAttivita
     }
     public static function delete_attivita()
     {
-        $entry_gforms = GFAPI::get_entries(24);
+        $entry_gforms = GFAPI::get_entries(45);
         if (!empty($entry_gforms)) {
-            $id_current_form = $entry_gforms[0]['id'];
-            $atto = new Attivita();
-            $atto->setTitleAttivita($entry_gforms[0][1]);
-            $atto->delete();
-            $result = GFAPI::delete_entry($id_current_form);
+            $att = new Attivita();
+            $title_attivita = $entry_gforms[0][7].' - attivita';
+            $att->setTitleAttivita($title_attivita);
+            $att->deleteAttivita();
+
         }
         return ' ';
     }

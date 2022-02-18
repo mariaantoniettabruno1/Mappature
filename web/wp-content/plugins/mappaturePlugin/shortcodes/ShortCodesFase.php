@@ -70,13 +70,13 @@ class ShortCodesFase
     public
     static function delete_fase()
     {
-        $entry_gforms = GFAPI::get_entries(23);
+        $entry_gforms = GFAPI::get_entries(46);
         if (!empty($entry_gforms)) {
-            $id_current_form = $entry_gforms[0]['id'];
             $fase = new Fase();
-            $fase->setTitle($entry_gforms[0][1]);
-            $fase->delete();
-            $result = GFAPI::delete_entry($id_current_form);
+            $title_fase = $entry_gforms[0][9].' - fase';
+            $fase->setTitle($title_fase);
+            $fase->deleteFase();
+
         }
         return '';
     }
