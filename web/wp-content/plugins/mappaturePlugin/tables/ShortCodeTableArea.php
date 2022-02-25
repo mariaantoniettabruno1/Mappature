@@ -199,7 +199,7 @@ class ShortCodeTableArea
             </tbody>
         </table>
         </div>
-
+        <button onClick="window.print()">Stampa</button>
         </body>
         </html>
         <?php
