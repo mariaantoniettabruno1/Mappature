@@ -38,6 +38,8 @@ require_once(plugin_dir_path(__FILE__) . 'tables/ShortCodeTableProcessi.php');
 require_once(plugin_dir_path(__FILE__) . 'tables/TableProcessi.php');
 require_once(plugin_dir_path(__FILE__) . 'tables/ShortCodeTableArea.php');
 require_once(plugin_dir_path(__FILE__) . 'tables/TableAreaServizioUfficio.php');
+require_once(plugin_dir_path(__FILE__) . 'tables/ShortCodeTableUtente.php');
+require_once(plugin_dir_path(__FILE__) . 'tables/TableUtente.php');
 
 
 /**
@@ -202,6 +204,7 @@ function shortcodes_init()
     add_shortcode("post_orgchartprocessi", "call_orgchart_processi");
     add_shortcode("post_table_processi", "call_visualize_table_processi");
     add_shortcode("post_table_area", "call_visualize_table_area");
+    add_shortcode("post_table_user", "call_visualize_table_utente");
 
 
 }
@@ -325,4 +328,8 @@ function call_visualize_table_processi()
 function call_visualize_table_area()
 {
     \MappaturePlugin\ShortCodeTableArea::visualize_table_area();
+}
+function call_visualize_table_utente()
+{
+    \MappaturePlugin\ShortCodeTableUtente::visualize_table_utente();
 }
