@@ -246,7 +246,7 @@ WHERE (m1.meta_value=?) AND m2.meta_key=16";
             $res = $stmt->get_result();
             $old_title = $res->fetch_assoc();
 
-            $sql = "SELECT entry_id FROM wp_gf_entry_meta WHERE meta_value=? AND form_id=41 ";
+            $sql = "SELECT entry_id FROM wp_gf_entry_meta WHERE meta_value=? AND form_id=91 ";
             if ($old_title != NULL && $old_title['meta_value'] != NULL) {
                 $stmt = $mysqli->prepare($sql);
                 $stmt->bind_param("s", $this->title_attivita);
@@ -262,7 +262,7 @@ WHERE (m1.meta_value=?) AND m2.meta_key=16";
 
             }
             else{
-                $sql = "DELETE FROM wp_gf_entry_meta WHERE form_id=24 AND meta_value=? ";
+                $sql = "DELETE FROM wp_gf_entry_meta WHERE form_id=80 AND meta_value=? ";
 
                 $stmt = $mysqli->prepare($sql);
                 $stmt->bind_param("s", $this->title_attivita);

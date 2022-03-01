@@ -69,7 +69,7 @@ class ShortCodesProcedimento
 
     public static function delete_procedimento()
     {
-        $entry_gforms = GFAPI::get_entries(39);
+        $entry_gforms = GFAPI::get_entries(90);
         if (!empty($entry_gforms)) {
             $procedimento = new Procedimento();
             $procedimento->setTitle($entry_gforms[0][7]);
@@ -81,7 +81,7 @@ class ShortCodesProcedimento
 
     public static function edit_procedimento()
     {
-        $entry_gforms = GFAPI::get_entries(37);
+        $entry_gforms = GFAPI::get_entries(88);
         if (!empty($entry_gforms)) {
             $procedimento = new Procedimento();
             $old_title = $entry_gforms[0][12];

@@ -91,7 +91,7 @@ class Area
 
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "SELECT value FROM user_has_metadata WHERE name='area' AND user_id IN (SELECT id FROM users WHERE username=?)";
+        $sql = "SELECT value FROM user_has_metadata WHERE name='area' AND user_id IN (SELECT id FROM users WHERE name=?)";
         foreach ($dirigenti as $dirigente) {
 
             $stmt = $mysqli->prepare($sql);

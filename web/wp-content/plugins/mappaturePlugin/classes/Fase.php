@@ -209,6 +209,7 @@ class Fase
             $stmt = $mysqli->prepare($sql);
             $stmt->bind_param("i", $this->id);
             $res = $stmt->execute();
+
         }
         $mysqli->close();
 
@@ -225,7 +226,7 @@ WHERE (m1.meta_value=?) AND m2.meta_key=14";
             $res = $stmt->get_result();
             $old_title = $res->fetch_assoc();
 
-            $sql = "SELECT entry_id FROM wp_gf_entry_meta WHERE meta_value=? AND form_id=43 ";
+            $sql = "SELECT entry_id FROM wp_gf_entry_meta WHERE meta_value=? AND form_id=93 ";
             if ($old_title != NULL && $old_title['meta_value'] != NULL) {
                 $stmt = $mysqli->prepare($sql);
                 $stmt->bind_param("s", $this->title);
@@ -241,7 +242,7 @@ WHERE (m1.meta_value=?) AND m2.meta_key=14";
 
             }
             else{
-                $sql = "DELETE FROM wp_gf_entry_meta WHERE form_id=23 AND meta_value=? ";
+                $sql = "DELETE FROM wp_gf_entry_meta WHERE form_id=79 AND meta_value=? ";
 
                 $stmt = $mysqli->prepare($sql);
                 $stmt->bind_param("s", $this->title);
@@ -272,7 +273,6 @@ WHERE (m1.meta_value=?) AND m2.meta_key=14";
         $sql = "INSERT INTO MAPP_subtask_users (subtask_id,user_id) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);
         foreach ($array_users as $userId) {
-            print_r($userId);
             $stmt->bind_param("ii", $result['id'], $userId);
             $res = $stmt->execute();
         }

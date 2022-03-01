@@ -170,7 +170,7 @@ class User
     {
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
-        $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key ='nickname' 
+        $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key ='last_name' 
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value='Dirigente')
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_key='area' AND meta_value=?)";
         $stmt = $mysqli->prepare($sql);
@@ -198,7 +198,7 @@ class User
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "SELECT username FROM users WHERE id IN(SELECT user_id FROM MAPP_project_users_owner WHERE project_id IN (SELECT id FROM projects WHERE name=?))";
+        $sql = "SELECT name FROM users WHERE id IN(SELECT user_id FROM MAPP_project_users_owner WHERE project_id IN (SELECT id FROM projects WHERE name=?))";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $processo[0]);
         $res = $stmt->execute();
@@ -220,7 +220,7 @@ class User
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "SELECT username FROM users WHERE id IN(SELECT user_id FROM MAPP_task_users_owner WHERE task_id IN (SELECT id FROM tasks WHERE title=?))";
+        $sql = "SELECT name FROM users WHERE id IN(SELECT user_id FROM MAPP_task_users_owner WHERE task_id IN (SELECT id FROM tasks WHERE title=?))";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $procedimento[0]);
         $res = $stmt->execute();
@@ -243,7 +243,7 @@ class User
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "SELECT username FROM users WHERE id IN(SELECT user_id FROM MAPP_task_users WHERE task_id IN (SELECT id FROM tasks WHERE title=?))";
+        $sql = "SELECT name FROM users WHERE id IN(SELECT user_id FROM MAPP_task_users WHERE task_id IN (SELECT id FROM tasks WHERE title=?))";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $procedimento[0]);
         $res = $stmt->execute();
@@ -267,7 +267,7 @@ class User
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
         $po_names = array();
-        $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key ='nickname'
+        $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key ='last_name'
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value='PO')
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_key= 'area' AND meta_value=?)
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_key='servizio' AND meta_value LIKE ?)";
@@ -297,7 +297,7 @@ class User
         $ufficio_user = "%$ufficio%";
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
-        $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key ='nickname'
+        $sql = "SELECT meta_value FROM wp_usermeta WHERE meta_key ='last_name'
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value='Dipendente')
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value=?)
                                       AND user_id IN (SELECT user_id FROM wp_usermeta WHERE meta_value LIKE ?)
@@ -324,7 +324,7 @@ class User
 
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "SELECT username FROM users WHERE id IN(SELECT user_id FROM MAPP_subtask_users WHERE subtask_id IN (SELECT id FROM subtasks WHERE title=?))";
+        $sql = "SELECT name FROM users WHERE id IN(SELECT user_id FROM MAPP_subtask_users WHERE subtask_id IN (SELECT id FROM subtasks WHERE title=?))";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $fasi_attivita[0]);
         $res = $stmt->execute();

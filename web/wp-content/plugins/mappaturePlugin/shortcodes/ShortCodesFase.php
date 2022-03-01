@@ -8,10 +8,10 @@ class ShortCodesFase
 {
     public static function create_fase()
     {
-        $entry_gforms = GFAPI::get_entries(23);
+        $entry_gforms = GFAPI::get_entries(79);
         $fase = new Fase();
         if (!empty($entry_gforms)) {
-            $entry_gforms = GFAPI::get_entries(23)[0];
+            $entry_gforms = GFAPI::get_entries(79)[0];
             $fase->setTitle($entry_gforms[1]);
             $fase->setNameProcedure($entry_gforms[11]);
             $fase->setNameProcess($entry_gforms[10]);
@@ -32,7 +32,7 @@ class ShortCodesFase
 
     public static function edit_fase()
     {
-        $entry_gforms = GFAPI::get_entries(43);
+        $entry_gforms = GFAPI::get_entries(93);
         $fase = new Fase();
         if (!empty($entry_gforms)) {
             $old_title = $entry_gforms[0][14];
@@ -48,7 +48,7 @@ class ShortCodesFase
     public
     static function associa_fase()
     {
-        $entry_gforms = GFAPI::get_entries(67);
+        $entry_gforms = GFAPI::get_entries(106);
 
         $idKanboard_array = array();
         if (!empty($entry_gforms)) {
@@ -70,7 +70,7 @@ class ShortCodesFase
     public
     static function delete_fase()
     {
-        $entry_gforms = GFAPI::get_entries(46);
+        $entry_gforms = GFAPI::get_entries(96);
         if (!empty($entry_gforms)) {
             $fase = new Fase();
             $title_fase = $entry_gforms[0][9].' - fase';

@@ -9,7 +9,7 @@ class ShortCodesDipendenteProcedimento
     public static function assign_dipendente()
     {
 
-        $entry_gforms = GFAPI::get_entries(56);
+        $entry_gforms = GFAPI::get_entries(102);
 
         $procedimento = new Procedimento();
 
@@ -44,7 +44,7 @@ class ShortCodesDipendenteProcedimento
 
     public static function edit_assign_dipendente()
     {
-        $entry_gforms = GFAPI::get_entries(63);
+        $entry_gforms = GFAPI::get_entries(103);
 
         $procedimento = new Procedimento();
 

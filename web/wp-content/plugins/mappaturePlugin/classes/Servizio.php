@@ -97,7 +97,7 @@ class Servizio
 
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "SELECT value FROM user_has_metadata WHERE name='servizio' AND user_id IN (SELECT id FROM users WHERE username=?)";
+        $sql = "SELECT value FROM user_has_metadata WHERE name='servizio' AND user_id IN (SELECT id FROM users WHERE name=?)";
         foreach ($po as $single_po) {
             $stmt = $mysqli->prepare($sql);
             $stmt->bind_param("s", $single_po);

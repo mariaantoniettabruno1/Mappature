@@ -88,7 +88,7 @@ class ShortCodesProcesso
     public
     static function delete_processo()
     {
-        $entry_gforms = GFAPI::get_entries(36);
+        $entry_gforms = GFAPI::get_entries(87);
         if (!empty($entry_gforms)) {
             $process = new Processo();
             $process->setNomeProcesso($entry_gforms[0][5]);

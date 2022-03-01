@@ -96,7 +96,7 @@ class Ufficio
 
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "SELECT value FROM user_has_metadata WHERE name='ufficio' AND user_id IN (SELECT id FROM users WHERE username=?)";
+        $sql = "SELECT value FROM user_has_metadata WHERE name='ufficio' AND user_id IN (SELECT id FROM users WHERE name=?)";
         foreach ($dipendenti as $dipendente) {
 
             $stmt = $mysqli->prepare($sql);

@@ -9,7 +9,7 @@ class TableUtente
     {
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
-        $sql = "SELECT user_nicename FROM wp_users";
+        $sql = "SELECT user_nicename FROM wp_users WHERE user_nicename<>'admin'";
         $result = $mysqli->query($sql);
         $row = $result->fetch_all();
         mysqli_close($mysqli);
@@ -20,7 +20,7 @@ class TableUtente
     {
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
-        $sql = "SELECT user_login FROM wp_users WHERE user_nicename=?";
+        $sql = "SELECT user_login FROM wp_users WHERE user_nicename=? ";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $username);
         $res = $stmt->execute();
