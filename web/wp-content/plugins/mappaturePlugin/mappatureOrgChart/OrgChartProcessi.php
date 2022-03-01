@@ -38,7 +38,7 @@ class OrgChartProcessi
                 foreach ($array_dipendenti_assegnati as $dipendente_assegnato) {
                     $dipendenti_assegnati_array = array('text' => $dipendente_assegnato, 'tags' => ['Dipendente Assegnato del Procedimento:', $procedim]);
 
-                        array_push($procedimenti_array['nodes'], $dipendenti_assegnati_array);
+                    array_push($procedimenti_array['nodes'], $dipendenti_assegnati_array);
 
 
                 }
@@ -55,15 +55,15 @@ class OrgChartProcessi
 
                     $fasi_attivita_array = array('text' => $subtask[0], 'tags' => ['Fase - Attivita'], 'nodes' => array(), 'state' => array('expanded' => false));
 
-                        foreach ($array_dipendenti as $dipendente) {
-                            $ufficio_dipendente = $ufficio->findUfficioByDipendente($dipendente);
+                    foreach ($array_dipendenti as $dipendente) {
+                        $ufficio_dipendente = $ufficio->findUfficioByDipendente($dipendente);
 
-                                $dipendenti_array = array('text' => $dipendente, 'tags' => ['Dirigente di:', $ufficio_dipendente[0] . ' (Ufficio)']);
-                                array_push($fasi_attivita_array['nodes'], $dipendenti_array);
+                        $dipendenti_array = array('text' => $dipendente, 'tags' => ['Dirigente di:', $ufficio_dipendente[0] . ' (Ufficio)']);
+                        array_push($fasi_attivita_array['nodes'], $dipendenti_array);
 
-                        }
+                    }
 
-                        array_push($procedimenti_array['nodes'], $fasi_attivita_array);
+                    array_push($procedimenti_array['nodes'], $fasi_attivita_array);
 
 
                 }
@@ -99,38 +99,32 @@ class OrgChartProcessi
 
         <div class="row">
             <hr>
-            <h2>Searchable Tree</h2>
+
             <div class="col-sm-4">
                 <h2>Input</h2>
                 <!-- <form> -->
                 <div class="form-group">
                     <label for="input-search" class="sr-only">Search Tree:</label>
-                    <input type="input" class="form-control" id="input-search" placeholder="Type to search..." value="">
+                    <input type="input" class="form-control" id="input-search" placeholder="Scrivi per cercare..." value="">
                 </div>
                 <div class="checkbox">
                     <label>
                         <input type="checkbox" class="checkbox" id="chk-ignore-case" value="false">
-                        Ignore Case
+                        Ignora le maiuscole
                     </label>
                 </div>
                 <div class="checkbox">
                     <label>
                         <input type="checkbox" class="checkbox" id="chk-exact-match" value="false">
-                        Exact Match
+                        Esatta corrispondenza
                     </label>
                 </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" class="checkbox" id="chk-reveal-results" value="false">
-                        Reveal Results
-                    </label>
-                </div>
-                <button type="button" class="btn btn-success" id="btn-search">Search</button>
-                <button type="button" class="btn btn-default" id="btn-clear-search">Clear</button>
+                <button type="button" class="btn btn-success" id="btn-search">Cerca</button>
+                <button type="button" class="btn btn-default" id="btn-clear-search">Cancella</button>
                 <!-- </form> -->
             </div>
-            <div class="col-sm-12">
-                <h2>Tree</h2>
+            <div class="col-sm-4">
+
                 <div id="treeview-searchable" class="treeview">
                     <ul class="list-group">
                         <li class="list-group-item node-treeview-searchable" data-nodeid="0"
@@ -161,8 +155,8 @@ class OrgChartProcessi
                     </ul>
                 </div>
             </div>
-            <div class="col-sm-6">
-                <h2>Results</h2>
+            <div class="col-sm-4">
+
                 <div id="search-output"></div>
             </div>
         </div>
@@ -211,7 +205,7 @@ class OrgChartProcessi
                 };
 
                 var results = $searchableTree.treeview('search', [pattern, options]);
-                var output = '<p>' + results.length + ' matches found</p>';
+                var output = '<h2>Risultati</h2> <p>' + results.length + ' matches found</p>';
                 $.each(results, function (index, result) {
                     output += '<p>- ' + result.text + '</p>';
                 });

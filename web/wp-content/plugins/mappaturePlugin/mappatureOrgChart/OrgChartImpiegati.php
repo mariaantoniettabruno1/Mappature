@@ -162,38 +162,32 @@ class OrgChartImpiegati
 
         <div class="row">
             <hr>
-            <h2>Searchable Tree</h2>
+
             <div class="col-sm-4">
                 <h2>Input</h2>
                 <!-- <form> -->
                 <div class="form-group">
                     <label for="input-search" class="sr-only">Search Tree:</label>
-                    <input type="input" class="form-control" id="input-search" placeholder="Type to search..." value="">
+                    <input type="input" class="form-control" id="input-search" placeholder="Scrivi per cercare..." value="">
                 </div>
                 <div class="checkbox">
                     <label>
                         <input type="checkbox" class="checkbox" id="chk-ignore-case" value="false">
-                        Ignore Case
+                        Ignora le maiuscole
                     </label>
                 </div>
                 <div class="checkbox">
                     <label>
                         <input type="checkbox" class="checkbox" id="chk-exact-match" value="false">
-                        Exact Match
+                        Esatta corrispondenza
                     </label>
                 </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" class="checkbox" id="chk-reveal-results" value="false">
-                        Reveal Results
-                    </label>
-                </div>
-                <button type="button" class="btn btn-success" id="btn-search">Search</button>
-                <button type="button" class="btn btn-default" id="btn-clear-search">Clear</button>
+                <button type="button" class="btn btn-success" id="btn-search">Cerca</button>
+                <button type="button" class="btn btn-default" id="btn-clear-search">Cancella</button>
                 <!-- </form> -->
             </div>
-            <div class="col-sm-12">
-                <h2>Tree</h2>
+            <div class="col-sm-4">
+
                 <div id="treeview-searchable" class="treeview">
                     <ul class="list-group">
                         <li class="list-group-item node-treeview-searchable" data-nodeid="0"
@@ -224,8 +218,7 @@ class OrgChartImpiegati
                     </ul>
                 </div>
             </div>
-            <div class="col-sm-6">
-                <h2>Results</h2>
+            <div class="col-sm-4" >
                 <div id="search-output"></div>
             </div>
         </div>
@@ -263,15 +256,16 @@ class OrgChartImpiegati
 
 
             var search = function (e) {
+
                 var pattern = $('#input-search').val();
                 var options = {
                     ignoreCase: $('#chk-ignore-case').is(':checked'),
                     exactMatch: $('#chk-exact-match').is(':checked'),
-                    revealResults: $('#chk-reveal-results').is(':checked')
+                    //revealResults: $('#chk-reveal-results').is(':checked')
                 };
 
                 var results = $searchableTree.treeview('search', [pattern, options]);
-                var output = '<p>' + results.length + ' matches found</p>';
+                var output = '<h2>Risultati</h2> <p>' + results.length + ' matches found</p>';
                 $.each(results, function (index, result) {
                     output += '<p>- ' + result.text + '</p>';
                 });
