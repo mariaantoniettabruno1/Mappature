@@ -9,10 +9,10 @@ class ShortCodesProcesso
 
     public static function create_processo()
     {
-        $lastEntry = GFAPI::get_entries(1);
+        $lastEntry = GFAPI::get_entries(74);
         $processo = new Processo();
         if (!empty($lastEntry)) {
-            $lastEntry = GFAPI::get_entries(1)[0];
+            $lastEntry = GFAPI::get_entries(74)[0];
             foreach ($lastEntry as $key => $value) {
                 $pattern = "[^9.]";
                 if (preg_match($pattern, $key) && $value) {
@@ -42,11 +42,11 @@ class ShortCodesProcesso
 
     public static function create_processo_postuma()
     {
-        $lastEntry = GFAPI::get_entries(65);
+        $lastEntry = GFAPI::get_entries(104);
 
         $processo = new Processo();
         if (!empty($lastEntry)) {
-            $lastEntry = GFAPI::get_entries(65)[0];
+            $lastEntry = GFAPI::get_entries(104)[0];
 
             $processo->setNomeProcesso($lastEntry[1]);
             $processo->setIdForm($lastEntry['form_id']);
@@ -72,7 +72,7 @@ class ShortCodesProcesso
 
     public static function edit_processo()
     {
-        $lastEntry = GFAPI::get_entries(34);
+        $lastEntry = GFAPI::get_entries(85);
         $processo = new Processo();
 
 

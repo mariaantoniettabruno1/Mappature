@@ -52,7 +52,6 @@ class ShortCodeTableUtente
 
             $selected_user = $_POST["select_user"];
             $id_kanboard = $user->getIdKanboard($selected_user);
-
             $processi = $user->selectProcessoUtente($id_kanboard);
             $procedimenti_creator = $user->selectProcedimentoUtenteCreator($id_kanboard);
             $procedimenti_owner = $user->selectProcedimentoUtenteOwner($id_kanboard);

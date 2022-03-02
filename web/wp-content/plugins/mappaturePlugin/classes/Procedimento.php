@@ -248,7 +248,7 @@ class Procedimento
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $sql = "SELECT id FROM projects WHERE name=? ORDER BY id DESC LIMIT 1";
+        $sql = "SELECT id FROM projects WHERE name=?";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $this->name_process);
         $res = $stmt->execute();
