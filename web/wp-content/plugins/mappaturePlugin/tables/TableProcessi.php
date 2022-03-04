@@ -40,6 +40,7 @@ class TableProcessi
             }
 
 
+
             $sql = "SELECT title FROM tasks WHERE  project_id=? ";
             $stmt = $mysqli->prepare($sql);
             $stmt->bind_param("i", $id_processo);

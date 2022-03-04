@@ -44,7 +44,7 @@ class ShortCodesProcedimento
     {
         $last_entry = GFAPI::get_entries(75);
         $procedure = new Procedimento();
-        print_r($last_entry);
+
         if (!empty($last_entry)) {
             $last_entry = GFAPI::get_entries(75)[0];
             $procedure->setTitle($last_entry[2]);

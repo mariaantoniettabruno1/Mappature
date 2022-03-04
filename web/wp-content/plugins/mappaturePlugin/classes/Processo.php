@@ -352,7 +352,7 @@ class Processo
         $stmt->bind_param("ss", $this->nome_processo, $this->token);
         $res = $stmt->execute();
 
-        $sql = "SELECT id FROM projects WHERE name=? ORDER BY id DESC LIMIT 1";
+        $sql = "SELECT id FROM projects WHERE name=?";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $this->nome_processo);
         $res = $stmt->execute();
@@ -454,7 +454,7 @@ WHERE (m1.meta_value=?) AND m2.meta_key=11";
 
             }
             else{
-                $sql = "DELETE FROM wp_gf_entry_meta WHERE (form_id=1 OR form_id=74) AND meta_value=? ";
+                $sql = "DELETE FROM wp_gf_entry_meta WHERE (form_id=104 OR form_id=74) AND meta_value=?";
 
                 $stmt = $mysqli->prepare($sql);
                 $stmt->bind_param("s", $this->nome_processo);
@@ -579,6 +579,7 @@ WHERE (m1.meta_value=?) AND m2.meta_key=11";
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
+  
 
         $sql = "INSERT INTO MAPP_project_users_owner (project_id,user_id) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);

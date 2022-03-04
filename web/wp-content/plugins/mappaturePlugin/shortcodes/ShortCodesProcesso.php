@@ -30,10 +30,11 @@ class ShortCodesProcesso
                     $processo->setRuoloUser('project-manager');
                     $processo->creaProcesso();
                     $processo->insertProcessoMetaData($processo->getNomeProcesso(), $processo->getAreaProcesso(), $processo->getServizioProcesso(), $processo->getUfficioProcesso());
+                    $processo->findProject();
+                    $processo->assignUsers($id_owner);
                 }
             }
-            $processo->findProject();
-            $processo->assignUsers($id_owner);
+
 
         }
         return '';
