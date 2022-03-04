@@ -37,8 +37,8 @@ class ShortCodesFase
         if (!empty($entry_gforms)) {
             $old_title = $entry_gforms[0][14];
             $new_title = $entry_gforms[0][17];
-            $old_title = $old_title . '- fase';
-            $new_title = $new_title . '- fase';
+            $old_title = $old_title . ' - fase';
+            $new_title = $new_title . ' - fase';
             $fase->update($old_title, $new_title);
         }
 

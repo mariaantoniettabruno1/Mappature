@@ -8,7 +8,6 @@ class ConnectionSarala
     /**
      * classe per la connesione al db di WordPress
      */
-    extends \mysqli
 {
     private $url;
     private $username;

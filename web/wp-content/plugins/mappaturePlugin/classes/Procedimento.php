@@ -370,7 +370,7 @@ WHERE (m1.meta_value=?) AND m2.meta_key=12";
 
             }
             else{
-                $sql = "DELETE FROM wp_gf_entry_meta WHERE (form_id=2 OR form_id=98) AND meta_value=? ";
+                $sql = "DELETE FROM wp_gf_entry_meta WHERE (form_id=75 OR form_id=98) AND meta_value=? ";
 
                 $stmt = $mysqli->prepare($sql);
                 $stmt->bind_param("s", $this->title);

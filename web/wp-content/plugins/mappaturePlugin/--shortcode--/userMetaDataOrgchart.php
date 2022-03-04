@@ -30,18 +30,15 @@ class UserMetaDataOrgchart
         }
         return $array;
     }
+private static function update_processi_by_user(string $old_user_area,array $array_users,string $area){
 
-    private static function update_processi_by_user(string $old_user_area, array $array_users, string $area)
-    {
-
-        $processi_wp = (new Processo)->findProjectsOnWordpress($old_user_area);
-        $array_ids = (new Processo)->findProjectsOnKanboard($processi_wp);
-        (new Processo)->deleteDismatchProject($array_ids, $array_users);
-        $nuovi_processi_wp = (new Processo)->findProjectsOnWordpress($area);
-        $array_ids = (new Processo)->findProjectsOnKanboard($nuovi_processi_wp);
-        (new Processo)->insertMatchProject($array_ids, $array_users);
-    }
-
+    $processi_wp = (new Processo)->findProjectsOnWordpress($old_user_area);
+    $array_ids = (new Processo)->findProjectsOnKanboard($processi_wp);
+    (new Processo)->deleteDismatchProject($array_ids, $array_users);
+    $nuovi_processi_wp = (new Processo)->findProjectsOnWordpress($area);
+    $array_ids = (new Processo)->findProjectsOnKanboard($nuovi_processi_wp);
+    (new Processo)->insertMatchProject($array_ids, $array_users);
+}
     private static function update_procedimenti_by_dirigente(string $area, string $old_user_area, $old_user_servizio, array $array_servizio, array $array_users_dirigente)
     {
 
@@ -56,6 +53,8 @@ class UserMetaDataOrgchart
 
     private static function update_procedimenti_by_po(string $area, string $old_user_area, array $array_users_po, $old_user_servizio, array $array_servizio)
     {
+
+
         //se ci sono dei procedimenti associati ai po selezionati, aggiorno i dati
         $procedimenti_wp = (new Procedimento)->findTaskOnWordpress($old_user_area, implode(",", $old_user_servizio));
         $array_ids_procedimento = (new Procedimento)->findTasksOnKanboard($procedimenti_wp);
@@ -67,10 +66,21 @@ class UserMetaDataOrgchart
 
     private static function update_fase_attivita_by_dipendenti(string $old_user_area, $old_user_servizio, $old_user_ufficio, array $array_users_dipendente, string $area, array $array_servizio, array $array_ufficio)
     {
-
         $fase_wp = (new Fase)->findFaseOnWordpress($old_user_area, implode(",", $old_user_servizio), implode(",", $old_user_ufficio));
         $attivita_wp = (new Attivita)->findAttivitaOnWordpress($old_user_area, implode(",", $old_user_servizio), implode(",", $old_user_ufficio));
-
+        if (!empty((array_filter($fase_wp))) && empty(array_filter($attivita_wp))) { //se ci sono delle fasi collegate ma non delle attività lavoro solo sulle fasi
+            $array_ids_fase = (new Fase)->findFaseOnKanboard($fase_wp);
+            (new Fase)->deleteDismatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
+            $nuova_fase_wp = (new Fase)->findFaseOnWordpress($area, $array_servizio, $array_ufficio);
+            $array_ids_fase = (new Fase)->findFaseOnKanboard($nuova_fase_wp);
+            (new Fase)->insertMatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
+        } elseif (empty((array_filter($fase_wp))) && !empty(array_filter($attivita_wp))) { //se ci sono delle attivita collegate ma non delle fasi lavoro solo sulle attività
+            $array_ids_attivita = (new Attivita)->findAttivitaOnKanboard($attivita_wp);
+            (new Attivita)->deleteDismatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
+            $attivita_wp = (new Attivita)->findAttivitaOnWordpress($area, $array_servizio, $array_ufficio);
+            $array_ids_attivita = (new Attivita)->findAttivitaOnKanboard($attivita_wp);
+            (new Attivita)->insertMatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
+        } elseif (!empty((array_filter($fase_wp))) && !empty(array_filter($attivita_wp))) { //altrimenti lavoro su entrambe
             $array_ids_fase = (new Fase)->findFaseOnKanboard($fase_wp);
             (new Fase)->deleteDismatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
             $nuova_fase_wp = (new Fase)->findFaseOnWordpress($area, $array_servizio, $array_ufficio);
@@ -81,26 +91,12 @@ class UserMetaDataOrgchart
             $attivita_wp = (new Attivita)->findAttivitaOnWordpress($area, $array_servizio, $array_ufficio);
             $array_ids_attivita = (new Attivita)->findAttivitaOnKanboard($attivita_wp);
             (new Attivita)->insertMatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
-
-    }
-    private static function update_procedimenti_by_dipendenti(string $old_user_area, $old_user_servizio, $old_user_ufficio, array $array_users_dipendente, string $area, array $array_servizio, array $array_ufficio)
-    {
-        //se ci sono dei procedimenti associati ai dipendenti selezionati, aggiorno i dati
-        $procedimenti_wp = (new Procedimento)->findTaskOnWordpressForDipendenti($old_user_area, implode(",", $old_user_servizio), implode(",", $old_user_ufficio));
-
-        $array_ids_procedimento = (new Procedimento)->findTasksOnKanboard($procedimenti_wp);
-
-        (new Procedimento)->deleteDismatchTasksUsers($array_ids_procedimento, $array_users_dipendente);
-        $nuovi_procedimenti_wp = (new Procedimento)->findTaskOnWordpressForDipendenti($area, $array_servizio,$array_ufficio);
-
-        $array_ids_procedimento = (new Procedimento)->findTasksOnKanboard($nuovi_procedimenti_wp);
-
-        (new Procedimento)->insertMatchTasksUsers($array_ids_procedimento, $array_users_dipendente);
+        }
     }
 
     public static function add_user_metadata()
     {
-        $entry_gforms = GFAPI::get_entries(100)[0];
+        $entry_gforms = GFAPI::get_entries(52)[0];
         $area = new Area();
         $servizio = new Servizio();
         $ufficio = new Ufficio();
@@ -144,7 +140,7 @@ class UserMetaDataOrgchart
 
     public static function edit_user_metadata()
     {
-        $entry_gforms = GFAPI::get_entries(101)[0];
+        $entry_gforms = GFAPI::get_entries(55)[0];
         $area = new Area();
         $servizio = new Servizio();
         $ufficio = new Ufficio();
@@ -180,16 +176,8 @@ class UserMetaDataOrgchart
 
                 $pattern_servizio = "[^4.]";
                 $array_servizio = self::get_old_metavalue($entry_gforms, $pattern_servizio);
-                if(empty($array_servizio)){
-                    array_push($array_servizio,$user_meta['servizio'][0]);
-
-                }
                 $pattern_ufficio = "[^6.]";
                 $array_ufficio = self::get_old_metavalue($entry_gforms, $pattern_ufficio);
-                if(empty($array_ufficio)){
-                    array_push($array_ufficio,$user_meta['ufficio'][0]);
-
-                }
 
 
                 //aggiornamento meta utente wp per servizio
@@ -217,23 +205,16 @@ class UserMetaDataOrgchart
         $temp_area = $area->getArea();
         if (!empty(array_filter($array_users_dirigente))) {
             //se ci sono dei processi collegati ai dirigenti, aggiorno i dati nel db
-            self::update_processi_by_user($old_user_area, $array_users_dirigente, $temp_area);
+            self::update_processi_by_user($old_user_area,$array_users_dirigente,$temp_area);
             self::update_procedimenti_by_dirigente($temp_area, $old_user_area, $old_user_servizio, $array_servizio, $array_users_dirigente);
-            self::update_fase_attivita_by_dipendenti($old_user_area, $old_user_servizio, $old_user_ufficio, $array_users_dirigente, $temp_area, $array_servizio, $array_ufficio);
-            self::update_procedimenti_by_dipendenti($old_user_area, $old_user_servizio, $old_user_ufficio, $array_users_dirigente, $temp_area, $array_servizio, $array_ufficio);
 
         } elseif (!empty(array_filter($array_users_po))) { //aggiornamenti di procedimenti che hanno il PO collegato
             //se ci sono dei processi collegati ai po, aggiorno i dati nel db
-            self::update_processi_by_user($old_user_area, $array_users_dirigente, $temp_area);
+            self::update_processi_by_user($old_user_area,$array_users_po,$temp_area);
             self::update_procedimenti_by_po($temp_area, $old_user_area, $array_users_po, $old_user_servizio, $array_servizio);
-            self::update_fase_attivita_by_dipendenti($old_user_area, $old_user_servizio, $old_user_ufficio, $array_users_po, $temp_area, $array_servizio, $array_ufficio);
-            self::update_procedimenti_by_dipendenti($old_user_area, $old_user_servizio, $old_user_ufficio, $array_users_po, $temp_area, $array_servizio, $array_ufficio);
-
         } elseif (!empty((array_filter($array_users_dipendente)))) {//aggiornamento dei dipendenti che hanno fase e attività collegata
-            self::update_processi_by_user($old_user_area, $array_users_dipendente, $temp_area);
-            self::update_procedimenti_by_po($temp_area, $old_user_area, $array_users_dipendente, $old_user_servizio, $array_servizio);
+
             self::update_fase_attivita_by_dipendenti($old_user_area, $old_user_servizio, $old_user_ufficio, $array_users_dipendente, $temp_area, $array_servizio, $array_ufficio);
-            self::update_procedimenti_by_dipendenti($old_user_area, $old_user_servizio, $old_user_ufficio, $array_users_dipendente, $temp_area, $array_servizio, $array_ufficio);
         }
 
         return '';

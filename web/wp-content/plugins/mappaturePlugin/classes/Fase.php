@@ -175,7 +175,6 @@ class Fase
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-
         $sql = "UPDATE subtasks SET title=? WHERE title=?";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("ss", $new_title, $old_title);
@@ -240,8 +239,7 @@ WHERE (m1.meta_value=?) AND m2.meta_key=14";
                 $res = $stmt->execute();
                 $this->title = $old_title['meta_value'];
 
-            }
-            else{
+            } else {
                 $sql = "DELETE FROM wp_gf_entry_meta WHERE form_id=79 AND meta_value=? ";
 
                 $stmt = $mysqli->prepare($sql);
@@ -259,15 +257,14 @@ WHERE (m1.meta_value=?) AND m2.meta_key=14";
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        $title_fase = $title_fase." - fase";
+        $title_fase = $title_fase . " - fase";
 
         $sql = "SELECT id FROM subtasks WHERE title LIKE ? ";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("s",  $title_fase);
+        $stmt->bind_param("s", $title_fase);
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
-
 
 
         $sql = "INSERT INTO MAPP_subtask_users (subtask_id,user_id) VALUES(?,?)";
