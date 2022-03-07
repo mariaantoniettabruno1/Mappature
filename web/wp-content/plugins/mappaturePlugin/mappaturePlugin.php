@@ -333,3 +333,16 @@ function call_visualize_table_utente()
 {
     \MappaturePlugin\ShortCodeTableUtente::visualize_table_utente();
 }
+
+add_action('gform_after_submission_102','set_post_content',10,2);
+function set_post_content($entry,$form){
+    if(isset($_POST['input_1_1'])){
+        update_entry_property($entry['id'],'1.1',$_POST['input_1_1']);
+    }
+    if(isset($_POST['input_1_2'])){
+        update_entry_property($entry['id'],'1.2',$_POST['input_1_2']);
+    }
+    if(isset($_POST['input_1_3'])){
+        update_entry_property($entry['id'],'1.3',$_POST['input_1_3']);
+    }
+}

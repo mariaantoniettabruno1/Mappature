@@ -777,7 +777,6 @@ WHERE (m1.meta_value=?) AND m2.meta_key=12";
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
-        print_r($result);
         array_push($this->users, $result['meta_value']);
         $mysqli->close();
 

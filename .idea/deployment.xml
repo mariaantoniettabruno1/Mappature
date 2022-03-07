@@ -5,7 +5,7 @@
       <paths name="Demo">
         <serverdata>
           <mappings>
-            <mapping deploy="/web/mappatura" local="$PROJECT_DIR$/web" web="/" />
+            <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
