@@ -402,7 +402,7 @@ WHERE (m1.meta_value=?) AND m2.meta_key=12";
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-        print_r($this->users);
+
         $sql = "INSERT INTO MAPP_task_users (task_id,user_id) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);
         foreach ($this->users as $userId) {
@@ -777,6 +777,7 @@ WHERE (m1.meta_value=?) AND m2.meta_key=12";
         $res = $stmt->execute();
         $res = $stmt->get_result();
         $result = $res->fetch_assoc();
+
         array_push($this->users, $result['meta_value']);
         $mysqli->close();
 

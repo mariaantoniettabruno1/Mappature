@@ -38,7 +38,7 @@ class OrgChartProcessi
                 foreach ($array_dipendenti_assegnati as $dipendente_assegnato) {
                     $dipendenti_assegnati_array = array('text' => $dipendente_assegnato, 'tags' => ['Dipendente Assegnato del Procedimento:', $procedim]);
 
-                        array_push($procedimenti_array['nodes'], $dipendenti_assegnati_array);
+                    array_push($procedimenti_array['nodes'], $dipendenti_assegnati_array);
 
 
                 }
@@ -55,15 +55,15 @@ class OrgChartProcessi
 
                     $fasi_attivita_array = array('text' => $subtask[0], 'tags' => ['Fase - Attivita'], 'nodes' => array(), 'state' => array('expanded' => false));
 
-                        foreach ($array_dipendenti as $dipendente) {
-                            $ufficio_dipendente = $ufficio->findUfficioByDipendente($dipendente);
+                    foreach ($array_dipendenti as $dipendente) {
+                        $ufficio_dipendente = $ufficio->findUfficioByDipendente($dipendente);
 
-                                $dipendenti_array = array('text' => $dipendente, 'tags' => ['Dirigente di:', $ufficio_dipendente[0] . ' (Ufficio)']);
-                                array_push($fasi_attivita_array['nodes'], $dipendenti_array);
+                        $dipendenti_array = array('text' => $dipendente, 'tags' => ['Dirigente di:', $ufficio_dipendente[0] . ' (Ufficio)']);
+                        array_push($fasi_attivita_array['nodes'], $dipendenti_array);
 
-                        }
+                    }
 
-                        array_push($procedimenti_array['nodes'], $fasi_attivita_array);
+                    array_push($procedimenti_array['nodes'], $fasi_attivita_array);
 
 
                 }
@@ -99,7 +99,7 @@ class OrgChartProcessi
 
         <div class="row">
             <hr>
-            
+
             <div class="col-sm-4">
                 <h2>Input</h2>
                 <!-- <form> -->
@@ -113,7 +113,7 @@ class OrgChartProcessi
                 <!-- </form> -->
             </div>
             <div class="col-sm-4">
-                
+
                 <div id="treeview-searchable" class="treeview">
                     <ul class="list-group">
                         <li class="list-group-item node-treeview-searchable" data-nodeid="0"

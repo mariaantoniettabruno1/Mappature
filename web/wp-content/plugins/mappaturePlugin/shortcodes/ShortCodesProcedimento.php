@@ -87,7 +87,7 @@ class ShortCodesProcedimento
             $procedimento = new Procedimento();
             $old_title = $entry_gforms[0][12];
             $new_title = $entry_gforms[0][13];
-           $procedimento->editProcedure($old_title,$new_title);
+            $procedimento->editProcedure($old_title,$new_title);
         }
 
         return '';

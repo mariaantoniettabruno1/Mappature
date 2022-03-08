@@ -71,16 +71,16 @@ class UserMetaDataOrgchart
         $fase_wp = (new Fase)->findFaseOnWordpress($old_user_area, implode(",", $old_user_servizio), implode(",", $old_user_ufficio));
         $attivita_wp = (new Attivita)->findAttivitaOnWordpress($old_user_area, implode(",", $old_user_servizio), implode(",", $old_user_ufficio));
 
-            $array_ids_fase = (new Fase)->findFaseOnKanboard($fase_wp);
-            (new Fase)->deleteDismatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
-            $nuova_fase_wp = (new Fase)->findFaseOnWordpress($area, $array_servizio, $array_ufficio);
-            $array_ids_fase = (new Fase)->findFaseOnKanboard($nuova_fase_wp);
-            (new Fase)->insertMatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
-            $array_ids_attivita = (new Attivita)->findAttivitaOnKanboard($attivita_wp);
-            (new Attivita)->deleteDismatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
-            $attivita_wp = (new Attivita)->findAttivitaOnWordpress($area, $array_servizio, $array_ufficio);
-            $array_ids_attivita = (new Attivita)->findAttivitaOnKanboard($attivita_wp);
-            (new Attivita)->insertMatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
+        $array_ids_fase = (new Fase)->findFaseOnKanboard($fase_wp);
+        (new Fase)->deleteDismatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
+        $nuova_fase_wp = (new Fase)->findFaseOnWordpress($area, $array_servizio, $array_ufficio);
+        $array_ids_fase = (new Fase)->findFaseOnKanboard($nuova_fase_wp);
+        (new Fase)->insertMatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
+        $array_ids_attivita = (new Attivita)->findAttivitaOnKanboard($attivita_wp);
+        (new Attivita)->deleteDismatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
+        $attivita_wp = (new Attivita)->findAttivitaOnWordpress($area, $array_servizio, $array_ufficio);
+        $array_ids_attivita = (new Attivita)->findAttivitaOnKanboard($attivita_wp);
+        (new Attivita)->insertMatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
 
     }
     private static function update_procedimenti_by_dipendenti(string $old_user_area, $old_user_servizio, $old_user_ufficio, array $array_users_dipendente, string $area, array $array_servizio, array $array_ufficio)
@@ -157,7 +157,9 @@ class UserMetaDataOrgchart
         $old_user_area = '';
         $old_user_servizio = array();
 
-
+        echo "<pre>";
+        print_r($entry_gforms);
+        echo "</pre>";
         //foreach per leggere tutti gli utenti dalle entries del form
         foreach ($entry_gforms as $key => $value) {
             $pattern = "[^1.]";

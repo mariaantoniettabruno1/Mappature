@@ -63,7 +63,7 @@ class Ufficio
     /**
      * Function per il select dell'ufficio dal custom form costruito tramite gforms
      * per l'inserimento manuale di una nuovo ufficio, collegato ad un area e ad un servizio specifico
-      * input: string di area, string di servizio
+     * input: string di area, string di servizio
      * output: array contentente tutti gli uffici inseriti tramite il form
      */
     public function selectUfficio($area,$servizio)
@@ -76,13 +76,13 @@ class Ufficio
                                           AND entry_id IN (SELECT entry_id FROM wp_gf_entry_meta WHERE meta_key=1 AND meta_value=?)
                                         AND entry_id IN (SELECT entry_id FROM wp_gf_entry_meta WHERE meta_key=2 AND meta_value=?)";
         $stmt = $mysqli->prepare($sql);
-            $stmt->bind_param("ss", $area,$servizio);
-            $res = $stmt->execute();
-            $res = $stmt->get_result();
-            $result = $res->fetch_all();
-            foreach ($result as $item) {
-                array_push($uffici, $item[0]);
-            }
+        $stmt->bind_param("ss", $area,$servizio);
+        $res = $stmt->execute();
+        $res = $stmt->get_result();
+        $result = $res->fetch_all();
+        foreach ($result as $item) {
+            array_push($uffici, $item[0]);
+        }
 
         $mysqli->close();
         return $uffici;

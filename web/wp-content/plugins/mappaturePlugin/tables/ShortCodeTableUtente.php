@@ -32,7 +32,7 @@ class ShortCodeTableUtente
 
         </head>
 
-    <body>
+        <body>
 
 
 
@@ -74,93 +74,93 @@ class ShortCodeTableUtente
 
 
 
-    <table class="center">
+        <table class="center">
 
-        <thead>
+            <thead>
 
-        <tr>
+            <tr>
 
-            <th>Processo</th>
+                <th>Processo</th>
 
-            <th>Procedimento di cui Dirigente</th>
+                <th>Procedimento di cui Dirigente</th>
 
-            <th>Procedimento di cui PO</th>
+                <th>Procedimento di cui PO</th>
 
-            <th>Procedimento di cui Dipendente</th>
+                <th>Procedimento di cui Dipendente</th>
 
-            <th>Fase/Attivita</th>
+                <th>Fase/Attivita</th>
 
-        </tr>
+            </tr>
 
-        </thead>
+            </thead>
 
-        <tbody>
+            <tbody>
 
-        <?php
+            <?php
 
-        if (isset($_POST['select_user'])) {
-
-
-
-            $selected_user = $_POST["select_user"];
-
-            $id_kanboard = $user->getIdKanboard($selected_user);
-
-            $processi = $user->selectProcessoUtente($id_kanboard);
-
-            $procedimenti_creator = $user->selectProcedimentoUtenteCreator($id_kanboard);
-
-            $procedimenti_owner = $user->selectProcedimentoUtenteOwner($id_kanboard);
-
-            $procedimenti_associati = $user->selectProcedimentoUtenteDipendente($id_kanboard);
-
-            $fasi_attivita = $user->selectFaseAttivitaUtente($id_kanboard);
+            if (isset($_POST['select_user'])) {
 
 
 
+                $selected_user = $_POST["select_user"];
 
+                $id_kanboard = $user->getIdKanboard($selected_user);
 
-            $table = array("Processo" => $processi,
+                $processi = $user->selectProcessoUtente($id_kanboard);
 
-                "Procedimento di cui Dirigente" => $procedimenti_creator,
+                $procedimenti_creator = $user->selectProcedimentoUtenteCreator($id_kanboard);
 
-                "Procedimento di cui PO" => $procedimenti_owner,
+                $procedimenti_owner = $user->selectProcedimentoUtenteOwner($id_kanboard);
 
-                "Procedimento di cui Dipendente" => $procedimenti_associati,
+                $procedimenti_associati = $user->selectProcedimentoUtenteDipendente($id_kanboard);
 
-                "Fase/Attivita" => $fasi_attivita);
-
-
-
-            if (!empty($table)) {
-
-                array_unshift($table, null);
-
-                $transposedarr = call_user_func_array('array_map', $table);
+                $fasi_attivita = $user->selectFaseAttivitaUtente($id_kanboard);
 
 
 
-                foreach ($transposedarr as $r) {
 
-                    echo '<tr>';
 
-                    foreach ($r as $c) {
+                $table = array("Processo" => $processi,
 
-                        echo '<td>' . $c[0] . '</td>';
+                    "Procedimento di cui Dirigente" => $procedimenti_creator,
+
+                    "Procedimento di cui PO" => $procedimenti_owner,
+
+                    "Procedimento di cui Dipendente" => $procedimenti_associati,
+
+                    "Fase/Attivita" => $fasi_attivita);
+
+
+
+                if (!empty($table)) {
+
+                    array_unshift($table, null);
+
+                    $transposedarr = call_user_func_array('array_map', $table);
+
+
+
+                    foreach ($transposedarr as $r) {
+
+                        echo '<tr>';
+
+                        foreach ($r as $c) {
+
+                            echo '<td>' . $c[0] . '</td>';
+
+                        }
+
+                        echo '</tr>';
 
                     }
 
-                    echo '</tr>';
+
+
+
 
                 }
 
-
-
-
-
-            }
-
-        }else {
+            }else {
 
                 echo '<tr>';
 
@@ -186,25 +186,25 @@ class ShortCodeTableUtente
 
             </tbody>
 
-            </table>
+        </table>
 
 
 
-            </div>
-
-            
-
-            </body>
-
-            </html>
-
-            <?php
+        </div>
 
 
 
+        </body>
+
+        </html>
+
+        <?php
 
 
-        }
+
+
+
+    }
 
 
 

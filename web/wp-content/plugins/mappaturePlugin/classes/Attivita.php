@@ -235,8 +235,9 @@ class Attivita
 
         $conn = new ConnectionSarala();
         $mysqli = $conn->connect();
-
+        $this->setTitleAttivita(explode(' - attivita', $this->title_attivita)[0]);
         while ($this->title_attivita != NULL) {
+
             $sql = "SELECT m2.meta_value FROM wp_gf_entry_meta AS m1
 JOIN wp_gf_entry_meta AS m2 ON m1.entry_id = m2.entry_id
 WHERE (m1.meta_value=?) AND m2.meta_key=16";
@@ -246,28 +247,39 @@ WHERE (m1.meta_value=?) AND m2.meta_key=16";
             $res = $stmt->get_result();
             $old_title = $res->fetch_assoc();
 
-            $sql = "SELECT entry_id FROM wp_gf_entry_meta WHERE meta_value=? AND form_id=91 ";
+            $sql = "SELECT entry_id FROM wp_gf_entry_meta WHERE meta_value=? AND form_id=91";
             if ($old_title != NULL && $old_title['meta_value'] != NULL) {
                 $stmt = $mysqli->prepare($sql);
                 $stmt->bind_param("s", $this->title_attivita);
                 $res = $stmt->execute();
                 $res = $stmt->get_result();
                 $id_entry = $res->fetch_assoc();
-
-                $sql = "DELETE FROM wp_gf_entry_meta WHERE entry_id=?";
-                $stmt = $mysqli->prepare($sql);
-                $stmt->bind_param("i", $id_entry['entry_id']);
-                $res = $stmt->execute();
-                $this->title_attivita = $old_title['meta_value'];
-
+                if($id_entry!=NULL && $id_entry['entry_id']!=NULL) {
+                    $sql = "DELETE FROM wp_gf_entry_meta WHERE entry_id=?";
+                    $stmt = $mysqli->prepare($sql);
+                    $stmt->bind_param("i", $id_entry['entry_id']);
+                    $res = $stmt->execute();
+                    if ($old_title != NULL && $old_title['meta_value'] != NULL) {
+                        $this->setTitleAttivita($old_title['meta_value']);
+                    }
+                }
+                else {
+                    $sql = "DELETE FROM wp_gf_entry_meta WHERE form_id=80 AND meta_value=? ";
+                    $stmt = $mysqli->prepare($sql);
+                    $stmt->bind_param("s", $this->title_attivita);
+                    $res = $stmt->execute();
+                    $this->setTitleAttivita(NULL);
+                }
             }
-            else{
-                $sql = "DELETE FROM wp_gf_entry_meta WHERE form_id=80 AND meta_value=? ";
 
+
+
+            else {
+                $sql = "DELETE FROM wp_gf_entry_meta WHERE form_id=80 AND meta_value=? ";
                 $stmt = $mysqli->prepare($sql);
                 $stmt->bind_param("s", $this->title_attivita);
                 $res = $stmt->execute();
-                $this->title_attivita = NULL;
+                $this->setTitleAttivita(NULL);
             }
         }
 

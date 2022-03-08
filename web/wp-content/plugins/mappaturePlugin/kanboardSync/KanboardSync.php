@@ -4,7 +4,7 @@ namespace MappaturePlugin;
 use Dompdf\Exception;
 
 /**
-* classe per la modifica o la creazione di uno user su kanboard, prelevando i dati e i metadati utente da WordPress
+ * classe per la modifica o la creazione di uno user su kanboard, prelevando i dati e i metadati utente da WordPress
  *e richiamando la funzione updateuser() o createuser() che inseriscono o aggiornano l'utente anche nel db di kanboard
  */
 

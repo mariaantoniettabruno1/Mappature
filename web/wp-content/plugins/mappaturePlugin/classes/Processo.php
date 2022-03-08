@@ -460,7 +460,7 @@ WHERE (m1.meta_value=?) AND m2.meta_key=11";
                 $stmt->bind_param("s", $this->nome_processo);
                 $res = $stmt->execute();
                 $this->nome_processo = NULL;
-                }
+            }
         }
 
 
@@ -579,7 +579,7 @@ WHERE (m1.meta_value=?) AND m2.meta_key=11";
     {
         $conn = new Connection();
         $mysqli = $conn->connect();
-  
+
 
         $sql = "INSERT INTO MAPP_project_users_owner (project_id,user_id) VALUES(?,?)";
         $stmt = $mysqli->prepare($sql);

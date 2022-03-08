@@ -162,7 +162,7 @@ class OrgChartImpiegati
 
         <div class="row">
             <hr>
-            
+
             <div class="col-sm-4">
                 <h2>Input</h2>
                 <!-- <form> -->
@@ -175,7 +175,7 @@ class OrgChartImpiegati
                 <!-- </form> -->
             </div>
             <div class="col-sm-4">
-                
+
                 <div id="treeview-searchable" class="treeview">
                     <ul class="list-group">
                         <li class="list-group-item node-treeview-searchable" data-nodeid="0"

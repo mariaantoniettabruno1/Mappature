@@ -30,15 +30,15 @@ class UserMetaDataOrgchart
         }
         return $array;
     }
-private static function update_processi_by_user(string $old_user_area,array $array_users,string $area){
+    private static function update_processi_by_user(string $old_user_area,array $array_users,string $area){
 
-    $processi_wp = (new Processo)->findProjectsOnWordpress($old_user_area);
-    $array_ids = (new Processo)->findProjectsOnKanboard($processi_wp);
-    (new Processo)->deleteDismatchProject($array_ids, $array_users);
-    $nuovi_processi_wp = (new Processo)->findProjectsOnWordpress($area);
-    $array_ids = (new Processo)->findProjectsOnKanboard($nuovi_processi_wp);
-    (new Processo)->insertMatchProject($array_ids, $array_users);
-}
+        $processi_wp = (new Processo)->findProjectsOnWordpress($old_user_area);
+        $array_ids = (new Processo)->findProjectsOnKanboard($processi_wp);
+        (new Processo)->deleteDismatchProject($array_ids, $array_users);
+        $nuovi_processi_wp = (new Processo)->findProjectsOnWordpress($area);
+        $array_ids = (new Processo)->findProjectsOnKanboard($nuovi_processi_wp);
+        (new Processo)->insertMatchProject($array_ids, $array_users);
+    }
     private static function update_procedimenti_by_dirigente(string $area, string $old_user_area, $old_user_servizio, array $array_servizio, array $array_users_dirigente)
     {
 

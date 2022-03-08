@@ -333,16 +333,55 @@ function call_visualize_table_utente()
 {
     \MappaturePlugin\ShortCodeTableUtente::visualize_table_utente();
 }
-
 add_action('gform_after_submission_102','set_post_content',10,2);
-function set_post_content($entry,$form){
-    if(isset($_POST['input_1_1'])){
-        update_entry_property($entry['id'],'1.1',$_POST['input_1_1']);
+function set_post_content($entry,$form)
+{
+
+    foreach ($_POST as $key => $value) {
+        $pattern = "[^input_1_]";
+        $pattern2 = "1.";
+        if (preg_match($pattern, $key) && $value) {
+            GFAPI::update_entry_field($entry['id'], $pattern2.explode("_",$key)[2], $value);
+        }
     }
-    if(isset($_POST['input_1_2'])){
-        update_entry_property($entry['id'],'1.2',$_POST['input_1_2']);
+
+}
+add_action('gform_after_submission_103','set_post_content_modifica',10,2);
+function set_post_content_modifica($entry,$form)
+{
+
+    foreach ($_POST as $key => $value) {
+        $pattern = "[^input_1_]";
+        $pattern2 = "1.";
+        if (preg_match($pattern, $key) && $value) {
+            GFAPI::update_entry_field($entry['id'], $pattern2.explode("_",$key)[2], $value);
+        }
     }
-    if(isset($_POST['input_1_3'])){
-        update_entry_property($entry['id'],'1.3',$_POST['input_1_3']);
+
+}
+add_action('gform_after_submission_101','set_post_content_modifica_assegnazione_utenti',10,2);
+function set_post_content_modifica_assegnazione_utenti($entry,$form)
+{
+
+    foreach ($_POST as $key => $value) {
+        $pattern = "[^input_1_]";
+        $pattern2 = "1.";
+        if (preg_match($pattern, $key) && $value) {
+            GFAPI::update_entry_field($entry['id'], $pattern2.explode("_",$key)[2], $value);
+        }
     }
+
+}
+add_action('gform_after_submission_100','set_post_content_assegnazione_utenti',10,2);
+function set_post_content_assegnazione_utenti($entry,$form)
+{
+
+    foreach ($_POST as $key => $value) {
+        $pattern = "[^input_1_]";
+        $pattern2 = "1.";
+        if (preg_match($pattern, $key) && $value) {
+            GFAPI::update_entry_field($entry['id'], $pattern2.explode("_",$key)[2], $value);
+        }
+    }
+
 }
