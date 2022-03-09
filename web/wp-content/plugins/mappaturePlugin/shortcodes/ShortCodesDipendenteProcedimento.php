@@ -71,9 +71,10 @@ class ShortCodesDipendenteProcedimento
                         }
                     }
 
-                    $procedimento->findTask();
-                    $procedimento->modificaAssegnazioneDipendenti();
+
                 }
+                $procedimento->findTask();
+                $procedimento->modificaAssegnazioneDipendenti();
             }
         }
 
