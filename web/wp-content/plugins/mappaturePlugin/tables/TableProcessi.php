@@ -138,13 +138,6 @@ class TableProcessi
 
         }
 
-
-        /* $table = array("Processo" => $name_processo,
-             "Dirigente" => $dirigente,
-             "Procedimento" => $name_tasks,
-             "PO" => $array_po,
-             "Dipendenti associati" => $array_dipendenti_associati);*/
-
         $mysqli->close();
         return $complete_table;
     }

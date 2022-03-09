@@ -98,34 +98,38 @@ class ShortCodeTableArea
 
                 foreach ($array_processi_kanboard as $proc) {
                     $array_data = $data->getDataOfProcesso($proc);
-                    $array = array($array_data);
-                    foreach ($array as $item) {
-                        if (!empty($item['Dipendenti associati'])) {
-                            foreach ($item['Dipendenti associati'] as $value) {
-                                echo '<tr>';
-                                echo '<td>' . $item['Processo'] . '</td>';
-                                echo '<td>' . implode(" , ", $item['Dirigente']) . '</td>';
-                                echo '<td>' . $value[0] . '</td>';
-                                unset($value[0]);
-                                echo '<td>' . implode(" , ", $item['PO']) . '</td>';
-                                echo '<td>' . implode(" , ", $value) . '</td>';
-                                echo '</tr>';
+                    foreach ($array_data as $item) {
+                        echo '<tr>';
+                        echo '<td>' . $item['Processo'] . '</td>';
+                        echo '<td>' . implode(" , ", $item['Dirigente']) . '</td>';
+                        echo '<td>' . $item['Procedimento'] . '</td>';
+                        echo '<td>' . implode(" , ", $item['PO']) . '</td>';
+                        echo '<td>' . implode(" , ", $item['Dipendenti associati']) . '</td>';
+                        if (!empty($item['Fase/Attività'])) {
+                            foreach ($item['Fase/Attività'] as $value) {
+
+                                if (is_array($value)) {
+
+                                    echo '<td>' . implode(" , ", $value) . '</td>';
+
+
+                                } else {
+                                    echo '<td>' . $value . '</td>';
+                                }
 
                             }
+
                         } else {
-                            echo '<tr>';
-                            echo '<td>' . $item['Processo'] . '</td>';
-                            echo '<td>' . implode(" , ", $item['Dirigente']) . '</td>';
-                            echo '<td>' . implode(" , ", $item['Procedimento']) . '</td>';
-                            echo '<td>' . implode(" , ", $item['PO']) . '</td>';
-                            echo '<td>' . implode(" , ", $item['Dipendenti associati']) . '</td>';
-                            echo '<td>' . implode(" , ", $item['Fase/Attivita']) . '</td>';
                             echo '<td>' . '</td>';
-                            echo '</tr>';
+                            echo '<td>' . '</td>';
+
                         }
 
 
+                        echo '</tr>';
                     }
+
+
                 }
             } elseif (isset($_POST['select_area']) && isset($_POST['select_servizio'])) {
                 $selected_area = $_POST["select_area"];
@@ -141,37 +145,38 @@ class ShortCodeTableArea
                 $data = new TableProcessi();
                 foreach ($array_processi_kanboard as $proc) {
                     $array_data = $data->getDataOfProcesso($proc);
-                    $array = array($array_data);
+                    foreach ($array_data as $item) {
+                        echo '<tr>';
+                        echo '<td>' . $item['Processo'] . '</td>';
+                        echo '<td>' . implode(" , ", $item['Dirigente']) . '</td>';
+                        echo '<td>' . $item['Procedimento'] . '</td>';
+                        echo '<td>' . implode(" , ", $item['PO']) . '</td>';
+                        echo '<td>' . implode(" , ", $item['Dipendenti associati']) . '</td>';
+                        if (!empty($item['Fase/Attività'])) {
+                            foreach ($item['Fase/Attività'] as $value) {
 
-                    foreach ($array as $item) {
-                        if (!empty($item['Dipendenti'])) {
-                            foreach ($item['Dipendenti'] as $value) {
-                                echo '<tr>';
-                                echo '<td>' . $item['Processo'] . '</td>';
-                                echo '<td>' . implode(" , ", $item['Dirigente']) . '</td>';
-                                echo '<td>' . implode(" , ", $item['Procedimento']) . '</td>';
-                                echo '<td>' . implode(" , ", $item['PO']) . '</td>';
-                                echo '<td>' . implode(" , ", $item['Dipendenti associati']) . '</td>';
-                                echo '<td>' . $value[0] . '</td>';
-                                unset($value[0]);
-                                echo '<td>' . implode(" , ", $value) . '</td>';
-                                echo '</tr>';
+                                if (is_array($value)) {
+
+                                    echo '<td>' . implode(" , ", $value) . '</td>';
+
+
+                                } else {
+                                    echo '<td>' . $value . '</td>';
+                                }
 
                             }
+
                         } else {
-                            echo '<tr>';
-                            echo '<td>' . $item['Processo'] . '</td>';
-                            echo '<td>' . implode(" , ", $item['Dirigente']) . '</td>';
-                            echo '<td>' . implode(" , ", $item['Procedimento']) . '</td>';
-                            echo '<td>' . implode(" , ", $item['PO']) . '</td>';
-                            echo '<td>' . implode(" , ", $item['Dipendenti associati']) . '</td>';
-                            echo '<td>' . implode(" , ", $item['Fase/Attivita']) . '</td>';
                             echo '<td>' . '</td>';
-                            echo '</tr>';
+                            echo '<td>' . '</td>';
+
                         }
 
 
+                        echo '</tr>';
                     }
+
+
                 }
             } else {
                 echo '<tr>';
