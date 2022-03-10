@@ -43,6 +43,7 @@ class ShortCodeTableUtente
                 ?>
 
                 <select id='user' name='select_user' onchange='this.form.submit()'>
+                    <option disabled selected> Seleziona utente </option>
 
                     <?php foreach ($results_user as $res_user): ?>
 
