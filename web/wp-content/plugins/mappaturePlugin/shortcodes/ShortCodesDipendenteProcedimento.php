@@ -10,9 +10,7 @@ class ShortCodesDipendenteProcedimento
     {
 
         $entry_gforms = GFAPI::get_entries(102);
-        echo "<pre>";
-        print_r($entry_gforms[0]);
-        echo "</pre>";
+
         $procedimento = new Procedimento();
 
         $old_value = '';

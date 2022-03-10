@@ -329,58 +329,62 @@ function call_visualize_table_area()
 {
     \MappaturePlugin\ShortCodeTableArea::visualize_table_area();
 }
+
 function call_visualize_table_utente()
 {
     \MappaturePlugin\ShortCodeTableUtente::visualize_table_utente();
 }
-add_action('gform_after_submission_102','set_post_content',10,2);
-function set_post_content($entry,$form)
-{
 
+add_action('gform_after_submission_102', 'set_post_content', 10, 2);
+function set_post_content($entry, $form)
+{
     foreach ($_POST as $key => $value) {
         $pattern = "[^input_1_]";
         $pattern2 = "1.";
         if (preg_match($pattern, $key) && $value) {
-            GFAPI::update_entry_field($entry['id'], $pattern2.explode("_",$key)[2], $value);
+            GFAPI::update_entry_field($entry['id'], $pattern2 . explode("_", $key)[2], $value);
         }
     }
 
 }
-add_action('gform_after_submission_103','set_post_content_modifica',10,2);
-function set_post_content_modifica($entry,$form)
+
+add_action('gform_after_submission_103', 'set_post_content_modifica', 10, 2);
+function set_post_content_modifica($entry, $form)
 {
 
     foreach ($_POST as $key => $value) {
         $pattern = "[^input_1_]";
         $pattern2 = "1.";
         if (preg_match($pattern, $key) && $value) {
-            GFAPI::update_entry_field($entry['id'], $pattern2.explode("_",$key)[2], $value);
+            GFAPI::update_entry_field($entry['id'], $pattern2 . explode("_", $key)[2], $value);
         }
     }
 
 }
-add_action('gform_after_submission_101','set_post_content_modifica_assegnazione_utenti',10,2);
-function set_post_content_modifica_assegnazione_utenti($entry,$form)
+
+add_action('gform_after_submission_101', 'set_post_content_modifica_assegnazione_utenti', 10, 2);
+function set_post_content_modifica_assegnazione_utenti($entry, $form)
 {
 
     foreach ($_POST as $key => $value) {
         $pattern = "[^input_1_]";
         $pattern2 = "1.";
         if (preg_match($pattern, $key) && $value) {
-            GFAPI::update_entry_field($entry['id'], $pattern2.explode("_",$key)[2], $value);
+            GFAPI::update_entry_field($entry['id'], $pattern2 . explode("_", $key)[2], $value);
         }
     }
 
 }
-add_action('gform_after_submission_100','set_post_content_assegnazione_utenti',10,2);
-function set_post_content_assegnazione_utenti($entry,$form)
+
+add_action('gform_after_submission_100', 'set_post_content_assegnazione_utenti', 10, 2);
+function set_post_content_assegnazione_utenti($entry, $form)
 {
 
     foreach ($_POST as $key => $value) {
         $pattern = "[^input_1_]";
         $pattern2 = "1.";
         if (preg_match($pattern, $key) && $value) {
-            GFAPI::update_entry_field($entry['id'], $pattern2.explode("_",$key)[2], $value);
+            GFAPI::update_entry_field($entry['id'], $pattern2 . explode("_", $key)[2], $value);
         }
     }
 
