@@ -39,6 +39,7 @@ class ShortCodeTableProcessi
                 $results_processi = $processo->selectProcesso();
 
                 echo "<select id='processo' name='select_processo'   onchange='this.form.submit()'>";
+                echo "<option disabled selected value='Seleziona Processo'> Seleziona Processo </option>";
 
                 foreach ($results_processi as $result) {
 

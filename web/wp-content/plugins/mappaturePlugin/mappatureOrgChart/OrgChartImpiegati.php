@@ -15,7 +15,7 @@ class OrgChartImpiegati
         $old_item = '';
         $old_servizio = '';
 
-        foreach ($array_area as $item) {
+       foreach ($array_area as $item) {
             if ($old_item == $item[0]) {
                 $servizi = $servizio->selectServizio($item[0]);
 
@@ -162,7 +162,7 @@ class OrgChartImpiegati
 
         <div class="row">
             <hr>
-            
+
             <div class="col-sm-4">
                 <h2>Input</h2>
                 <!-- <form> -->
@@ -170,12 +170,13 @@ class OrgChartImpiegati
                     <label for="input-search" class="sr-only">Search Tree:</label>
                     <input type="input" class="form-control" id="input-search" placeholder="Scrivi per cercare..." value="">
                 </div>
+
                 <button type="button" class="btn btn-success" id="btn-search">Cerca</button>
                 <button type="button" class="btn btn-default" id="btn-clear-search">Cancella</button>
                 <!-- </form> -->
             </div>
             <div class="col-sm-4">
-                
+
                 <div id="treeview-searchable" class="treeview">
                     <ul class="list-group">
                         <li class="list-group-item node-treeview-searchable" data-nodeid="0"
@@ -206,7 +207,8 @@ class OrgChartImpiegati
                     </ul>
                 </div>
             </div>
-            <div class="col-sm-4" >
+            <div class="col-sm-4">
+
                 <div id="search-output"></div>
             </div>
         </div>
@@ -215,10 +217,12 @@ class OrgChartImpiegati
             #treeview-searchable .node-disabled {
                 display: none;
             }
+            div {
+                display-table: block;
+            }
         </style>
 
         <script>
-
 
             var organigramma_string = `<?php echo json_encode($tree_array);?>`;
 
@@ -244,15 +248,13 @@ class OrgChartImpiegati
 
 
             var search = function (e) {
-
                 var pattern = $('#input-search').val();
                 var options = {
-
                     revealResults: $('#chk-reveal-results').is(':checked')
                 };
 
                 var results = $searchableTree.treeview('search', [pattern, options]);
-                var output = '<h2>Risultati</h2> <p>' + results.length + ' corrispondenze trovate </p>';
+                var output = '<h2>Risultati</h2> <p>' + results.length + ' corrispondenze trovate</p>';
                 $.each(results, function (index, result) {
                     output += '<p>- ' + result.text + '</p>';
                 });
@@ -338,6 +340,7 @@ class OrgChartImpiegati
         </script>
         </body>
         </html>
+
 
         <?php
     }

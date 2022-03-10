@@ -1,13 +1,10 @@
 <?php
 
 
-
 namespace MappaturePlugin;
 
 
-
 class ShortCodeTableUtente
-
 
 
 {
@@ -19,9 +16,6 @@ class ShortCodeTableUtente
         ?>
 
 
-
-
-
         <!DOCTYPE html>
 
         <html lang="en">
@@ -29,11 +23,9 @@ class ShortCodeTableUtente
         <head>
 
 
-
         </head>
 
-    <body>
-
+        <body>
 
 
         <div>
@@ -65,102 +57,89 @@ class ShortCodeTableUtente
             </form>
 
 
-
-
-
         </div>
 
         <h2>TABELLA</h2>
 
 
+        <table class="center">
 
-    <table class="center">
+            <thead>
 
-        <thead>
+            <tr>
 
-        <tr>
+                <th>Processo</th>
 
-            <th>Processo</th>
+                <th>Procedimento di cui Dirigente</th>
 
-            <th>Procedimento di cui Dirigente</th>
+                <th>Procedimento di cui PO</th>
 
-            <th>Procedimento di cui PO</th>
+                <th>Procedimento di cui Dipendente</th>
 
-            <th>Procedimento di cui Dipendente</th>
+                <th>Fase/Attivita</th>
 
-            <th>Fase/Attivita</th>
+            </tr>
 
-        </tr>
+            </thead>
 
-        </thead>
+            <tbody>
 
-        <tbody>
+            <?php
 
-        <?php
-
-        if (isset($_POST['select_user'])) {
-
+            if (isset($_POST['select_user'])) {
 
 
-            $selected_user = $_POST["select_user"];
+                $selected_user = $_POST["select_user"];
 
-            $id_kanboard = $user->getIdKanboard($selected_user);
+                $id_kanboard = $user->getIdKanboard($selected_user);
 
-            $processi = $user->selectProcessoUtente($id_kanboard);
+                $processi = $user->selectProcessoUtente($id_kanboard);
 
-            $procedimenti_creator = $user->selectProcedimentoUtenteCreator($id_kanboard);
+                $procedimenti_creator = $user->selectProcedimentoUtenteCreator($id_kanboard);
 
-            $procedimenti_owner = $user->selectProcedimentoUtenteOwner($id_kanboard);
+                $procedimenti_owner = $user->selectProcedimentoUtenteOwner($id_kanboard);
 
-            $procedimenti_associati = $user->selectProcedimentoUtenteDipendente($id_kanboard);
+                $procedimenti_associati = $user->selectProcedimentoUtenteDipendente($id_kanboard);
 
-            $fasi_attivita = $user->selectFaseAttivitaUtente($id_kanboard);
-
-
+                $fasi_attivita = $user->selectFaseAttivitaUtente($id_kanboard);
 
 
+                $table = array("Processo" => $processi,
 
-            $table = array("Processo" => $processi,
+                    "Procedimento di cui Dirigente" => $procedimenti_creator,
 
-                "Procedimento di cui Dirigente" => $procedimenti_creator,
+                    "Procedimento di cui PO" => $procedimenti_owner,
 
-                "Procedimento di cui PO" => $procedimenti_owner,
+                    "Procedimento di cui Dipendente" => $procedimenti_associati,
 
-                "Procedimento di cui Dipendente" => $procedimenti_associati,
-
-                "Fase/Attivita" => $fasi_attivita);
-
+                    "Fase/Attivita" => $fasi_attivita);
 
 
-            if (!empty($table)) {
+                if (!empty($table)) {
 
-                array_unshift($table, null);
+                    array_unshift($table, null);
 
-                $transposedarr = call_user_func_array('array_map', $table);
+                    $transposedarr = call_user_func_array('array_map', $table);
 
 
+                    foreach ($transposedarr as $r) {
 
-                foreach ($transposedarr as $r) {
+                        echo '<tr>';
 
-                    echo '<tr>';
+                        foreach ($r as $c) {
 
-                    foreach ($r as $c) {
+                            echo '<td>' . $c[0] . '</td>';
 
-                        echo '<td>' . $c[0] . '</td>';
+                        }
+
+                        echo '</tr>';
 
                     }
 
-                    echo '</tr>';
 
                 }
 
-
-
-
-
-            }
-
-        }else {
+            } else {
 
                 echo '<tr>';
 
@@ -179,37 +158,24 @@ class ShortCodeTableUtente
             }
 
 
-
-
-
             ?>
 
             </tbody>
 
-            </table>
+        </table>
 
 
-
-            </div>
-
-            
-
-            </body>
-
-            </html>
-
-            <?php
+        </div>
 
 
+        </body>
+
+        </html>
+
+        <?php
 
 
-
-        }
-
-
-
-
-
+    }
 
 
 }

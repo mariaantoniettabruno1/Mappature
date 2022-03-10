@@ -25,6 +25,7 @@ class ShortCodeTableArea
                 $results_area = $area->selectAreaForTable();
                 ?>
                 <select id='area' name='select_area' onchange='this.form.submit()'>
+                    <option disabled selected> Seleziona Area </option>
                     <?php foreach ($results_area as $res_area): ?>
                         <option <?= isset($_POST['select_area']) && $_POST['select_area'] === $res_area[0] ? 'selected' : '' ?>
                                 value='<?= $res_area[0] ?>'><?= $res_area[0] ?></option>
@@ -40,6 +41,7 @@ class ShortCodeTableArea
                 ?>
 
                 <select id='servizio' name='select_servizio' onchange='this.form.submit()'>
+                    <option disabled selected> Seleziona Servizio </option>
                     <?php foreach ($results_servizio as $res_serv): ?>
                         <option <?= isset($_POST['select_servizio']) && $_POST['select_servizio'] === $res_serv[0] ? 'selected' : '' ?>
                                 value='<?= $res_serv[0] ?>'><?= $res_serv[0] ?></option>
@@ -55,6 +57,7 @@ class ShortCodeTableArea
 
 
                 <select id='ufficio' name='select_ufficio' onchange='this.form.submit()'>
+                    <option disabled selected> Seleziona Ufficio </option>
                     <?php foreach ($results_ufficio as $res_uff): ?>
                         <option <?= isset($_POST['select_ufficio']) && $_POST['select_ufficio'] === $res_uff[0] ? 'selected' : '' ?>
                                 value='<?= $res_uff[0] ?>'><?= $res_uff[0] ?></option>
