@@ -71,18 +71,19 @@ class UserMetaDataOrgchart
         $fase_wp = (new Fase)->findFaseOnWordpress($old_user_area, implode(",", $old_user_servizio), implode(",", $old_user_ufficio));
         $attivita_wp = (new Attivita)->findAttivitaOnWordpress($old_user_area, implode(",", $old_user_servizio), implode(",", $old_user_ufficio));
 
-            $array_ids_fase = (new Fase)->findFaseOnKanboard($fase_wp);
-            (new Fase)->deleteDismatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
-            $nuova_fase_wp = (new Fase)->findFaseOnWordpress($area, $array_servizio, $array_ufficio);
-            $array_ids_fase = (new Fase)->findFaseOnKanboard($nuova_fase_wp);
-            (new Fase)->insertMatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
-            $array_ids_attivita = (new Attivita)->findAttivitaOnKanboard($attivita_wp);
-            (new Attivita)->deleteDismatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
-            $attivita_wp = (new Attivita)->findAttivitaOnWordpress($area, $array_servizio, $array_ufficio);
-            $array_ids_attivita = (new Attivita)->findAttivitaOnKanboard($attivita_wp);
-            (new Attivita)->insertMatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
+        $array_ids_fase = (new Fase)->findFaseOnKanboard($fase_wp);
+        (new Fase)->deleteDismatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
+        $nuova_fase_wp = (new Fase)->findFaseOnWordpress($area, $array_servizio, $array_ufficio);
+        $array_ids_fase = (new Fase)->findFaseOnKanboard($nuova_fase_wp);
+        (new Fase)->insertMatchSubtaskUsers($array_ids_fase, $array_users_dipendente);
+        $array_ids_attivita = (new Attivita)->findAttivitaOnKanboard($attivita_wp);
+        (new Attivita)->deleteDismatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
+        $attivita_wp = (new Attivita)->findAttivitaOnWordpress($area, $array_servizio, $array_ufficio);
+        $array_ids_attivita = (new Attivita)->findAttivitaOnKanboard($attivita_wp);
+        (new Attivita)->insertMatchAttivitaUsers($array_ids_attivita, $array_users_dipendente);
 
     }
+
     private static function update_procedimenti_by_dipendenti(string $old_user_area, $old_user_servizio, $old_user_ufficio, array $array_users_dipendente, string $area, array $array_servizio, array $array_ufficio)
     {
         //se ci sono dei procedimenti associati ai dipendenti selezionati, aggiorno i dati
@@ -91,7 +92,7 @@ class UserMetaDataOrgchart
         $array_ids_procedimento = (new Procedimento)->findTasksOnKanboard($procedimenti_wp);
 
         (new Procedimento)->deleteDismatchTasksUsers($array_ids_procedimento, $array_users_dipendente);
-        $nuovi_procedimenti_wp = (new Procedimento)->findTaskOnWordpressForDipendenti($area, $array_servizio,$array_ufficio);
+        $nuovi_procedimenti_wp = (new Procedimento)->findTaskOnWordpressForDipendenti($area, $array_servizio, $array_ufficio);
 
         $array_ids_procedimento = (new Procedimento)->findTasksOnKanboard($nuovi_procedimenti_wp);
 
@@ -122,14 +123,18 @@ class UserMetaDataOrgchart
 
                 update_user_meta($wp_userid, 'servizio', implode(",", $array_servizio));
                 $user_meta = array(get_user_meta($wp_userid));
-                array_push($user_meta[0]['servizio'], $array_servizio);
+                foreach ($array_servizio as $serv) {
+                    array_push($user_meta['servizio'], $serv);
+                }
 
                 $servizio->setServizio(implode(",", $array_servizio));
                 $servizio->setUserServizio($user_meta[0]['id_kanboard'][0]);
 
                 update_user_meta($wp_userid, 'ufficio', implode(",", $array_ufficio));
                 $user_meta = array(get_user_meta($wp_userid));
-                array_push($user_meta[0]['ufficio'], $array_ufficio);
+                foreach ($array_ufficio as $uf) {
+                    array_push($user_meta['ufficio'], $uf);
+                }
                 $ufficio->setUfficio(implode(",", $array_ufficio));
                 $ufficio->setUserUfficio($user_meta[0]['id_kanboard'][0]);
 
@@ -179,33 +184,35 @@ class UserMetaDataOrgchart
 
                 $pattern_servizio = "[^4.]";
                 $array_servizio = self::get_old_metavalue($entry_gforms, $pattern_servizio);
-                if(empty($array_servizio)){
-                    if(!str_contains($user_meta['servizio'][0],'{'))
-                    array_push($array_servizio,$user_meta['servizio'][0]);
-                    else{
-                        array_push($array_servizio,'');
+                if (empty($array_servizio)) {
+                    if (!str_contains($user_meta['servizio'][0], '{')) {
+                        array_push($array_servizio, $user_meta['servizio'][0]);
+                    } else {
+                        array_push($array_servizio, '');
                     }
 
-
                 }
+
                 $pattern_ufficio = "[^6.]";
                 $array_ufficio = self::get_old_metavalue($entry_gforms, $pattern_ufficio);
-                if(empty($array_ufficio)){
-                    if(!str_contains($user_meta['ufficio'][0],'{'))
-                        array_push($array_servizio,$user_meta['ufficio'][0]);
-                    else{
-                        array_push($array_servizio,'');
+                if (empty($array_ufficio)) {
+                    if (!str_contains($user_meta['ufficio'][0], '{')) {
+                        array_push($array_ufficio, $user_meta['ufficio'][0]);
+                    } else {
+                        array_push($array_ufficio, '');
+
                     }
 
-
                 }
-
 
                 //aggiornamento meta utente wp per servizio
 
                 update_user_meta($wp_userid, 'servizio', $array_servizio);
                 $user_meta = get_user_meta($wp_userid);
-                array_push($user_meta['servizio'], $array_servizio);
+                foreach ($array_servizio as $serv) {
+                    array_push($user_meta['servizio'], $serv);
+                }
+
                 $servizio->setServizio(implode(",", $array_servizio));
                 $servizio->editUserServizio($user_meta['id_kanboard'][0]);
 
@@ -213,7 +220,10 @@ class UserMetaDataOrgchart
 
                 update_user_meta($wp_userid, 'ufficio', $array_ufficio);
                 $user_meta = get_user_meta($wp_userid);
-                array_push($user_meta['ufficio'], $array_ufficio);
+                foreach ($array_ufficio as $uf) {
+                    array_push($user_meta['ufficio'], $uf);
+                }
+
                 $ufficio->setUfficio(implode(",", $array_ufficio));
                 $ufficio->editUserUfficio($user_meta['id_kanboard'][0]);
 
